@@ -1,4 +1,6 @@
-# MyTube
+# AI-Tube
+
+> **This project is a fork of [MyTube](https://github.com/franklioxygen/MyTube) by [franklioxygen](https://github.com/franklioxygen).** All original credit goes to the upstream author. This fork adds MP3/MP4 format selection, a token-based REST API for AI agent integration, and a local Docker Compose setup for personal self-hosting.
 
 Self-hosted downloader and player for YouTube, Bilibili, Twitch, MissAV, and [yt-dlp sites](https://github.com/yt-dlp/yt-dlp/blob/master/supportedsites.md). Features channel subscriptions, auto-downloads, and local storage for media. Organize your library into collections with a sleek UI. Includes built-in Cloudflare Tunnel support for secure remote access without port forwarding. Docker-ready deployment.
 

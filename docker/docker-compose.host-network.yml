@@ -1,3 +1,5 @@
+name: ai-tube-prod
+
 # Example configuration for systems where bridge network cannot access internet
 # (e.g., OpenWrt/iStoreOS on arm64)
 #

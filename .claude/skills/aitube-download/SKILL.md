@@ -1,21 +1,39 @@
 # AI Tube Download Skill
 
-Help the user download YouTube / web videos or audio via the local AI Tube server.
+Help the user download YouTube / web videos or audio via their AI Tube server.
 
 ---
 
-## Step 1 — Load stored token
+## Step 1 — Load stored config
 
-Check if a token is already saved:
+Check if API URL and token are already saved:
 
 ```bash
+cat ~/.aitube-url 2>/dev/null || echo "NO_URL"
 cat ~/.aitube-token 2>/dev/null || echo "NO_TOKEN"
 ```
 
-- If a token exists, store it as `AITUBE_TOKEN` and skip to Step 2.
-- If `NO_TOKEN`, go to Step 1a.
+- If both exist, store them as `AITUBE_URL` and `AITUBE_TOKEN` and skip to Step 2.
+- If `NO_URL`, go to Step 1a.
+- If `NO_TOKEN`, go to Step 1b.
 
-### Step 1a — Ask for token
+### Step 1a — Ask for API URL
+
+Use AskUserQuestion:
+
+> What is your AI Tube server URL (including port)?
+>
+> Example: `http://localhost:6001` or `http://192.168.1.100:6001`
+
+Save the answer (strip any trailing slash):
+
+```bash
+echo "PASTE_URL_HERE" > ~/.aitube-url
+chmod 600 ~/.aitube-url
+echo "URL saved."
+```
+
+### Step 1b — Ask for token
 
 Use AskUserQuestion:
 
@@ -28,7 +46,7 @@ Use AskUserQuestion:
 >
 > Paste your token here:
 
-Take the user's answer, save it, and confirm:
+Save the token:
 
 ```bash
 echo "PASTE_TOKEN_HERE" > ~/.aitube-token
@@ -36,14 +54,14 @@ chmod 600 ~/.aitube-token
 echo "Token saved."
 ```
 
-Replace `PASTE_TOKEN_HERE` with the actual token value the user provided.
-
-Then verify it works:
+### Step 1c — Verify connection
 
 ```powershell
 powershell -Command "
+\$url   = (Get-Content '\$env:USERPROFILE\.aitube-url'   -Raw).Trim().TrimEnd('/')
+\$token = (Get-Content '\$env:USERPROFILE\.aitube-token' -Raw).Trim()
 try {
-  \$r = Invoke-RestMethod -Uri 'http://localhost:6001/api/download-status' -Headers @{'X-API-Key'='PASTE_TOKEN_HERE'}
+  \$r = Invoke-RestMethod -Uri \"\$url/api/download-status\" -Headers @{'X-API-Key'=\$token}
   Write-Output 'AUTH_OK'
 } catch {
   Write-Output ('AUTH_FAIL: ' + \$_.Exception.Message)
@@ -52,7 +70,7 @@ try {
 ```
 
 - If `AUTH_OK` → proceed to Step 2.
-- If `AUTH_FAIL` → tell the user the token didn't work and ask them to re-check it. Repeat Step 1a.
+- If `AUTH_FAIL` → tell the user the URL or token didn't work, ask them to re-check, and repeat from Step 1a.
 
 ---
 
@@ -79,17 +97,11 @@ Options:
 
 ## Step 3 — Submit download
 
-Read the saved token:
-
-```bash
-AITUBE_TOKEN=$(cat ~/.aitube-token)
-echo "Token loaded: ${AITUBE_TOKEN:0:8}..."
-```
-
-Submit via the local REST API:
+Read the saved config and submit:
 
 ```powershell
 powershell -Command "
+\$url   = (Get-Content '\$env:USERPROFILE\.aitube-url'   -Raw).Trim().TrimEnd('/')
 \$token = (Get-Content '\$env:USERPROFILE\.aitube-token' -Raw).Trim()
 \$body = ConvertTo-Json @{
   url    = 'VIDEO_URL'
@@ -97,7 +109,7 @@ powershell -Command "
   title  = 'TITLE'
 }
 try {
-  \$r = Invoke-RestMethod -Uri 'http://localhost:6001/api/agent/download' \`
+  \$r = Invoke-RestMethod -Uri \"\$url/api/agent/download\" \`
     -Method POST \`
     -Headers @{'Content-Type'='application/json'; 'X-API-Key'=\$token} \`
     -Body \$body
@@ -114,7 +126,7 @@ Replace:
 - `TITLE` with a short descriptive label (e.g. the video title if known, otherwise `"Download"`)
 
 **On success** (`success: true`): Tell the user:
-> ✅ Queued as **FORMAT** (ID: `downloadId`). Downloading now — check http://localhost:6001 for progress.
+> ✅ Queued as **FORMAT** (ID: `downloadId`). Downloading now — check `AITUBE_URL` for progress.
 
 **On error**: Show the error message and ask the user if they want to retry.
 
@@ -126,8 +138,9 @@ If the user asks "is it done?" or "how's the download?", check status:
 
 ```powershell
 powershell -Command "
+\$url   = (Get-Content '\$env:USERPROFILE\.aitube-url'   -Raw).Trim().TrimEnd('/')
 \$token = (Get-Content '\$env:USERPROFILE\.aitube-token' -Raw).Trim()
-\$r = Invoke-RestMethod -Uri 'http://localhost:6001/api/download-status' \`
+\$r = Invoke-RestMethod -Uri \"\$url/api/download-status\" \`
   -Headers @{'X-API-Key'=\$token}
 \$r | ConvertTo-Json -Depth 5
 "
@@ -142,8 +155,9 @@ Parse and summarise:
 
 ## Reference
 
-**Server:** `http://localhost:6001`
-**Token file:** `~/.aitube-token`
+**Config files:**
+- `~/.aitube-url` — server URL with port (e.g. `http://localhost:6001`)
+- `~/.aitube-token` — API access key
 
 | Endpoint | Method | Purpose |
 |----------|--------|---------|

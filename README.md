@@ -64,6 +64,62 @@ For installation and setup instructions, please refer to [Getting Started](docum
 
 For the three-tier admin trust and deployment security model, please refer to [Deployment Security Model](documents/en/deployment-security-model.md).
 
+## AI Agent Skill (Claude Code)
+
+AI-Tube ships a [Claude Code](https://claude.ai/code) skill that lets you trigger downloads by chatting with your AI agent — no browser required.
+
+### Install the skill
+
+Copy the skill into your Claude Code global skills folder:
+
+```bash
+# macOS / Linux
+mkdir -p ~/.claude/skills/mytube-download
+cp .claude/skills/mytube-download/SKILL.md ~/.claude/skills/mytube-download/SKILL.md
+
+# Windows (PowerShell)
+New-Item -ItemType Directory -Force "$env:USERPROFILE\.claude\skills\mytube-download"
+Copy-Item ".claude\skills\mytube-download\SKILL.md" "$env:USERPROFILE\.claude\skills\mytube-download\SKILL.md"
+```
+
+### Enable the API
+
+Set these environment variables before starting the container (see [docker-compose.local.yml](docker-compose.local.yml)):
+
+```env
+MYTUBE_API_ENABLED=true
+MYTUBE_API_TOKEN=        # leave blank to auto-generate a token on first start
+```
+
+On first start, the generated token is printed to the container log:
+
+```bash
+docker logs mytube-api | grep "API access key"
+```
+
+### Use the skill
+
+In Claude Code, type:
+
+```
+/mytube-download  download https://www.youtube.com/watch?v=xxxx as mp3
+```
+
+The skill will:
+1. Load (or prompt for) your API token and save it to `~/.mytube-token`
+2. Verify the token against the running container
+3. Submit the download job via the REST API
+4. Report back the download ID and let you poll progress on demand
+
+### Supported formats
+
+| Format | Description |
+|--------|-------------|
+| `mp4`  | Best quality video + audio |
+| `mp3`  | Audio only, highest quality |
+
+For full REST API documentation see [API Reference](documents/en/api.md).
+
 ## API Endpoints
 
 For a list of available API endpoints, please refer to [API Endpoints](documents/en/api-endpoints.md).

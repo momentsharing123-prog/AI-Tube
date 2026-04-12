@@ -54,6 +54,7 @@ interface DownloadContextType {
     playlistSelectorUrl: string;
     playlistSelectorTitle: string;
     handleDownloadSelectedTracks: (entries: Array<{ url: string; title: string }>) => Promise<void>;
+    handleDownloadCurrentFromPlaylist: () => Promise<any>;
 }
 
 const DownloadContext = createContext<DownloadContextType | undefined>(undefined);
@@ -226,40 +227,46 @@ export const DownloadProvider: React.FC<{ children: React.ReactNode }> = ({ chil
 
             if (playlistRegex.test(videoUrl) && !skipCollectionCheck) {
                 setIsCheckingParts(true);
+
+                // Try to fetch playlist metadata for display (title / count).
+                // Whether or not this succeeds we ALWAYS show the modal so the
+                // user can choose between "just this video" and "browse playlist".
+                let playlistTitle: string = '';
+                let playlistCount: number = 0;
+
                 try {
                     const playlistResponse = await api.get('/check-playlist', {
                         params: { url: videoUrl }
                     });
-
                     if (playlistResponse.data.success) {
-                        const { title, videoCount } = playlistResponse.data;
-                        setIsCheckingParts(false);
-
-                        // MP3 mode → open the song-picker so user can select individual tracks
-                        if (downloadFormat === 'mp3') {
-                            setPlaylistSelectorUrl(videoUrl);
-                            setPlaylistSelectorTitle(title || videoUrl);
-                            setShowPlaylistSelectorModal(true);
-                            return { success: true };
-                        }
-
-                        // MP4 / other → existing flow (confirm download all / subscribe)
-                        setBilibiliPartsInfo({
-                            videosNumber: videoCount,
-                            title: title,
-                            url: videoUrl,
-                            type: 'playlist',
-                            collectionInfo: null
-                        });
-                        setShowBilibiliPartsModal(true);
-                        return { success: true };
+                        playlistTitle = playlistResponse.data.title || '';
+                        playlistCount = playlistResponse.data.videoCount || 0;
                     }
                 } catch (err) {
-                    console.error('Error checking playlist:', err);
-                    // Continue with normal download if check fails
+                    console.error('Error checking playlist (non-fatal):', err);
+                    // Ignore — we still show the modal below
                 } finally {
                     setIsCheckingParts(false);
                 }
+
+                // MP3 mode → song-picker so user can select individual tracks
+                if (downloadFormat === 'mp3') {
+                    setPlaylistSelectorUrl(videoUrl);
+                    setPlaylistSelectorTitle(playlistTitle || videoUrl);
+                    setShowPlaylistSelectorModal(true);
+                    return { success: true };
+                }
+
+                // MP4 / other → existing confirm-download-all / subscribe flow
+                setBilibiliPartsInfo({
+                    videosNumber: playlistCount,
+                    title: playlistTitle || 'Playlist',
+                    url: videoUrl,
+                    type: 'playlist',
+                    collectionInfo: null
+                });
+                setShowBilibiliPartsModal(true);
+                return { success: true };
             }
 
             // Check for YouTube channel playlists URL
@@ -507,13 +514,24 @@ export const DownloadProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     const handleDownloadSelectedTracks = async (entries: Array<{ url: string; title: string }>) => {
         setShowPlaylistSelectorModal(false);
         try {
-            await api.post('/download/playlist-mp3', { entries });
+            if (entries.length === 0) {
+                // Empty entries = "download all" fallback (called when track list unavailable)
+                await api.post('/download/playlist-mp3', { playlistUrl: playlistSelectorUrl });
+            } else {
+                await api.post('/download/playlist-mp3', { entries });
+            }
             checkBackendDownloadStatus();
             showSnackbar(t('playlistDownloadStarted'));
         } catch (err: any) {
             console.error('Error queuing selected tracks:', err);
             showSnackbar(err?.response?.data?.error || t('failedToDownload'), 'error');
         }
+    };
+
+    // "Just this song" from the song-picker modal — download single video, no playlist
+    const handleDownloadCurrentFromPlaylist = async () => {
+        setShowPlaylistSelectorModal(false);
+        return await handleVideoSubmit(playlistSelectorUrl, true, true);
     };
 
     // Subscription logic
@@ -688,6 +706,7 @@ export const DownloadProvider: React.FC<{ children: React.ReactNode }> = ({ chil
             playlistSelectorUrl,
             playlistSelectorTitle,
             handleDownloadSelectedTracks,
+            handleDownloadCurrentFromPlaylist,
         }}>
             {children}
             <Suspense fallback={null}>

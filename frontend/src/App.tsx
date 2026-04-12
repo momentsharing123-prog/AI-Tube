@@ -73,6 +73,7 @@ function AppContent() {
         playlistSelectorUrl,
         playlistSelectorTitle,
         handleDownloadSelectedTracks,
+        handleDownloadCurrentFromPlaylist,
     } = useDownload();
 
     const { isAuthenticated, loginRequired, checkingAuth } = useAuth();
@@ -162,6 +163,7 @@ function AppContent() {
                                     playlistUrl={playlistSelectorUrl}
                                     playlistTitle={playlistSelectorTitle}
                                     onDownloadSelected={handleDownloadSelectedTracks}
+                                    onDownloadCurrent={handleDownloadCurrentFromPlaylist}
                                     isLoading={loading}
                                 />
                             )}

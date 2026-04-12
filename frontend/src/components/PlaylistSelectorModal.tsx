@@ -32,6 +32,8 @@ interface PlaylistSelectorModalProps {
     playlistTitle: string;
     /** Called with the selected entries to download */
     onDownloadSelected: (entries: PlaylistEntry[]) => void;
+    /** Called when the user wants just the single current video (no playlist) */
+    onDownloadCurrent: () => void;
     isLoading?: boolean;
 }
 
@@ -41,6 +43,7 @@ const PlaylistSelectorModal: React.FC<PlaylistSelectorModalProps> = ({
     playlistUrl,
     playlistTitle,
     onDownloadSelected,
+    onDownloadCurrent,
     isLoading = false,
 }) => {
     const [entries, setEntries] = useState<PlaylistEntry[]>([]);
@@ -94,6 +97,13 @@ const PlaylistSelectorModal: React.FC<PlaylistSelectorModalProps> = ({
         onDownloadSelected(chosenEntries);
     };
 
+    // Fallback: download all without selecting (used when entry list couldn't be fetched)
+    const handleDownloadAll = () => {
+        onDownloadSelected(entries.length > 0 ? entries : []);
+    };
+
+    const showFallback = !fetching && (fetchError !== null || entries.length === 0);
+
     return (
         <Dialog
             open={isOpen}
@@ -105,9 +115,9 @@ const PlaylistSelectorModal: React.FC<PlaylistSelectorModalProps> = ({
             <DialogTitle sx={{ m: 0, p: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <Box>
                     <Typography variant="h6" component="div" sx={{ fontWeight: 600 }}>
-                        Select Songs to Download
+                        Playlist Detected
                     </Typography>
-                    <Typography variant="body2" color="text.secondary" sx={{ mt: 0.25 }}>
+                    <Typography variant="body2" color="text.secondary" sx={{ mt: 0.25 }} noWrap>
                         {playlistTitle}
                     </Typography>
                 </Box>
@@ -121,14 +131,23 @@ const PlaylistSelectorModal: React.FC<PlaylistSelectorModalProps> = ({
                     <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', py: 6, gap: 2 }}>
                         <CircularProgress size={36} />
                         <Typography variant="body2" color="text.secondary">
-                            Loading playlist…
+                            Loading track list…
                         </Typography>
                     </Box>
                 )}
 
-                {fetchError && (
+                {/* Fetch error or empty list — show fallback message */}
+                {showFallback && (
                     <Box sx={{ p: 3 }}>
-                        <Typography color="error">{fetchError}</Typography>
+                        {fetchError
+                            ? <Typography color="error" sx={{ mb: 1 }}>{fetchError}</Typography>
+                            : <Typography color="text.secondary" sx={{ mb: 1 }}>
+                                Track list is unavailable for this playlist type (e.g. YouTube Mix / Radio).
+                              </Typography>
+                        }
+                        <Typography variant="body2" color="text.secondary">
+                            You can still download all tracks, or just the current song.
+                        </Typography>
                     </Box>
                 )}
 
@@ -200,20 +219,38 @@ const PlaylistSelectorModal: React.FC<PlaylistSelectorModalProps> = ({
             </DialogContent>
 
             <DialogActions sx={{ p: 2, gap: 1 }}>
-                <Button onClick={onClose} color="inherit" disabled={isLoading}>
-                    Cancel
+                {/* Always show "just this song" option */}
+                <Button onClick={onDownloadCurrent} color="inherit" disabled={isLoading || fetching}>
+                    Just this song
                 </Button>
-                <Button
-                    onClick={handleDownload}
-                    variant="contained"
-                    color="primary"
-                    disabled={isLoading || fetching || noneSelected}
-                    startIcon={isLoading ? <CircularProgress size={16} color="inherit" /> : <MusicNote />}
-                >
-                    {isLoading
-                        ? 'Queuing…'
-                        : `Download ${selected.size} track${selected.size === 1 ? '' : 's'} as MP3`}
-                </Button>
+
+                {/* Fallback: can't enumerate tracks → offer download-all */}
+                {showFallback && (
+                    <Button
+                        onClick={handleDownloadAll}
+                        variant="contained"
+                        color="primary"
+                        disabled={isLoading}
+                        startIcon={isLoading ? <CircularProgress size={16} color="inherit" /> : <MusicNote />}
+                    >
+                        {isLoading ? 'Queuing…' : 'Download All as MP3'}
+                    </Button>
+                )}
+
+                {/* Normal: track list loaded → download selected */}
+                {!fetching && entries.length > 0 && (
+                    <Button
+                        onClick={handleDownload}
+                        variant="contained"
+                        color="primary"
+                        disabled={isLoading || noneSelected}
+                        startIcon={isLoading ? <CircularProgress size={16} color="inherit" /> : <MusicNote />}
+                    >
+                        {isLoading
+                            ? 'Queuing…'
+                            : `Download ${selected.size} track${selected.size === 1 ? '' : 's'} as MP3`}
+                    </Button>
+                )}
             </DialogActions>
         </Dialog>
     );

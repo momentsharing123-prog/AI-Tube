@@ -75,7 +75,9 @@ const BilibiliPartsModal: React.FC<BilibiliPartsModalProps> = ({
             case 'series':
                 return t('seriesHasVideos', { count: videosNumber });
             case 'playlist':
-                return t('playlistHasVideos', { count: videosNumber });
+                return videosNumber > 0
+                    ? t('playlistHasVideos', { count: videosNumber })
+                    : 'A playlist was detected. You can download all videos or just the current one.';
             default:
                 return t('videoHasParts', { count: videosNumber });
         }
@@ -90,7 +92,9 @@ const BilibiliPartsModal: React.FC<BilibiliPartsModalProps> = ({
             case 'series':
                 return t('downloadAllVideos', { count: videosNumber });
             case 'playlist':
-                return t('downloadAllVideos', { count: videosNumber });
+                return videosNumber > 0
+                    ? t('downloadAllVideos', { count: videosNumber })
+                    : t('downloadAllVideos', { count: '' }).replace(/\s*\(\)/, '').trim() || 'Download All Videos';
             default:
                 return t('downloadAllParts', { count: videosNumber });
         }

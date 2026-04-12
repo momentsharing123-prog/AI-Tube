@@ -31,6 +31,7 @@ interface PlaylistSelectorModalProps {
     onClose: () => void;
     playlistUrl: string;
     playlistTitle: string;
+    format: 'mp3' | 'mp4';
     /** Called with the selected entries and optional collection name to download */
     onDownloadSelected: (entries: PlaylistEntry[], collectionName: string) => void;
     /** Called when the user wants just the single current video (no playlist) */
@@ -43,10 +44,13 @@ const PlaylistSelectorModal: React.FC<PlaylistSelectorModalProps> = ({
     onClose,
     playlistUrl,
     playlistTitle,
+    format,
     onDownloadSelected,
     onDownloadCurrent,
     isLoading = false,
 }) => {
+    const formatLabel = format === 'mp3' ? 'MP3' : 'MP4';
+    const itemLabel = format === 'mp3' ? 'track' : 'video';
     const [entries, setEntries] = useState<PlaylistEntry[]>([]);
     const [selected, setSelected] = useState<Set<number>>(new Set());
     const [fetching, setFetching] = useState(false);
@@ -172,7 +176,7 @@ const PlaylistSelectorModal: React.FC<PlaylistSelectorModalProps> = ({
                               </Typography>
                         }
                         <Typography variant="body2" color="text.secondary">
-                            You can still download all tracks, or just the current song.
+                            You can still download all {itemLabel}s, or just the current one.
                         </Typography>
                     </Box>
                 )}
@@ -245,12 +249,12 @@ const PlaylistSelectorModal: React.FC<PlaylistSelectorModalProps> = ({
             </DialogContent>
 
             <DialogActions sx={{ p: 2, gap: 1 }}>
-                {/* Always show "just this song" option */}
+                {/* Always show "just this one" option */}
                 <Button onClick={onDownloadCurrent} color="inherit" disabled={isLoading || fetching}>
-                    Just this song
+                    Just this {itemLabel}
                 </Button>
 
-                {/* Fallback: can't enumerate tracks → offer download-all */}
+                {/* Fallback: can't enumerate → offer download-all */}
                 {showFallback && (
                     <Button
                         onClick={handleDownloadAll}
@@ -259,11 +263,11 @@ const PlaylistSelectorModal: React.FC<PlaylistSelectorModalProps> = ({
                         disabled={isLoading}
                         startIcon={isLoading ? <CircularProgress size={16} color="inherit" /> : <MusicNote />}
                     >
-                        {isLoading ? 'Queuing…' : 'Download All as MP3'}
+                        {isLoading ? 'Queuing…' : `Download All as ${formatLabel}`}
                     </Button>
                 )}
 
-                {/* Normal: track list loaded → download selected */}
+                {/* Normal: list loaded → download selected */}
                 {!fetching && entries.length > 0 && (
                     <Button
                         onClick={handleDownload}
@@ -274,7 +278,7 @@ const PlaylistSelectorModal: React.FC<PlaylistSelectorModalProps> = ({
                     >
                         {isLoading
                             ? 'Queuing…'
-                            : `Download ${selected.size} track${selected.size === 1 ? '' : 's'} as MP3`}
+                            : `Download ${selected.size} ${itemLabel}${selected.size === 1 ? '' : 's'} as ${formatLabel}`}
                     </Button>
                 )}
             </DialogActions>

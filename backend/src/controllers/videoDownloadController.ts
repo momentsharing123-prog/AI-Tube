@@ -731,15 +731,77 @@ export const getPlaylistEntries = async (
   }
 };
 
+// ── Shared helper ─────────────────────────────────────────────────────────────
+
+/**
+ * Resolve the entry list from a request body.
+ * Returns entries array or an error string.
+ */
+async function resolvePlaylistEntries(
+  explicitEntries: any,
+  playlistUrl: any,
+): Promise<Array<{ url: string; title: string }> | string> {
+  if (Array.isArray(explicitEntries) && explicitEntries.length > 0) {
+    const filtered = (explicitEntries as any[]).filter(
+      (e) => e && typeof e.url === "string" && typeof e.title === "string",
+    );
+    if (filtered.length === 0) {
+      return "entries must be a non-empty array of { url, title } objects";
+    }
+    return filtered;
+  }
+
+  if (!playlistUrl || typeof playlistUrl !== "string") {
+    return "Either playlistUrl or entries is required";
+  }
+
+  let validatedUrl: string;
+  try {
+    validatedUrl = validateUrl(playlistUrl);
+  } catch (error) {
+    return error instanceof Error ? error.message : "Invalid URL format";
+  }
+
+  const entries = await downloadService.getPlaylistEntries(validatedUrl);
+  if (entries.length === 0) {
+    return "No videos found in playlist. Check that the URL contains a valid playlist parameter.";
+  }
+  return entries;
+}
+
+/**
+ * Find or create a collection by name. Returns collectionId or null.
+ */
+function resolveCollection(name: string, formatLabel: string): string | null {
+  const resolvedName = name.trim();
+  if (!resolvedName) return null;
+
+  const existing = storageService.getCollectionByName(resolvedName);
+  if (existing) {
+    logger.info(`Reusing existing collection "${resolvedName}" for ${formatLabel} playlist`);
+    return existing.id;
+  }
+
+  const newCollection = {
+    id: Date.now().toString(),
+    name: resolvedName,
+    videos: [] as string[],
+    createdAt: new Date().toISOString(),
+    title: resolvedName,
+  };
+  storageService.saveCollection(newCollection);
+  logger.info(`Created collection "${resolvedName}" for ${formatLabel} playlist`);
+  return newCollection.id;
+}
+
+// ── Playlist download endpoints ───────────────────────────────────────────────
+
 /**
  * Download selected YouTube playlist entries as individual MP3 files.
  * POST /api/download/playlist-mp3
  * Body:
  *   { playlistUrl: string, collectionName?: string }       — download ALL entries
  *   { entries: [{url,title}], collectionName?: string }    — download selected entries only
- *
- * When collectionName is provided, a collection is created (or reused by name)
- * and every downloaded track is added to it, mirroring MP4 playlist behaviour.
  */
 export const downloadPlaylistAsMP3 = async (
   req: Request,
@@ -747,103 +809,47 @@ export const downloadPlaylistAsMP3 = async (
 ): Promise<any> => {
   const { playlistUrl, entries: explicitEntries, collectionName } = req.body;
 
-  let entries: Array<{ url: string; title: string }>;
-
-  if (Array.isArray(explicitEntries) && explicitEntries.length > 0) {
-    // Caller provided an explicit list (e.g. from the song-picker UI)
-    entries = explicitEntries.filter(
-      (e: any) => e && typeof e.url === "string" && typeof e.title === "string"
-    );
-    if (entries.length === 0) {
-      return sendBadRequest(res, "entries must be a non-empty array of { url, title } objects");
-    }
-  } else {
-    // Fall back: fetch all entries from the playlist URL
-    if (!playlistUrl || typeof playlistUrl !== "string") {
-      return sendBadRequest(res, "Either playlistUrl or entries is required");
-    }
-
-    let validatedUrl: string;
-    try {
-      validatedUrl = validateUrl(playlistUrl);
-    } catch (error) {
-      return sendBadRequest(res, error instanceof Error ? error.message : "Invalid URL format");
-    }
-
-    try {
-      entries = await downloadService.getPlaylistEntries(validatedUrl);
-    } catch (error) {
-      logger.error("Error fetching playlist entries:", error);
-      return sendBadRequest(res, error instanceof Error ? error.message : "Failed to fetch playlist entries");
-    }
-
-    if (entries.length === 0) {
-      return sendBadRequest(res, "No videos found in playlist. Check that the URL contains a valid playlist parameter.");
-    }
+  const entriesOrError = await resolvePlaylistEntries(explicitEntries, playlistUrl).catch(
+    (err) => err instanceof Error ? err.message : "Failed to fetch playlist entries",
+  );
+  if (typeof entriesOrError === "string") {
+    return sendBadRequest(res, entriesOrError);
   }
+  const entries = entriesOrError;
 
-  // ── Collection setup ────────────────────────────────────────────────────────
-  let collectionId: string | null = null;
-  const resolvedCollectionName =
-    typeof collectionName === "string" ? collectionName.trim() : "";
+  const collectionId = resolveCollection(
+    typeof collectionName === "string" ? collectionName : "",
+    "MP3",
+  );
+  const resolvedCollectionName = collectionId
+    ? (storageService.getCollectionById(collectionId)?.name ?? "")
+    : "";
 
-  if (resolvedCollectionName) {
-    // Reuse existing collection with this name, or create a new one
-    const existing = storageService.getCollectionByName(resolvedCollectionName);
-    if (existing) {
-      collectionId = existing.id;
-      logger.info(`Reusing existing collection "${resolvedCollectionName}" for MP3 playlist`);
-    } else {
-      const newCollection = {
-        id: Date.now().toString(),
-        name: resolvedCollectionName,
-        videos: [] as string[],
-        createdAt: new Date().toISOString(),
-        title: resolvedCollectionName,
-      };
-      storageService.saveCollection(newCollection);
-      collectionId = newCollection.id;
-      logger.info(`Created collection "${resolvedCollectionName}" for MP3 playlist`);
-    }
-  }
-
-  // ── Queue downloads ─────────────────────────────────────────────────────────
   const downloadIds: string[] = [];
 
   for (const entry of entries) {
     const entryId = Date.now().toString() + "_" + Math.random().toString(36).slice(2, 7);
-    const entryUrl = entry.url;
-    const entryTitle = entry.title;
-    const capturedCollectionId = collectionId; // capture for async closure
+    const capturedCollectionId = collectionId;
     downloadIds.push(entryId);
 
     const downloadTask = async (registerCancel: (cancel: () => void) => void) => {
       const videoData = await downloadService.downloadYouTubeVideo(
-        entryUrl,
-        entryId,
-        registerCancel,
-        "mp3",
-        { noPlaylist: true },
+        entry.url, entryId, registerCancel, "mp3", { noPlaylist: true },
       );
-
-      // Add to collection if one was specified
       if (capturedCollectionId && videoData?.id) {
         storageService.atomicUpdateCollection(capturedCollectionId, (col) => {
-          if (!col.videos.includes(videoData.id)) {
-            col.videos.push(videoData.id);
-          }
+          if (!col.videos.includes(videoData.id)) col.videos.push(videoData.id);
           return col;
         });
         logger.info(`Added "${videoData.title}" to collection "${resolvedCollectionName}"`);
       }
-
       return { success: true, video: videoData };
     };
 
     downloadManager
-      .addDownload(downloadTask, entryId, entryTitle, entryUrl, "youtube")
+      .addDownload(downloadTask, entryId, entry.title, entry.url, "youtube")
       .then(() => logger.info("Playlist MP3 download completed:", entryId))
-      .catch((error) => logger.error("Playlist MP3 download failed:", { entryId, error }));
+      .catch((err) => logger.error("Playlist MP3 download failed:", { entryId, err }));
   }
 
   sendData(res, {
@@ -851,6 +857,72 @@ export const downloadPlaylistAsMP3 = async (
     status: "queued",
     message: `Queued ${entries.length} track${entries.length === 1 ? "" : "s"} as MP3`,
     totalTracks: entries.length,
+    collectionId,
+    downloadIds,
+  });
+};
+
+/**
+ * Download selected YouTube playlist entries as individual MP4 files.
+ * POST /api/download/playlist-mp4
+ * Body:
+ *   { playlistUrl: string, collectionName?: string }       — download ALL entries
+ *   { entries: [{url,title}], collectionName?: string }    — download selected entries only
+ */
+export const downloadPlaylistAsMP4 = async (
+  req: Request,
+  res: Response,
+): Promise<any> => {
+  const { playlistUrl, entries: explicitEntries, collectionName } = req.body;
+
+  const entriesOrError = await resolvePlaylistEntries(explicitEntries, playlistUrl).catch(
+    (err) => err instanceof Error ? err.message : "Failed to fetch playlist entries",
+  );
+  if (typeof entriesOrError === "string") {
+    return sendBadRequest(res, entriesOrError);
+  }
+  const entries = entriesOrError;
+
+  const collectionId = resolveCollection(
+    typeof collectionName === "string" ? collectionName : "",
+    "MP4",
+  );
+  const resolvedCollectionName = collectionId
+    ? (storageService.getCollectionById(collectionId)?.name ?? "")
+    : "";
+
+  const downloadIds: string[] = [];
+
+  for (const entry of entries) {
+    const entryId = Date.now().toString() + "_" + Math.random().toString(36).slice(2, 7);
+    const capturedCollectionId = collectionId;
+    downloadIds.push(entryId);
+
+    const downloadTask = async (registerCancel: (cancel: () => void) => void) => {
+      const videoData = await downloadService.downloadYouTubeVideo(
+        entry.url, entryId, registerCancel, "mp4", { noPlaylist: true },
+      );
+      if (capturedCollectionId && videoData?.id) {
+        storageService.atomicUpdateCollection(capturedCollectionId, (col) => {
+          if (!col.videos.includes(videoData.id)) col.videos.push(videoData.id);
+          return col;
+        });
+        logger.info(`Added "${videoData.title}" to collection "${resolvedCollectionName}"`);
+      }
+      return { success: true, video: videoData };
+    };
+
+    downloadManager
+      .addDownload(downloadTask, entryId, entry.title, entry.url, "youtube")
+      .then(() => logger.info("Playlist MP4 download completed:", entryId))
+      .catch((err) => logger.error("Playlist MP4 download failed:", { entryId, err }));
+  }
+
+  sendData(res, {
+    success: true,
+    status: "queued",
+    message: `Queued ${entries.length} video${entries.length === 1 ? "" : "s"} as MP4`,
+    totalVideos: entries.length,
     collectionId,
     downloadIds,
   });

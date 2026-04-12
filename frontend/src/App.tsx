@@ -72,6 +72,7 @@ function AppContent() {
         setShowPlaylistSelectorModal,
         playlistSelectorUrl,
         playlistSelectorTitle,
+        playlistSelectorFormat,
         handleDownloadSelectedTracks,
         handleDownloadCurrentFromPlaylist,
     } = useDownload();
@@ -154,7 +155,7 @@ function AppContent() {
                             )}
                         </Suspense>
 
-                        {/* Playlist Song Picker Modal (MP3 mode) */}
+                        {/* Playlist Video/Track Picker Modal (MP3 + MP4) */}
                         <Suspense fallback={null}>
                             {showPlaylistSelectorModal && (
                                 <PlaylistSelectorModal
@@ -162,6 +163,7 @@ function AppContent() {
                                     onClose={() => setShowPlaylistSelectorModal(false)}
                                     playlistUrl={playlistSelectorUrl}
                                     playlistTitle={playlistSelectorTitle}
+                                    format={playlistSelectorFormat}
                                     onDownloadSelected={handleDownloadSelectedTracks}
                                     onDownloadCurrent={handleDownloadCurrentFromPlaylist}
                                     isLoading={loading}

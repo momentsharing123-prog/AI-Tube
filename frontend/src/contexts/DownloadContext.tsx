@@ -48,11 +48,12 @@ interface DownloadContextType {
     handleDownloadCurrentBilibiliPart: () => Promise<any>;
     downloadFormat: 'mp4' | 'mp3';
     setDownloadFormat: (format: 'mp4' | 'mp3') => void;
-    // Playlist song-picker modal (MP3 only)
+    // Playlist song/video-picker modal (MP3 + MP4)
     showPlaylistSelectorModal: boolean;
     setShowPlaylistSelectorModal: (show: boolean) => void;
     playlistSelectorUrl: string;
     playlistSelectorTitle: string;
+    playlistSelectorFormat: 'mp3' | 'mp4';
     handleDownloadSelectedTracks: (entries: Array<{ url: string; title: string }>, collectionName: string) => Promise<void>;
     handleDownloadCurrentFromPlaylist: () => Promise<any>;
 }
@@ -165,10 +166,11 @@ export const DownloadProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     });
     const [isCheckingParts, setIsCheckingParts] = useState<boolean>(false);
 
-    // Playlist song-picker modal state (MP3 + playlist)
+    // Playlist song/video-picker modal state (MP3 + MP4)
     const [showPlaylistSelectorModal, setShowPlaylistSelectorModal] = useState<boolean>(false);
     const [playlistSelectorUrl, setPlaylistSelectorUrl] = useState<string>('');
     const [playlistSelectorTitle, setPlaylistSelectorTitle] = useState<string>('');
+    const [playlistSelectorFormat, setPlaylistSelectorFormat] = useState<'mp3' | 'mp4'>('mp3');
     const [downloadFormat, setDownloadFormat] = useState<'mp4' | 'mp3'>('mp4');
 
 
@@ -249,23 +251,11 @@ export const DownloadProvider: React.FC<{ children: React.ReactNode }> = ({ chil
                     setIsCheckingParts(false);
                 }
 
-                // MP3 mode → song-picker so user can select individual tracks
-                if (downloadFormat === 'mp3') {
-                    setPlaylistSelectorUrl(videoUrl);
-                    setPlaylistSelectorTitle(playlistTitle || videoUrl);
-                    setShowPlaylistSelectorModal(true);
-                    return { success: true };
-                }
-
-                // MP4 / other → existing confirm-download-all / subscribe flow
-                setBilibiliPartsInfo({
-                    videosNumber: playlistCount,
-                    title: playlistTitle || 'Playlist',
-                    url: videoUrl,
-                    type: 'playlist',
-                    collectionInfo: null
-                });
-                setShowBilibiliPartsModal(true);
+                // Both MP3 and MP4 → video/track picker modal
+                setPlaylistSelectorUrl(videoUrl);
+                setPlaylistSelectorTitle(playlistTitle || videoUrl);
+                setPlaylistSelectorFormat(downloadFormat === 'mp3' ? 'mp3' : 'mp4');
+                setShowPlaylistSelectorModal(true);
                 return { success: true };
             }
 
@@ -510,18 +500,19 @@ export const DownloadProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         return await handleVideoSubmit(bilibiliPartsInfo.url, true, true);
     };
 
-    // Download selected tracks from the song-picker modal
+    // Download selected tracks/videos from the picker modal
     const handleDownloadSelectedTracks = async (entries: Array<{ url: string; title: string }>, collectionName: string) => {
         setShowPlaylistSelectorModal(false);
+        const endpoint = playlistSelectorFormat === 'mp3' ? '/download/playlist-mp3' : '/download/playlist-mp4';
         try {
             if (entries.length === 0) {
                 // Empty entries = "download all" fallback (called when track list unavailable)
-                await api.post('/download/playlist-mp3', {
+                await api.post(endpoint, {
                     playlistUrl: playlistSelectorUrl,
                     ...(collectionName ? { collectionName } : {}),
                 });
             } else {
-                await api.post('/download/playlist-mp3', {
+                await api.post(endpoint, {
                     entries,
                     ...(collectionName ? { collectionName } : {}),
                 });
@@ -532,7 +523,7 @@ export const DownloadProvider: React.FC<{ children: React.ReactNode }> = ({ chil
             }
             showSnackbar(t('playlistDownloadStarted'));
         } catch (err: any) {
-            console.error('Error queuing selected tracks:', err);
+            console.error('Error queuing selected items:', err);
             showSnackbar(err?.response?.data?.error || t('failedToDownload'), 'error');
         }
     };
@@ -714,6 +705,7 @@ export const DownloadProvider: React.FC<{ children: React.ReactNode }> = ({ chil
             setShowPlaylistSelectorModal,
             playlistSelectorUrl,
             playlistSelectorTitle,
+            playlistSelectorFormat,
             handleDownloadSelectedTracks,
             handleDownloadCurrentFromPlaylist,
         }}>

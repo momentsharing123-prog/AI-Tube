@@ -8,8 +8,8 @@ services:
     image: aitube-backend:local
     container_name: ai-tube-prod
     volumes:
-      - "E:/Youtube Download/uploads:/app/uploads"
-      - "E:/Youtube Download/data:/app/data"
+      - "E:/Youtube Download/SynologyDrive/uploads:/app/uploads"
+      - "E:/Youtube Download/SynologyDrive/data:/app/data"
     environment:
       - PORT=5551
       - PUID=${PUID:-1000}

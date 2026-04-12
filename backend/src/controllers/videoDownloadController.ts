@@ -696,40 +696,89 @@ export const checkPlaylist = async (
 };
 
 /**
- * Download an entire YouTube playlist as individual MP3 files.
- * POST /api/download/playlist-mp3
- * Body: { playlistUrl: string }
+ * List all entries in a YouTube playlist without downloading.
+ * GET /api/playlist-entries?url=<playlistUrl>
  *
- * Enumerates playlist entries via --flat-playlist, then queues each video
- * as a separate MP3 download so they each appear as individual library entries.
+ * Returns { entries: Array<{ url, title }> } for the frontend song-picker UI.
+ */
+export const getPlaylistEntries = async (
+  req: Request,
+  res: Response,
+): Promise<any> => {
+  const url = req.query.url as string | undefined;
+
+  if (!url) {
+    return sendBadRequest(res, "url query parameter is required");
+  }
+
+  let validatedUrl: string;
+  try {
+    validatedUrl = validateUrl(url);
+  } catch (error) {
+    return sendBadRequest(res, error instanceof Error ? error.message : "Invalid URL format");
+  }
+
+  try {
+    const entries = await downloadService.getPlaylistEntries(validatedUrl);
+    sendData(res, { success: true, entries });
+  } catch (error) {
+    logger.error("Error fetching playlist entries:", error);
+    sendData(res, {
+      success: false,
+      error: error instanceof Error ? error.message : "Failed to fetch playlist entries",
+      entries: [],
+    });
+  }
+};
+
+/**
+ * Download selected YouTube playlist entries as individual MP3 files.
+ * POST /api/download/playlist-mp3
+ * Body:
+ *   { playlistUrl: string }                                — download ALL entries
+ *   { entries: Array<{ url: string; title: string }> }    — download selected entries only
+ *
+ * Queues each track as a separate download so they appear as individual library entries.
  */
 export const downloadPlaylistAsMP3 = async (
   req: Request,
   res: Response,
 ): Promise<any> => {
-  const { playlistUrl } = req.body;
-
-  if (!playlistUrl || typeof playlistUrl !== "string") {
-    return sendBadRequest(res, "playlistUrl is required");
-  }
-
-  let validatedUrl: string;
-  try {
-    validatedUrl = validateUrl(playlistUrl);
-  } catch (error) {
-    return sendBadRequest(res, error instanceof Error ? error.message : "Invalid URL format");
-  }
+  const { playlistUrl, entries: explicitEntries } = req.body;
 
   let entries: Array<{ url: string; title: string }>;
-  try {
-    entries = await downloadService.getPlaylistEntries(validatedUrl);
-  } catch (error) {
-    logger.error("Error fetching playlist entries:", error);
-    return sendBadRequest(res, error instanceof Error ? error.message : "Failed to fetch playlist entries");
-  }
 
-  if (entries.length === 0) {
-    return sendBadRequest(res, "No videos found in playlist. Check that the URL contains a valid playlist parameter.");
+  if (Array.isArray(explicitEntries) && explicitEntries.length > 0) {
+    // Caller provided an explicit list (e.g. from the song-picker UI)
+    entries = explicitEntries.filter(
+      (e: any) => e && typeof e.url === "string" && typeof e.title === "string"
+    );
+    if (entries.length === 0) {
+      return sendBadRequest(res, "entries must be a non-empty array of { url, title } objects");
+    }
+  } else {
+    // Fall back: fetch all entries from the playlist URL
+    if (!playlistUrl || typeof playlistUrl !== "string") {
+      return sendBadRequest(res, "Either playlistUrl or entries is required");
+    }
+
+    let validatedUrl: string;
+    try {
+      validatedUrl = validateUrl(playlistUrl);
+    } catch (error) {
+      return sendBadRequest(res, error instanceof Error ? error.message : "Invalid URL format");
+    }
+
+    try {
+      entries = await downloadService.getPlaylistEntries(validatedUrl);
+    } catch (error) {
+      logger.error("Error fetching playlist entries:", error);
+      return sendBadRequest(res, error instanceof Error ? error.message : "Failed to fetch playlist entries");
+    }
+
+    if (entries.length === 0) {
+      return sendBadRequest(res, "No videos found in playlist. Check that the URL contains a valid playlist parameter.");
+    }
   }
 
   const downloadIds: string[] = [];
@@ -760,7 +809,7 @@ export const downloadPlaylistAsMP3 = async (
   sendData(res, {
     success: true,
     status: "queued",
-    message: `Queued ${entries.length} tracks as MP3`,
+    message: `Queued ${entries.length} track${entries.length === 1 ? "" : "s"} as MP3`,
     totalTracks: entries.length,
     downloadIds,
   });

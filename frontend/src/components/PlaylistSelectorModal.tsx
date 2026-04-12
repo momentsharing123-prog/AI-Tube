@@ -1,0 +1,222 @@
+import { CheckBox, CheckBoxOutlineBlank, Close, MusicNote } from '@mui/icons-material';
+import {
+    Box,
+    Button,
+    Checkbox,
+    CircularProgress,
+    Dialog,
+    DialogActions,
+    DialogContent,
+    DialogTitle,
+    Divider,
+    FormControlLabel,
+    IconButton,
+    List,
+    ListItem,
+    ListItemIcon,
+    ListItemText,
+    Typography,
+} from '@mui/material';
+import { useEffect, useState } from 'react';
+import api from '../services/api';
+
+export interface PlaylistEntry {
+    url: string;
+    title: string;
+}
+
+interface PlaylistSelectorModalProps {
+    isOpen: boolean;
+    onClose: () => void;
+    playlistUrl: string;
+    playlistTitle: string;
+    /** Called with the selected entries to download */
+    onDownloadSelected: (entries: PlaylistEntry[]) => void;
+    isLoading?: boolean;
+}
+
+const PlaylistSelectorModal: React.FC<PlaylistSelectorModalProps> = ({
+    isOpen,
+    onClose,
+    playlistUrl,
+    playlistTitle,
+    onDownloadSelected,
+    isLoading = false,
+}) => {
+    const [entries, setEntries] = useState<PlaylistEntry[]>([]);
+    const [selected, setSelected] = useState<Set<number>>(new Set());
+    const [fetching, setFetching] = useState(false);
+    const [fetchError, setFetchError] = useState<string | null>(null);
+
+    // Fetch playlist entries when modal opens
+    useEffect(() => {
+        if (!isOpen || !playlistUrl) return;
+        setFetching(true);
+        setFetchError(null);
+        setEntries([]);
+        setSelected(new Set());
+
+        api.get('/playlist-entries', { params: { url: playlistUrl } })
+            .then((res) => {
+                const fetched: PlaylistEntry[] = res.data?.entries ?? [];
+                setEntries(fetched);
+                // Select all by default
+                setSelected(new Set(fetched.map((_, i) => i)));
+            })
+            .catch((err) => {
+                setFetchError(err?.response?.data?.error || err?.message || 'Failed to load playlist');
+            })
+            .finally(() => setFetching(false));
+    }, [isOpen, playlistUrl]);
+
+    const allSelected = entries.length > 0 && selected.size === entries.length;
+    const noneSelected = selected.size === 0;
+
+    const toggleAll = () => {
+        if (allSelected) {
+            setSelected(new Set());
+        } else {
+            setSelected(new Set(entries.map((_, i) => i)));
+        }
+    };
+
+    const toggle = (idx: number) => {
+        setSelected((prev) => {
+            const next = new Set(prev);
+            if (next.has(idx)) next.delete(idx);
+            else next.add(idx);
+            return next;
+        });
+    };
+
+    const handleDownload = () => {
+        const chosenEntries = entries.filter((_, i) => selected.has(i));
+        onDownloadSelected(chosenEntries);
+    };
+
+    return (
+        <Dialog
+            open={isOpen}
+            onClose={onClose}
+            maxWidth="sm"
+            fullWidth
+            slotProps={{ paper: { sx: { borderRadius: 2, maxHeight: '85vh' } } }}
+        >
+            <DialogTitle sx={{ m: 0, p: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <Box>
+                    <Typography variant="h6" component="div" sx={{ fontWeight: 600 }}>
+                        Select Songs to Download
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary" sx={{ mt: 0.25 }}>
+                        {playlistTitle}
+                    </Typography>
+                </Box>
+                <IconButton aria-label="close" onClick={onClose} sx={{ color: (theme) => theme.palette.grey[500] }}>
+                    <Close />
+                </IconButton>
+            </DialogTitle>
+
+            <DialogContent dividers sx={{ p: 0 }}>
+                {fetching && (
+                    <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', py: 6, gap: 2 }}>
+                        <CircularProgress size={36} />
+                        <Typography variant="body2" color="text.secondary">
+                            Loading playlist…
+                        </Typography>
+                    </Box>
+                )}
+
+                {fetchError && (
+                    <Box sx={{ p: 3 }}>
+                        <Typography color="error">{fetchError}</Typography>
+                    </Box>
+                )}
+
+                {!fetching && !fetchError && entries.length > 0 && (
+                    <>
+                        {/* Select all row */}
+                        <Box sx={{ px: 2, py: 1, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                            <FormControlLabel
+                                control={
+                                    <Checkbox
+                                        checked={allSelected}
+                                        indeterminate={!allSelected && !noneSelected}
+                                        onChange={toggleAll}
+                                        icon={<CheckBoxOutlineBlank />}
+                                        checkedIcon={<CheckBox />}
+                                    />
+                                }
+                                label={
+                                    <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                                        {allSelected ? 'Deselect all' : 'Select all'} ({entries.length} tracks)
+                                    </Typography>
+                                }
+                            />
+                            <Typography variant="caption" color="text.secondary">
+                                {selected.size} selected
+                            </Typography>
+                        </Box>
+                        <Divider />
+
+                        {/* Track list */}
+                        <List dense disablePadding sx={{ overflowY: 'auto' }}>
+                            {entries.map((entry, idx) => (
+                                <ListItem
+                                    key={idx}
+                                    disablePadding
+                                    onClick={() => toggle(idx)}
+                                    sx={{
+                                        cursor: 'pointer',
+                                        px: 2,
+                                        py: 0.5,
+                                        '&:hover': { bgcolor: 'action.hover' },
+                                        bgcolor: selected.has(idx) ? 'action.selected' : 'transparent',
+                                    }}
+                                >
+                                    <ListItemIcon sx={{ minWidth: 36 }}>
+                                        <Checkbox
+                                            edge="start"
+                                            checked={selected.has(idx)}
+                                            tabIndex={-1}
+                                            disableRipple
+                                            size="small"
+                                        />
+                                    </ListItemIcon>
+                                    <ListItemIcon sx={{ minWidth: 32 }}>
+                                        <MusicNote fontSize="small" color="action" />
+                                    </ListItemIcon>
+                                    <ListItemText
+                                        primary={
+                                            <Typography variant="body2" noWrap title={entry.title}>
+                                                {entry.title}
+                                            </Typography>
+                                        }
+                                    />
+                                </ListItem>
+                            ))}
+                        </List>
+                    </>
+                )}
+            </DialogContent>
+
+            <DialogActions sx={{ p: 2, gap: 1 }}>
+                <Button onClick={onClose} color="inherit" disabled={isLoading}>
+                    Cancel
+                </Button>
+                <Button
+                    onClick={handleDownload}
+                    variant="contained"
+                    color="primary"
+                    disabled={isLoading || fetching || noneSelected}
+                    startIcon={isLoading ? <CircularProgress size={16} color="inherit" /> : <MusicNote />}
+                >
+                    {isLoading
+                        ? 'Queuing…'
+                        : `Download ${selected.size} track${selected.size === 1 ? '' : 's'} as MP3`}
+                </Button>
+            </DialogActions>
+        </Dialog>
+    );
+};
+
+export default PlaylistSelectorModal;

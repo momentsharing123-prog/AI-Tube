@@ -21,6 +21,10 @@ const BilibiliPartsModal = lazyWithRetry(
     () => import('./components/BilibiliPartsModal'),
     'bilibili-parts-modal',
 );
+const PlaylistSelectorModal = lazyWithRetry(
+    () => import('./components/PlaylistSelectorModal'),
+    'playlist-selector-modal',
+);
 const AuthorVideos = lazyWithRetry(() => import('./pages/AuthorVideos'), 'author-videos');
 const CollectionPage = lazyWithRetry(
     () => import('./pages/CollectionPage'),
@@ -63,7 +67,12 @@ function AppContent() {
         bilibiliPartsInfo,
         isCheckingParts,
         handleDownloadAllBilibiliParts,
-        handleDownloadCurrentBilibiliPart
+        handleDownloadCurrentBilibiliPart,
+        showPlaylistSelectorModal,
+        setShowPlaylistSelectorModal,
+        playlistSelectorUrl,
+        playlistSelectorTitle,
+        handleDownloadSelectedTracks,
     } = useDownload();
 
     const { isAuthenticated, loginRequired, checkingAuth } = useAuth();
@@ -140,6 +149,20 @@ function AppContent() {
                                     onDownloadCurrent={handleDownloadCurrentBilibiliPart}
                                     isLoading={loading || isCheckingParts}
                                     type={bilibiliPartsInfo.type}
+                                />
+                            )}
+                        </Suspense>
+
+                        {/* Playlist Song Picker Modal (MP3 mode) */}
+                        <Suspense fallback={null}>
+                            {showPlaylistSelectorModal && (
+                                <PlaylistSelectorModal
+                                    isOpen={showPlaylistSelectorModal}
+                                    onClose={() => setShowPlaylistSelectorModal(false)}
+                                    playlistUrl={playlistSelectorUrl}
+                                    playlistTitle={playlistSelectorTitle}
+                                    onDownloadSelected={handleDownloadSelectedTracks}
+                                    isLoading={loading}
                                 />
                             )}
                         </Suspense>

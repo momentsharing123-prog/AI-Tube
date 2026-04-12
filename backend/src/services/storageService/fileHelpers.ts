@@ -160,7 +160,7 @@ export function removeDirectoryRecursive(targetPath: string): void {
 
 function findFileInStorage(
   baseDir: string,
-  fileLabel: "video" | "image",
+  fileLabel: "video" | "image" | "audio",
   filename: string,
   collections: Collection[] = []
 ): string | null {

@@ -7,11 +7,14 @@ import {
     IconButton,
     InputAdornment,
     TextField,
+    ToggleButton,
+    ToggleButtonGroup,
     useMediaQuery,
     useTheme
 } from '@mui/material';
 import { FormEvent } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
+import { useDownload } from '../../contexts/DownloadContext';
 import { useLanguage } from '../../contexts/LanguageContext';
 
 interface SearchInputProps {
@@ -38,6 +41,7 @@ const SearchInput: React.FC<SearchInputProps> = ({
     const { t } = useLanguage();
     const { userRole } = useAuth();
     const isVisitor = userRole === 'visitor';
+    const { downloadFormat, setDownloadFormat } = useDownload();
 
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down('md'));
@@ -76,7 +80,23 @@ const SearchInput: React.FC<SearchInputProps> = ({
                 slotProps={{
                     input: {
                         startAdornment: !isMobile ? (
-                            <InputAdornment position="start">
+                            <InputAdornment position="start" sx={{ gap: 0.5 }}>
+                                {!isVisitor && !isSearchMode && (
+                                    <ToggleButtonGroup
+                                        value={downloadFormat}
+                                        exclusive
+                                        size="small"
+                                        onChange={(_, val) => val && setDownloadFormat(val)}
+                                        sx={{ mr: 0.5 }}
+                                    >
+                                        <ToggleButton value="mp4" sx={{ py: 0.25, px: 1.5, fontSize: '0.7rem', fontWeight: 700, lineHeight: 1.5 }}>
+                                            MP4
+                                        </ToggleButton>
+                                        <ToggleButton value="mp3" sx={{ py: 0.25, px: 1.5, fontSize: '0.7rem', fontWeight: 700, lineHeight: 1.5 }}>
+                                            MP3
+                                        </ToggleButton>
+                                    </ToggleButtonGroup>
+                                )}
                                 <IconButton
                                     onClick={handlePaste}
                                     edge="start"

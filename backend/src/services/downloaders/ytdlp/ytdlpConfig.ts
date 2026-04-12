@@ -471,6 +471,8 @@ function applyPostBuildRules(context: DownloadFlagContext): string {
   return mergeOutputFormat;
 }
 
+export type DownloadFormat = "mp4" | "mp3";
+
 /**
  * Prepare yt-dlp flags for video download
  */
@@ -478,8 +480,27 @@ export function prepareDownloadFlags(
   videoUrl: string,
   outputPath: string,
   userConfig?: any,
+  format?: DownloadFormat,
 ): PreparedFlags {
   const config = (userConfig || getUserYtDlpConfig(videoUrl) || {}) as UserYtDlpConfig;
+
+  // MP3: bypass all video format logic and use audio extraction flags
+  if (format === "mp3") {
+    const { networkOptions } = extractUserConfigOptions(config);
+    const mp3Flags = {
+      ...networkOptions,
+      output: outputPath,
+      extractAudio: true,
+      audioFormat: "mp3",
+      audioQuality: "0",
+      ignoreErrors: true,
+    };
+    appendProviderExtractorArg(mp3Flags);
+    finalizeExtractorArgs(mp3Flags);
+    logger.debug("MP3 audio extraction flags:", mp3Flags);
+    return { flags: mp3Flags, mergeOutputFormat: "mp3" };
+  }
+
   const context = createDownloadFlagContext(videoUrl, outputPath, config);
   const mergeOutputFormat = applyPostBuildRules(context);
   const { flags } = context;

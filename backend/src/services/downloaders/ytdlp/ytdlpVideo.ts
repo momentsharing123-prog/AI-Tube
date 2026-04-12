@@ -38,7 +38,7 @@ import { Video } from "../../storageService";
 import { deleteSmallThumbnailMirrorSync } from "../../thumbnailMirrorService";
 import { twitchApiService } from "../../twitchService";
 import { BaseDownloader } from "../BaseDownloader";
-import { prepareDownloadFlags } from "./ytdlpConfig";
+import { DownloadFormat, prepareDownloadFlags } from "./ytdlpConfig";
 import { getProviderScript } from "./ytdlpHelpers";
 import { extractVideoMetadata } from "./ytdlpMetadata";
 import { processSubtitles } from "./ytdlpSubtitle";
@@ -104,7 +104,8 @@ function isExpectedTwitchMetadataError(error: unknown): boolean {
 export async function downloadVideo(
   videoUrl: string,
   downloadId?: string,
-  onStart?: (cancel: () => void) => void
+  onStart?: (cancel: () => void) => void,
+  format?: DownloadFormat
 ): Promise<Video> {
   logger.info("Detected URL:", videoUrl);
 
@@ -113,7 +114,8 @@ export async function downloadVideo(
   const safeBaseFilename = `video_${timestamp}`;
 
   // Add extensions for video and thumbnail
-  const videoFilename = `${safeBaseFilename}.mp4`;
+  const fileExt = format === "mp3" ? "mp3" : "mp4";
+  const videoFilename = `${safeBaseFilename}.${fileExt}`;
   const thumbnailFilename = `${safeBaseFilename}.jpg`;
 
   let videoTitle: string,
@@ -216,7 +218,7 @@ export async function downloadVideo(
       videoAuthor,
       videoDate
     );
-    const newVideoFilename = `${newSafeBaseFilename}.mp4`;
+    const newVideoFilename = `${newSafeBaseFilename}.${fileExt}`;
     const newThumbnailFilename = `${newSafeBaseFilename}.jpg`;
 
     // Update the filenames
@@ -264,7 +266,8 @@ export async function downloadVideo(
     const { flags, mergeOutputFormat } = prepareDownloadFlags(
       videoUrl,
       newVideoPath,
-      downloadUserConfig
+      downloadUserConfig,
+      format
     );
 
     // Log final flags to verify proxy is included

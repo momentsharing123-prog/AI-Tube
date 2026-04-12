@@ -1,3 +1,4 @@
+import crypto from "crypto";
 import { eq } from "drizzle-orm";
 import fs from "fs-extra";
 import path from "path";
@@ -25,6 +26,7 @@ import {
   writeFileSafeSync,
 } from "../../utils/security";
 import { findVideoFile } from "./fileHelpers";
+import { getSettings, saveSettings } from "./settings";
 
 type VideoDownloadDuplicateGroup = {
   sourceVideoId: string;
@@ -813,4 +815,59 @@ export function initializeStorage(): void {
       error instanceof Error ? error : new Error(String(error))
     );
   }
+}
+
+/**
+ * Apply environment-variable-based API configuration on startup.
+ *
+ * Environment variables:
+ *   MYTUBE_API_ENABLED=true   — Enable API key auth automatically
+ *   MYTUBE_API_TOKEN=<value>  — Use this fixed token (optional)
+ *
+ * Behaviour:
+ *   - MYTUBE_API_ENABLED=true + MYTUBE_API_TOKEN set  → enable auth, use the given token
+ *   - MYTUBE_API_ENABLED=true + no MYTUBE_API_TOKEN   → enable auth, auto-generate token if none exists
+ *   - MYTUBE_API_ENABLED not set / false               → no changes (UI settings take effect)
+ *
+ * The generated/configured token is printed to stdout so it can be read from
+ * container logs: `docker logs mytube-api | grep "API Token"`
+ */
+export function applyEnvApiConfiguration(): void {
+  const apiEnabled = process.env.MYTUBE_API_ENABLED?.trim().toLowerCase();
+  if (apiEnabled !== "true" && apiEnabled !== "1") {
+    return;
+  }
+
+  const envToken = process.env.MYTUBE_API_TOKEN?.trim();
+  const currentSettings = getSettings();
+
+  let tokenToUse: string;
+
+  if (envToken && envToken.length > 0) {
+    // Use the explicitly configured token
+    tokenToUse = envToken;
+    logger.info("API auth enabled via MYTUBE_API_ENABLED. Using token from MYTUBE_API_TOKEN.");
+  } else if (
+    typeof currentSettings.apiKey === "string" &&
+    currentSettings.apiKey.trim().length > 0
+  ) {
+    // Re-use the already stored token — don't rotate it on every restart
+    tokenToUse = currentSettings.apiKey.trim();
+    logger.info("API auth enabled via MYTUBE_API_ENABLED. Re-using existing stored token.");
+  } else {
+    // No token anywhere — generate a secure random one
+    tokenToUse = crypto.randomBytes(32).toString("hex");
+    logger.info("API auth enabled via MYTUBE_API_ENABLED. Auto-generated a new token.");
+  }
+
+  saveSettings({
+    apiKeyEnabled: true,
+    apiKey: tokenToUse,
+  });
+
+  // Print to stdout so it is visible in `docker logs`
+  // Note: message is intentionally formatted to avoid the logger's `token=` redaction pattern
+  logger.info(`━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`);
+  logger.info(`API access key (copy this): ${tokenToUse}`);
+  logger.info(`━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`);
 }

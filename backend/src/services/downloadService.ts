@@ -203,8 +203,9 @@ export async function downloadYouTubeVideo(
   videoUrl: string,
   downloadId?: string,
   onStart?: (cancel: () => void) => void,
+  format?: "mp4" | "mp3",
 ): Promise<Video> {
-  return YtDlpDownloader.downloadVideo(videoUrl, downloadId, onStart);
+  return YtDlpDownloader.downloadVideo(videoUrl, downloadId, onStart, format);
 }
 
 // Helper function to download MissAV video

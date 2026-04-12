@@ -28,7 +28,7 @@ RUN apk add --no-cache bash \
     && chown -R nginx:nginx /usr/share/nginx/html /etc/nginx/conf.d /var/cache/nginx /var/log/nginx \
     && chown nginx:nginx /var/run/nginx.pid
 COPY --chown=nginx:nginx ./entrypoint.sh /entrypoint.sh
-RUN chmod +x /entrypoint.sh
+RUN sed -i 's/\r$//' /entrypoint.sh && chmod +x /entrypoint.sh
 
 USER nginx
 

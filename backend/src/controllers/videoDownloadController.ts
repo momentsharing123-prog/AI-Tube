@@ -147,7 +147,9 @@ export const downloadVideo = async (
       downloadCollection,
       collectionInfo,
       forceDownload, // Allow re-download of deleted videos
+      format, // 'mp4' | 'mp3' — defaults to 'mp4'
     } = req.body;
+    const downloadFormat: "mp4" | "mp3" = format === "mp3" ? "mp3" : "mp4";
     let videoUrl = youtubeUrl;
 
     if (!videoUrl) {
@@ -480,11 +482,12 @@ export const downloadVideo = async (
         );
         return { success: true, video: videoData };
       } else {
-        // YouTube download
+        // YouTube/generic download
         const videoData = await downloadService.downloadYouTubeVideo(
           downloadUrl,
           downloadId,
           registerCancel,
+          downloadFormat,
         );
         return { success: true, video: videoData };
       }

@@ -115,7 +115,7 @@ docker-compose up -d
 可以直接使用仓库内置的 compose 文件：
 
 ```
-docker-compose -f docker-compose.single-container.yml up -d
+docker compose -f docker/docker-compose.single-container.yml up -d
 ```
 
 或者使用等价的独立 compose 文件：
@@ -293,11 +293,11 @@ MYTUBE_ADMIN_TRUST_LEVEL=container
 或者直接使用仓库提供的 `docker-compose.host-network.yml`：
 
 ```
-docker-compose -f docker-compose.host-network.yml up -d
+docker compose -f docker/docker-compose.host-network.yml up -d
 ```
 
 如果使用前后端合一的单容器部署，仓库还提供：
 
 ```
-docker-compose -f docker-compose.single-container.yml up -d
+docker compose -f docker/docker-compose.single-container.yml up -d
 ```

@@ -1,6 +1,10 @@
 #!/bin/bash
 set -e
 
+# Resolve project root relative to this script (docker/ → parent)
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
+
 DOCKER_PATH="docker"
 USERNAME="franklioxygen"
 VERSION=$1
@@ -53,10 +57,10 @@ echo "🏗️ Building and pushing backend..."
 $DOCKER_PATH buildx build \
   --platform $PLATFORMS \
   $ATTESTATION_FLAGS \
-  -f backend/Dockerfile \
+  -f "$PROJECT_ROOT/backend/Dockerfile" \
   $BACKEND_TAGS \
   --push \
-  .
+  "$PROJECT_ROOT"
 
 echo ""
 
@@ -69,7 +73,7 @@ $DOCKER_PATH buildx build \
   --build-arg VITE_BACKEND_URL="$VITE_BACKEND_URL" \
   $FRONTEND_TAGS \
   --push \
-  frontend
+  "$PROJECT_ROOT/frontend"
 
 echo ""
 echo "✅ Successfully built and pushed images to Docker Hub!"

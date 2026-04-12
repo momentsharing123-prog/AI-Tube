@@ -1,6 +1,10 @@
 #!/bin/bash
 set -e
 
+# Resolve project root relative to this script (docker/ → parent)
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
+
 DOCKER_PATH="docker"
 USERNAME="franklioxygen"
 
@@ -9,7 +13,7 @@ VITE_API_URL=${VITE_API_URL:-"http://localhost:5551/api"}
 VITE_BACKEND_URL=${VITE_BACKEND_URL:-"http://localhost:5551"}
 
 # Define platforms to build
-PLATFORMS=("linux/amd64") 
+PLATFORMS=("linux/amd64")
 
 # Tag definitions for TEST
 BACKEND_TEST_AMD64="$USERNAME/mytube:backend-test-amd64"
@@ -27,27 +31,25 @@ build_backend() {
   local platform=$1
   local tag=$2
   local additional_tag=$3  # Optional additional tag to create before cleanup
-  
+
   echo "🏗️ Building backend for $platform..."
-  # Run build from root context to allow copying frontend files
-  # Use -f backend/Dockerfile to specify the Dockerfile path
-  $DOCKER_PATH build --platform $platform -f backend/Dockerfile -t $tag .
-  
+  $DOCKER_PATH build --platform $platform -f "$PROJECT_ROOT/backend/Dockerfile" -t $tag "$PROJECT_ROOT"
+
   # Create additional tag if provided (before pushing, so we can push both)
   if [ -n "$additional_tag" ]; then
     echo "🏷️  Tagging backend image as: $additional_tag"
     $DOCKER_PATH tag $tag $additional_tag
   fi
-  
+
   echo "🚀 Pushing backend image: $tag"
   $DOCKER_PATH push $tag
-  
+
   # Push additional tag if provided
   if [ -n "$additional_tag" ]; then
     echo "🚀 Pushing backend additional tag: $additional_tag"
     $DOCKER_PATH push $additional_tag
   fi
-  
+
   echo "🧹 Cleaning up local backend image: $tag"
   $DOCKER_PATH rmi $tag 2>/dev/null || true
   if [ -n "$additional_tag" ]; then
@@ -61,37 +63,35 @@ build_frontend() {
   local platform=$1
   local tag=$2
   local additional_tag=$3  # Optional additional tag to create before cleanup
-  
+
   echo "🏗️ Building frontend for $platform..."
-  cd frontend
   $DOCKER_PATH build --platform $platform \
     --build-arg VITE_API_URL="$VITE_API_URL" \
     --build-arg VITE_BACKEND_URL="$VITE_BACKEND_URL" \
-    -t $tag .
-  
+    -t $tag \
+    "$PROJECT_ROOT/frontend"
+
   # Create additional tag if provided (before pushing, so we can push both)
   if [ -n "$additional_tag" ]; then
     echo "🏷️  Tagging frontend image as: $additional_tag"
     $DOCKER_PATH tag $tag $additional_tag
   fi
-  
+
   echo "🚀 Pushing frontend image: $tag"
   $DOCKER_PATH push $tag
-  
+
   # Push additional tag if provided
   if [ -n "$additional_tag" ]; then
     echo "🚀 Pushing frontend additional tag: $additional_tag"
     $DOCKER_PATH push $additional_tag
   fi
-  
+
   echo "🧹 Cleaning up local frontend image: $tag"
   $DOCKER_PATH rmi $tag 2>/dev/null || true
   if [ -n "$additional_tag" ]; then
     echo "🧹 Cleaning up local frontend additional tag: $additional_tag"
     $DOCKER_PATH rmi $additional_tag 2>/dev/null || true
   fi
-  
-  cd ..
 }
 
 

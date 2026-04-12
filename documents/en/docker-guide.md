@@ -114,7 +114,7 @@ If you prefer a single container, use the backend-integrated image published to 
 You can run the compose file included in this repository:
 
 ```
-docker-compose -f docker-compose.single-container.yml up -d
+docker compose -f docker/docker-compose.single-container.yml up -d
 ```
 
 Or use an equivalent standalone compose file:
@@ -305,11 +305,11 @@ If you prefer to build the images yourself (e.g., to modify code), follow these 
 Alternatively, the repo includes `docker-compose.host-network.yml` for host-network deployments:
 
 ```
-docker-compose -f docker-compose.host-network.yml up -d
+docker compose -f docker/docker-compose.host-network.yml up -d
 ```
 
 For unified frontend+backend deployment, the repo also includes:
 
 ```
-docker-compose -f docker-compose.single-container.yml up -d
+docker compose -f docker/docker-compose.single-container.yml up -d
 ```

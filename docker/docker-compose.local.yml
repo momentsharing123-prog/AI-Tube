@@ -1,7 +1,7 @@
 services:
   backend:
     build:
-      context: .
+      context: ..
       dockerfile: backend/Dockerfile
     image: mytube-backend:local
     container_name: mytube-api
@@ -26,7 +26,7 @@ services:
 
   frontend:
     build:
-      context: ./frontend
+      context: ../frontend
       dockerfile: Dockerfile
     image: mytube-frontend:local
     container_name: mytube-web

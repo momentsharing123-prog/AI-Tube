@@ -84,10 +84,13 @@ mytube/
 ├── codeql-reports/                    # CodeQL 报告输出
 ├── data/                              # 可选运行时数据 (如果从仓库根目录启动)
 ├── uploads/                           # 可选运行时媒体 (如果从仓库根目录启动)
-├── stacks/                            # 部署栈示例
-├── docker-compose.yml
-├── docker-compose.host-network.yml
-├── docker-compose.single-container.yml
+├── docker/                            # Docker 及部署文件
+│   ├── docker-compose.yml             # 标准双容器部署
+│   ├── docker-compose.host-network.yml
+│   ├── docker-compose.single-container.yml
+│   ├── docker-compose.local.yml       # 本地构建（不使用 Docker Hub 镜像）
+│   ├── build-and-push.sh              # 多架构构建推送脚本
+│   └── build-and-push-test.sh        # 测试构建脚本（仅 amd64）
 ├── README.md
 ├── README-zh.md
 └── package.json                       # 根目录任务运行脚本

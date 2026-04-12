@@ -84,10 +84,13 @@ mytube/
 ├── codeql-reports/                    # CodeQL report output
 ├── data/                              # Optional runtime data (if backend started from repo root)
 ├── uploads/                           # Optional runtime media (if backend started from repo root)
-├── stacks/                            # Deployment stack examples
-├── docker-compose.yml
-├── docker-compose.host-network.yml
-├── docker-compose.single-container.yml
+├── docker/                            # Docker & deployment files
+│   ├── docker-compose.yml             # Standard two-container deployment
+│   ├── docker-compose.host-network.yml
+│   ├── docker-compose.single-container.yml
+│   ├── docker-compose.local.yml       # Local build (no Docker Hub images)
+│   ├── build-and-push.sh              # Multi-arch build & push script
+│   └── build-and-push-test.sh        # Test build script (amd64 only)
 ├── README.md
 ├── README-zh.md
 └── package.json                       # Root task runner scripts

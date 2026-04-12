@@ -84,7 +84,7 @@ Copy-Item ".claude\skills\mytube-download\SKILL.md" "$env:USERPROFILE\.claude\sk
 
 ### Enable the API
 
-Set these environment variables before starting the container (see [docker-compose.local.yml](docker-compose.local.yml)):
+Set these environment variables before starting the container (see [docker/docker-compose.local.yml](docker/docker-compose.local.yml)):
 
 ```env
 MYTUBE_API_ENABLED=true
@@ -201,7 +201,7 @@ We welcome contributions! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for deta
 
 ## Deployment
 
-For detailed Docker deployment instructions, including the official GitHub Container image (`ghcr.io/franklioxygen/mytube:latest`) and the single-container compose file (`docker-compose.single-container.yml`), please refer to [Docker Deployment Guide](documents/en/docker-guide.md).
+For detailed Docker deployment instructions, including the official GitHub Container image (`ghcr.io/franklioxygen/mytube:latest`) and the single-container compose file (`docker/docker-compose.single-container.yml`), please refer to [Docker Deployment Guide](documents/en/docker-guide.md).
 For the `application` / `container` / `host` admin trust boundary, please refer to [Deployment Security Model](documents/en/deployment-security-model.md).
 
 ## Star History

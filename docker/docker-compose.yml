@@ -2,7 +2,7 @@ services:
   backend:
     image: franklioxygen/mytube:backend-latest
     pull_policy: always
-    container_name: aitube-backend
+    container_name: ai-tube-prod
     volumes:
       - /share/CACHEDEV2_DATA/Medias/AI Tube/uploads:/app/uploads
       - /share/CACHEDEV2_DATA/Medias/AI Tube/data:/app/data
@@ -28,7 +28,7 @@ services:
   frontend:
     image: franklioxygen/mytube:frontend-latest
     pull_policy: always
-    container_name: aitube-frontend
+    container_name: ai-tube-prod-web
     ports:
       - "5556:5556"
     environment:

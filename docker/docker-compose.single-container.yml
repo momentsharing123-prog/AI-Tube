@@ -5,7 +5,7 @@ services:
   aitube:
     image: ${AITUBE_SINGLE_IMAGE:-ghcr.io/franklioxygen/mytube:latest}
     pull_policy: always
-    container_name: aitube
+    container_name: ai-tube-prod
     ports:
       - "5551:5551"
     volumes:

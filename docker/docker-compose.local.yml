@@ -4,7 +4,7 @@ services:
       context: ..
       dockerfile: backend/Dockerfile
     image: aitube-backend:local
-    container_name: aitube-api
+    container_name: ai-tube-prod
     volumes:
       - "E:/Youtube Download/uploads:/app/uploads"
       - "E:/Youtube Download/data:/app/data"
@@ -29,7 +29,7 @@ services:
       context: ../frontend
       dockerfile: Dockerfile
     image: aitube-frontend:local
-    container_name: aitube-web
+    container_name: ai-tube-prod-web
     ports:
       - "6001:5556"
     environment:

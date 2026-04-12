@@ -735,16 +735,17 @@ export const getPlaylistEntries = async (
  * Download selected YouTube playlist entries as individual MP3 files.
  * POST /api/download/playlist-mp3
  * Body:
- *   { playlistUrl: string }                                — download ALL entries
- *   { entries: Array<{ url: string; title: string }> }    — download selected entries only
+ *   { playlistUrl: string, collectionName?: string }       — download ALL entries
+ *   { entries: [{url,title}], collectionName?: string }    — download selected entries only
  *
- * Queues each track as a separate download so they appear as individual library entries.
+ * When collectionName is provided, a collection is created (or reused by name)
+ * and every downloaded track is added to it, mirroring MP4 playlist behaviour.
  */
 export const downloadPlaylistAsMP3 = async (
   req: Request,
   res: Response,
 ): Promise<any> => {
-  const { playlistUrl, entries: explicitEntries } = req.body;
+  const { playlistUrl, entries: explicitEntries, collectionName } = req.body;
 
   let entries: Array<{ url: string; title: string }>;
 
@@ -781,12 +782,39 @@ export const downloadPlaylistAsMP3 = async (
     }
   }
 
+  // ── Collection setup ────────────────────────────────────────────────────────
+  let collectionId: string | null = null;
+  const resolvedCollectionName =
+    typeof collectionName === "string" ? collectionName.trim() : "";
+
+  if (resolvedCollectionName) {
+    // Reuse existing collection with this name, or create a new one
+    const existing = storageService.getCollectionByName(resolvedCollectionName);
+    if (existing) {
+      collectionId = existing.id;
+      logger.info(`Reusing existing collection "${resolvedCollectionName}" for MP3 playlist`);
+    } else {
+      const newCollection = {
+        id: Date.now().toString(),
+        name: resolvedCollectionName,
+        videos: [] as string[],
+        createdAt: new Date().toISOString(),
+        title: resolvedCollectionName,
+      };
+      storageService.saveCollection(newCollection);
+      collectionId = newCollection.id;
+      logger.info(`Created collection "${resolvedCollectionName}" for MP3 playlist`);
+    }
+  }
+
+  // ── Queue downloads ─────────────────────────────────────────────────────────
   const downloadIds: string[] = [];
 
   for (const entry of entries) {
     const entryId = Date.now().toString() + "_" + Math.random().toString(36).slice(2, 7);
     const entryUrl = entry.url;
     const entryTitle = entry.title;
+    const capturedCollectionId = collectionId; // capture for async closure
     downloadIds.push(entryId);
 
     const downloadTask = async (registerCancel: (cancel: () => void) => void) => {
@@ -797,6 +825,18 @@ export const downloadPlaylistAsMP3 = async (
         "mp3",
         { noPlaylist: true },
       );
+
+      // Add to collection if one was specified
+      if (capturedCollectionId && videoData?.id) {
+        storageService.atomicUpdateCollection(capturedCollectionId, (col) => {
+          if (!col.videos.includes(videoData.id)) {
+            col.videos.push(videoData.id);
+          }
+          return col;
+        });
+        logger.info(`Added "${videoData.title}" to collection "${resolvedCollectionName}"`);
+      }
+
       return { success: true, video: videoData };
     };
 
@@ -811,6 +851,7 @@ export const downloadPlaylistAsMP3 = async (
     status: "queued",
     message: `Queued ${entries.length} track${entries.length === 1 ? "" : "s"} as MP3`,
     totalTracks: entries.length,
+    collectionId,
     downloadIds,
   });
 };

@@ -53,7 +53,7 @@ interface DownloadContextType {
     setShowPlaylistSelectorModal: (show: boolean) => void;
     playlistSelectorUrl: string;
     playlistSelectorTitle: string;
-    handleDownloadSelectedTracks: (entries: Array<{ url: string; title: string }>) => Promise<void>;
+    handleDownloadSelectedTracks: (entries: Array<{ url: string; title: string }>, collectionName: string) => Promise<void>;
     handleDownloadCurrentFromPlaylist: () => Promise<any>;
 }
 
@@ -511,16 +511,25 @@ export const DownloadProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     };
 
     // Download selected tracks from the song-picker modal
-    const handleDownloadSelectedTracks = async (entries: Array<{ url: string; title: string }>) => {
+    const handleDownloadSelectedTracks = async (entries: Array<{ url: string; title: string }>, collectionName: string) => {
         setShowPlaylistSelectorModal(false);
         try {
             if (entries.length === 0) {
                 // Empty entries = "download all" fallback (called when track list unavailable)
-                await api.post('/download/playlist-mp3', { playlistUrl: playlistSelectorUrl });
+                await api.post('/download/playlist-mp3', {
+                    playlistUrl: playlistSelectorUrl,
+                    ...(collectionName ? { collectionName } : {}),
+                });
             } else {
-                await api.post('/download/playlist-mp3', { entries });
+                await api.post('/download/playlist-mp3', {
+                    entries,
+                    ...(collectionName ? { collectionName } : {}),
+                });
             }
             checkBackendDownloadStatus();
+            if (collectionName) {
+                await fetchCollections();
+            }
             showSnackbar(t('playlistDownloadStarted'));
         } catch (err: any) {
             console.error('Error queuing selected tracks:', err);

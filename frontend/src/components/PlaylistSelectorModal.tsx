@@ -15,6 +15,7 @@ import {
     ListItem,
     ListItemIcon,
     ListItemText,
+    TextField,
     Typography,
 } from '@mui/material';
 import { useEffect, useState } from 'react';
@@ -30,8 +31,8 @@ interface PlaylistSelectorModalProps {
     onClose: () => void;
     playlistUrl: string;
     playlistTitle: string;
-    /** Called with the selected entries to download */
-    onDownloadSelected: (entries: PlaylistEntry[]) => void;
+    /** Called with the selected entries and optional collection name to download */
+    onDownloadSelected: (entries: PlaylistEntry[], collectionName: string) => void;
     /** Called when the user wants just the single current video (no playlist) */
     onDownloadCurrent: () => void;
     isLoading?: boolean;
@@ -50,6 +51,7 @@ const PlaylistSelectorModal: React.FC<PlaylistSelectorModalProps> = ({
     const [selected, setSelected] = useState<Set<number>>(new Set());
     const [fetching, setFetching] = useState(false);
     const [fetchError, setFetchError] = useState<string | null>(null);
+    const [collectionName, setCollectionName] = useState<string>('');
 
     // Fetch playlist entries when modal opens
     useEffect(() => {
@@ -58,6 +60,7 @@ const PlaylistSelectorModal: React.FC<PlaylistSelectorModalProps> = ({
         setFetchError(null);
         setEntries([]);
         setSelected(new Set());
+        setCollectionName('');
 
         api.get('/playlist-entries', { params: { url: playlistUrl } })
             .then((res) => {
@@ -71,6 +74,13 @@ const PlaylistSelectorModal: React.FC<PlaylistSelectorModalProps> = ({
             })
             .finally(() => setFetching(false));
     }, [isOpen, playlistUrl]);
+
+    // Pre-fill collection name once playlist title is known
+    useEffect(() => {
+        if (playlistTitle && playlistTitle !== playlistUrl) {
+            setCollectionName(playlistTitle);
+        }
+    }, [playlistTitle, playlistUrl]);
 
     const allSelected = entries.length > 0 && selected.size === entries.length;
     const noneSelected = selected.size === 0;
@@ -94,12 +104,12 @@ const PlaylistSelectorModal: React.FC<PlaylistSelectorModalProps> = ({
 
     const handleDownload = () => {
         const chosenEntries = entries.filter((_, i) => selected.has(i));
-        onDownloadSelected(chosenEntries);
+        onDownloadSelected(chosenEntries, collectionName.trim());
     };
 
     // Fallback: download all without selecting (used when entry list couldn't be fetched)
     const handleDownloadAll = () => {
-        onDownloadSelected(entries.length > 0 ? entries : []);
+        onDownloadSelected(entries.length > 0 ? entries : [], collectionName.trim());
     };
 
     const showFallback = !fetching && (fetchError !== null || entries.length === 0);
@@ -110,7 +120,7 @@ const PlaylistSelectorModal: React.FC<PlaylistSelectorModalProps> = ({
             onClose={onClose}
             maxWidth="sm"
             fullWidth
-            slotProps={{ paper: { sx: { borderRadius: 2, maxHeight: '85vh' } } }}
+            slotProps={{ paper: { sx: { borderRadius: 2, maxHeight: '90vh' } } }}
         >
             <DialogTitle sx={{ m: 0, p: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <Box>
@@ -127,6 +137,22 @@ const PlaylistSelectorModal: React.FC<PlaylistSelectorModalProps> = ({
             </DialogTitle>
 
             <DialogContent dividers sx={{ p: 0 }}>
+                {/* Collection name field — always shown */}
+                <Box sx={{ px: 2, pt: 2, pb: 1 }}>
+                    <TextField
+                        fullWidth
+                        label="Collection name (optional)"
+                        variant="outlined"
+                        size="small"
+                        value={collectionName}
+                        onChange={(e) => setCollectionName(e.target.value)}
+                        placeholder={playlistTitle || 'My Playlist'}
+                        disabled={isLoading}
+                        helperText="Leave blank to add tracks without a collection, or enter a name to group them together."
+                    />
+                </Box>
+                <Divider />
+
                 {fetching && (
                     <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', py: 6, gap: 2 }}>
                         <CircularProgress size={36} />
@@ -138,7 +164,7 @@ const PlaylistSelectorModal: React.FC<PlaylistSelectorModalProps> = ({
 
                 {/* Fetch error or empty list — show fallback message */}
                 {showFallback && (
-                    <Box sx={{ p: 3 }}>
+                    <Box sx={{ p: 2 }}>
                         {fetchError
                             ? <Typography color="error" sx={{ mb: 1 }}>{fetchError}</Typography>
                             : <Typography color="text.secondary" sx={{ mb: 1 }}>

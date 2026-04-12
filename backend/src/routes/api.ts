@@ -17,6 +17,8 @@ const router = express.Router();
 // Video routes
 router.get("/search", asyncHandler(videoDownloadController.searchVideos));
 router.post("/download", asyncHandler(videoDownloadController.downloadVideo));
+// Playlist-as-MP3: enumerate all playlist entries and queue each as an MP3 download
+router.post("/download/playlist-mp3", asyncHandler(videoDownloadController.downloadPlaylistAsMP3));
 
 // AI Agent download endpoint — API key only, clean schema
 router.post("/agent/download", asyncHandler(agentDownloadController.agentDownload));

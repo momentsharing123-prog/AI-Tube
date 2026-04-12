@@ -473,6 +473,11 @@ function applyPostBuildRules(context: DownloadFlagContext): string {
 
 export type DownloadFormat = "mp4" | "mp3";
 
+export interface YtDlpDownloadOptions {
+  /** When true, adds --no-playlist so only the single video is downloaded even if URL contains a playlist parameter */
+  noPlaylist?: boolean;
+}
+
 /**
  * Prepare yt-dlp flags for video download
  */
@@ -481,13 +486,14 @@ export function prepareDownloadFlags(
   outputPath: string,
   userConfig?: any,
   format?: DownloadFormat,
+  options?: YtDlpDownloadOptions,
 ): PreparedFlags {
   const config = (userConfig || getUserYtDlpConfig(videoUrl) || {}) as UserYtDlpConfig;
 
   // MP3: bypass all video format logic and use audio extraction flags
   if (format === "mp3") {
     const { networkOptions } = extractUserConfigOptions(config);
-    const mp3Flags = {
+    const mp3Flags: YtDlpFlags = {
       ...networkOptions,
       output: outputPath,
       extractAudio: true,
@@ -495,6 +501,9 @@ export function prepareDownloadFlags(
       audioQuality: "0",
       ignoreErrors: true,
     };
+    if (options?.noPlaylist) {
+      mp3Flags.noPlaylist = true;
+    }
     appendProviderExtractorArg(mp3Flags);
     finalizeExtractorArgs(mp3Flags);
     logger.debug("MP3 audio extraction flags:", mp3Flags);
@@ -504,6 +513,10 @@ export function prepareDownloadFlags(
   const context = createDownloadFlagContext(videoUrl, outputPath, config);
   const mergeOutputFormat = applyPostBuildRules(context);
   const { flags } = context;
+
+  if (options?.noPlaylist) {
+    flags.noPlaylist = true;
+  }
 
   logger.debug("Final yt-dlp flags:", flags);
 

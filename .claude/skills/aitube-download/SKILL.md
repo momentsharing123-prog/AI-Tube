@@ -80,6 +80,13 @@ Check what the user has already provided in their message:
 
 - **URL** — did they paste a link? Extract it.
 - **Format** — did they say "mp3", "audio", "music"? → `mp3`. Did they say "mp4", "video"? → `mp4`. If unclear, ask.
+- **Collection** — did the URL contain `?list=` or `&list=` (YouTube playlist)? If so and format is `mp3`, ask:
+
+> The URL looks like a YouTube playlist. Do you want to download **just this one song** or the **entire playlist as MP3**?
+>
+> Options:
+> - A) Just this song
+> - B) Entire playlist as MP3
 
 If URL is missing, use AskUserQuestion:
 
@@ -96,6 +103,8 @@ Options:
 ---
 
 ## Step 3 — Submit download
+
+### 3a — Single video (default)
 
 Read the saved config and submit:
 
@@ -127,6 +136,34 @@ Replace:
 
 **On success** (`success: true`): Tell the user:
 > ✅ Queued as **FORMAT** (ID: `downloadId`). Downloading now — check `AITUBE_URL` for progress.
+
+**On error**: Show the error message and ask the user if they want to retry.
+
+### 3b — Entire playlist as MP3 (when user chose "entire playlist")
+
+```powershell
+powershell -Command "
+\$url   = (Get-Content '\$env:USERPROFILE\.aitube-url'   -Raw).Trim().TrimEnd('/')
+\$token = (Get-Content '\$env:USERPROFILE\.aitube-token' -Raw).Trim()
+\$body = ConvertTo-Json @{
+  url                = 'PLAYLIST_URL'
+  format             = 'mp3'
+  downloadCollection = \$true
+}
+try {
+  \$r = Invoke-RestMethod -Uri \"\$url/api/agent/download\" \`
+    -Method POST \`
+    -Headers @{'Content-Type'='application/json'; 'X-API-Key'=\$token} \`
+    -Body \$body
+  Write-Output (\$r | ConvertTo-Json)
+} catch {
+  Write-Output ('ERROR: ' + \$_.Exception.Message)
+}
+"
+```
+
+**On success**: Tell the user:
+> ✅ Queued **N tracks** as MP3. Downloading now — check `AITUBE_URL` for progress.
 
 **On error**: Show the error message and ask the user if they want to retry.
 

@@ -416,8 +416,20 @@ export const DownloadProvider: React.FC<{ children: React.ReactNode }> = ({ chil
                 return { success: true };
             }
 
-            // Handle playlist without subscription - create continuous download task
+            // Handle playlist without subscription
             if (isPlaylist) {
+                // MP3 mode: download every track in the playlist as individual MP3 files
+                if (downloadFormat === 'mp3') {
+                    await api.post('/download/playlist-mp3', {
+                        playlistUrl: bilibiliPartsInfo.url,
+                    });
+
+                    checkBackendDownloadStatus();
+                    showSnackbar(t('playlistDownloadStarted'));
+                    return { success: true };
+                }
+
+                // MP4 mode: create a continuous download task (subscription-style)
                 const response = await api.post('/subscriptions/tasks/playlist', {
                     playlistUrl: bilibiliPartsInfo.url,
                     collectionName: collectionName || bilibiliPartsInfo.title

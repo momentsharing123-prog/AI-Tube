@@ -38,7 +38,7 @@ import { Video } from "../../storageService";
 import { deleteSmallThumbnailMirrorSync } from "../../thumbnailMirrorService";
 import { twitchApiService } from "../../twitchService";
 import { BaseDownloader } from "../BaseDownloader";
-import { DownloadFormat, prepareDownloadFlags } from "./ytdlpConfig";
+import { DownloadFormat, YtDlpDownloadOptions, prepareDownloadFlags } from "./ytdlpConfig";
 import { getProviderScript } from "./ytdlpHelpers";
 import { extractVideoMetadata } from "./ytdlpMetadata";
 import { processSubtitles } from "./ytdlpSubtitle";
@@ -105,7 +105,8 @@ export async function downloadVideo(
   videoUrl: string,
   downloadId?: string,
   onStart?: (cancel: () => void) => void,
-  format?: DownloadFormat
+  format?: DownloadFormat,
+  options?: YtDlpDownloadOptions
 ): Promise<Video> {
   logger.info("Detected URL:", videoUrl);
 
@@ -153,6 +154,7 @@ export async function downloadVideo(
       ...networkConfig,
       noWarnings: true,
       preferFreeFormats: true,
+      ...(options?.noPlaylist ? { noPlaylist: true } : {}),
       ...(PROVIDER_SCRIPT
         ? {
             extractorArgs: `youtubepot-bgutilscript:script_path=${PROVIDER_SCRIPT}`,
@@ -273,7 +275,8 @@ export async function downloadVideo(
       videoUrl,
       newVideoPath,
       downloadUserConfig,
-      format
+      format,
+      options
     );
 
     // Log final flags to verify proxy is included

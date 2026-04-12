@@ -4,7 +4,7 @@ import { getLatestVideoUrl } from "./ytdlp/ytdlpChannel";
 import { getVideoInfo as getVideoInfoFromModule } from "./ytdlp/ytdlpMetadata";
 import { searchVideos } from "./ytdlp/ytdlpSearch";
 import { downloadVideo as downloadVideoFromModule } from "./ytdlp/ytdlpVideo";
-import { DownloadFormat } from "./ytdlp/ytdlpConfig";
+import { DownloadFormat, YtDlpDownloadOptions } from "./ytdlp/ytdlpConfig";
 
 export class YtDlpDownloader extends BaseDownloader {
   // Search for videos (primarily for YouTube, but could be adapted)
@@ -51,8 +51,9 @@ export class YtDlpDownloader extends BaseDownloader {
     videoUrl: string,
     downloadId?: string,
     onStart?: (cancel: () => void) => void,
-    format?: DownloadFormat
+    format?: DownloadFormat,
+    options?: YtDlpDownloadOptions
   ): Promise<Video> {
-    return downloadVideoFromModule(videoUrl, downloadId, onStart, format);
+    return downloadVideoFromModule(videoUrl, downloadId, onStart, format, options);
   }
 }

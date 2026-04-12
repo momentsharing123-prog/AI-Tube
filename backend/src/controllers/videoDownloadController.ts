@@ -482,12 +482,14 @@ export const downloadVideo = async (
         );
         return { success: true, video: videoData };
       } else {
-        // YouTube/generic download
+        // YouTube/generic download — use --no-playlist so playlist parameters
+        // in the URL don't cause the entire playlist to be downloaded
         const videoData = await downloadService.downloadYouTubeVideo(
           downloadUrl,
           downloadId,
           registerCancel,
           downloadFormat,
+          { noPlaylist: true },
         );
         return { success: true, video: videoData };
       }
@@ -691,4 +693,75 @@ export const checkPlaylist = async (
         error instanceof Error ? error.message : "Failed to check playlist",
     });
   }
+};
+
+/**
+ * Download an entire YouTube playlist as individual MP3 files.
+ * POST /api/download/playlist-mp3
+ * Body: { playlistUrl: string }
+ *
+ * Enumerates playlist entries via --flat-playlist, then queues each video
+ * as a separate MP3 download so they each appear as individual library entries.
+ */
+export const downloadPlaylistAsMP3 = async (
+  req: Request,
+  res: Response,
+): Promise<any> => {
+  const { playlistUrl } = req.body;
+
+  if (!playlistUrl || typeof playlistUrl !== "string") {
+    return sendBadRequest(res, "playlistUrl is required");
+  }
+
+  let validatedUrl: string;
+  try {
+    validatedUrl = validateUrl(playlistUrl);
+  } catch (error) {
+    return sendBadRequest(res, error instanceof Error ? error.message : "Invalid URL format");
+  }
+
+  let entries: Array<{ url: string; title: string }>;
+  try {
+    entries = await downloadService.getPlaylistEntries(validatedUrl);
+  } catch (error) {
+    logger.error("Error fetching playlist entries:", error);
+    return sendBadRequest(res, error instanceof Error ? error.message : "Failed to fetch playlist entries");
+  }
+
+  if (entries.length === 0) {
+    return sendBadRequest(res, "No videos found in playlist. Check that the URL contains a valid playlist parameter.");
+  }
+
+  const downloadIds: string[] = [];
+
+  for (const entry of entries) {
+    const entryId = Date.now().toString() + "_" + Math.random().toString(36).slice(2, 7);
+    const entryUrl = entry.url;
+    const entryTitle = entry.title;
+    downloadIds.push(entryId);
+
+    const downloadTask = async (registerCancel: (cancel: () => void) => void) => {
+      const videoData = await downloadService.downloadYouTubeVideo(
+        entryUrl,
+        entryId,
+        registerCancel,
+        "mp3",
+        { noPlaylist: true },
+      );
+      return { success: true, video: videoData };
+    };
+
+    downloadManager
+      .addDownload(downloadTask, entryId, entryTitle, entryUrl, "youtube")
+      .then(() => logger.info("Playlist MP3 download completed:", entryId))
+      .catch((error) => logger.error("Playlist MP3 download failed:", { entryId, error }));
+  }
+
+  sendData(res, {
+    success: true,
+    status: "queued",
+    message: `Queued ${entries.length} tracks as MP3`,
+    totalTracks: entries.length,
+    downloadIds,
+  });
 };

@@ -204,8 +204,43 @@ export async function downloadYouTubeVideo(
   downloadId?: string,
   onStart?: (cancel: () => void) => void,
   format?: "mp4" | "mp3",
+  options?: import("./downloaders/ytdlp/ytdlpConfig").YtDlpDownloadOptions,
 ): Promise<Video> {
-  return YtDlpDownloader.downloadVideo(videoUrl, downloadId, onStart, format);
+  return YtDlpDownloader.downloadVideo(videoUrl, downloadId, onStart, format, options);
+}
+
+/**
+ * Get all video entries from a YouTube playlist without downloading.
+ * Returns an array of { url, title } objects for each entry.
+ */
+export async function getPlaylistEntries(playlistUrl: string): Promise<Array<{ url: string; title: string }>> {
+  const { executeYtDlpJson, getNetworkConfigFromUserConfig, getUserYtDlpConfig } =
+    await import("../utils/ytDlpUtils");
+  const { getProviderScript } = await import("./downloaders/ytdlp/ytdlpHelpers");
+  const { logger } = await import("../utils/logger");
+
+  const userConfig = getUserYtDlpConfig(playlistUrl);
+  const networkConfig = getNetworkConfigFromUserConfig(userConfig);
+  const PROVIDER_SCRIPT = getProviderScript();
+
+  const info = await executeYtDlpJson(playlistUrl, {
+    ...networkConfig,
+    noWarnings: true,
+    flatPlaylist: true,
+    ...(PROVIDER_SCRIPT
+      ? { extractorArgs: `youtubepot-bgutilscript:script_path=${PROVIDER_SCRIPT}` }
+      : {}),
+  });
+
+  if (!info.entries || info.entries.length === 0) {
+    logger.warn("getPlaylistEntries: no entries found for", playlistUrl);
+    return [];
+  }
+
+  return (info.entries as any[]).map((entry: any) => ({
+    url: entry.url || entry.webpage_url || `https://www.youtube.com/watch?v=${entry.id}`,
+    title: entry.title || entry.id || "Unknown",
+  }));
 }
 
 // Helper function to download MissAV video

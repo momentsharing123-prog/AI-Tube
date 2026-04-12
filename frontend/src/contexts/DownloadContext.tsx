@@ -46,6 +46,8 @@ interface DownloadContextType {
     isCheckingParts: boolean;
     handleDownloadAllBilibiliParts: (collectionName: string, subscribeInfo?: SubscribeInfo) => Promise<{ success: boolean; error?: string }>;
     handleDownloadCurrentBilibiliPart: () => Promise<any>;
+    downloadFormat: 'mp4' | 'mp3';
+    setDownloadFormat: (format: 'mp4' | 'mp3') => void;
 }
 
 const DownloadContext = createContext<DownloadContextType | undefined>(undefined);
@@ -155,6 +157,7 @@ export const DownloadProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         collectionInfo: null // For collection/series, stores the API response
     });
     const [isCheckingParts, setIsCheckingParts] = useState<boolean>(false);
+    const [downloadFormat, setDownloadFormat] = useState<'mp4' | 'mp3'>('mp4');
 
 
     // Reference to track current download IDs for detecting completion
@@ -337,7 +340,8 @@ export const DownloadProvider: React.FC<{ children: React.ReactNode }> = ({ chil
             // Normal download flow
             const response = await api.post('/download', {
                 youtubeUrl: videoUrl,
-                forceDownload: forceDownload
+                forceDownload: forceDownload,
+                format: downloadFormat,
             });
 
             // Check if video was skipped (already exists or previously deleted)
@@ -630,7 +634,9 @@ export const DownloadProvider: React.FC<{ children: React.ReactNode }> = ({ chil
             bilibiliPartsInfo,
             isCheckingParts,
             handleDownloadAllBilibiliParts,
-            handleDownloadCurrentBilibiliPart
+            handleDownloadCurrentBilibiliPart,
+            downloadFormat,
+            setDownloadFormat,
         }}>
             {children}
             <Suspense fallback={null}>

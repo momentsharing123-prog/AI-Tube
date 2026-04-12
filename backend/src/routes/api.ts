@@ -1,4 +1,5 @@
 import express from "express";
+import * as agentDownloadController from "../controllers/agentDownloadController";
 import * as cleanupController from "../controllers/cleanupController";
 import * as cloudStorageController from "../controllers/cloudStorageController";
 import * as collectionController from "../controllers/collectionController";
@@ -16,6 +17,9 @@ const router = express.Router();
 // Video routes
 router.get("/search", asyncHandler(videoDownloadController.searchVideos));
 router.post("/download", asyncHandler(videoDownloadController.downloadVideo));
+
+// AI Agent download endpoint — API key only, clean schema
+router.post("/agent/download", asyncHandler(agentDownloadController.agentDownload));
 router.post(
   "/upload",
   videoController.upload.single("video"),

@@ -40,8 +40,17 @@ const isPublicEndpoint = (req: Request): boolean => {
   );
 };
 
-const isApiKeyDownloadEndpoint = (req: Request): boolean => {
-  return req.method === "POST" && getNormalizedRequestPath(req) === "/download";
+const isApiKeyAllowedEndpoint = (req: Request): boolean => {
+  const path = getNormalizedRequestPath(req);
+  // POST: submit downloads
+  if (req.method === "POST" && (path === "/download" || path === "/agent/download")) {
+    return true;
+  }
+  // GET: poll download status and history (useful for agents)
+  if (req.method === "GET" && (path === "/download-status" || path === "/downloads/history")) {
+    return true;
+  }
+  return false;
 };
 
 const isAdminUploadEndpoint = (req: Request): boolean => {
@@ -65,7 +74,7 @@ export const roleBasedAuthMiddleware = (
 ): void => {
   // API keys are intentionally restricted to task submission only.
   if (req.apiKeyAuthenticated === true) {
-    if (isApiKeyDownloadEndpoint(req)) {
+    if (isApiKeyAllowedEndpoint(req)) {
       next();
       return;
     }
@@ -73,7 +82,7 @@ export const roleBasedAuthMiddleware = (
     res.status(403).json({
       success: false,
       error:
-        "API key authentication only allows POST /api/download requests.",
+        "API key authentication is restricted to download and status endpoints.",
     });
     return;
   }

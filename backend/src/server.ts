@@ -65,6 +65,7 @@ const startServer = async (): Promise<void> => {
     await runMigrations();
 
     storageService.initializeStorage();
+    storageService.applyEnvApiConfiguration();
     downloadManager.initialize();
 
     const frontendDist = path.join(__dirname, "../../frontend/dist");

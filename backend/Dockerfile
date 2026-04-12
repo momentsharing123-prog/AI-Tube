@@ -131,7 +131,8 @@ COPY backend/package*.json ./
 COPY backend/entrypoint.sh /usr/local/bin/mytube-entrypoint.sh
 COPY backend/scripts ./scripts
 COPY backend/vendor ./vendor
-RUN chmod +x /usr/local/bin/mytube-entrypoint.sh \
+RUN sed -i 's/\r$//' /usr/local/bin/mytube-entrypoint.sh \
+    && chmod +x /usr/local/bin/mytube-entrypoint.sh \
     && npm ci --only=production
 
 # Copy built artifacts from builder

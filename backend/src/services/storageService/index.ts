@@ -5,7 +5,7 @@
 export * from "./types";
 
 // Initialization
-export { initializeStorage } from "./initialization";
+export { initializeStorage, applyEnvApiConfiguration } from "./initialization";
 
 // Download Status
 export {

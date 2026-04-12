@@ -1,0 +1,48 @@
+services:
+  backend:
+    build:
+      context: ..
+      dockerfile: backend/Dockerfile
+    image: ai-tube-backend:prod
+    container_name: ai-tube-prod
+    volumes:
+      - "E:/Youtube Download/uploads:/app/uploads"
+      - "E:/Youtube Download/data:/app/data"
+    environment:
+      - PORT=5551
+      - PUID=${PUID:-1000}
+      - PGID=${PGID:-1000}
+      - JWT_SECRET=${JWT_SECRET}
+      - CSRF_SECRET=${CSRF_SECRET}
+      - MYTUBE_AUTO_FIX_PERMISSIONS=1
+      - MYTUBE_ADMIN_TRUST_LEVEL=container
+      # API token config — leave MYTUBE_API_TOKEN blank to auto-generate
+      - MYTUBE_API_ENABLED=${MYTUBE_API_ENABLED:-true}
+      - MYTUBE_API_TOKEN=${MYTUBE_API_TOKEN:-}
+    restart: unless-stopped
+    networks:
+      - ai-tube-network
+
+  frontend:
+    build:
+      context: ../frontend
+      dockerfile: Dockerfile
+    image: ai-tube-frontend:prod
+    container_name: ai-tube-prod-web
+    ports:
+      - "6001:5556"
+    environment:
+      - VITE_API_URL=/api
+      - VITE_BACKEND_URL=
+    depends_on:
+      - backend
+    restart: unless-stopped
+    networks:
+      - ai-tube-network
+
+networks:
+  ai-tube-network:
+    driver: bridge
+    driver_opts:
+      com.docker.network.bridge.enable_ip_masquerade: "true"
+      com.docker.network.bridge.enable_icc: "true"

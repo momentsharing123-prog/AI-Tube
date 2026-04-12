@@ -6,6 +6,7 @@ import {
   CLOUD_THUMBNAIL_CACHE_DIR,
   IMAGES_DIR,
   IMAGES_SMALL_DIR,
+  MUSIC_DIR,
   SUBTITLES_DIR,
   VIDEOS_DIR,
 } from "../config/paths";
@@ -118,6 +119,34 @@ export const registerStaticRoutes = (
           res.setHeader("Content-Type", "text/x-ssa");
         } else {
           res.setHeader("Content-Type", "video/mp4");
+        }
+      },
+    })
+  );
+
+  app.use(
+    "/music",
+    express.static(MUSIC_DIR, {
+      fallthrough: false,
+      setHeaders: (res, filePath) => {
+        res.setHeader("Access-Control-Allow-Origin", "*");
+        res.setHeader(
+          "Access-Control-Expose-Headers",
+          "Accept-Ranges, Content-Range, Content-Length"
+        );
+        const lowerPath = filePath.toLowerCase();
+        if (lowerPath.endsWith(".mp3")) {
+          res.setHeader("Content-Type", "audio/mpeg");
+        } else if (lowerPath.endsWith(".m4a")) {
+          res.setHeader("Content-Type", "audio/mp4");
+        } else if (lowerPath.endsWith(".ogg")) {
+          res.setHeader("Content-Type", "audio/ogg");
+        } else if (lowerPath.endsWith(".flac")) {
+          res.setHeader("Content-Type", "audio/flac");
+        } else if (lowerPath.endsWith(".wav")) {
+          res.setHeader("Content-Type", "audio/wav");
+        } else {
+          res.setHeader("Content-Type", "audio/mpeg");
         }
       },
     })

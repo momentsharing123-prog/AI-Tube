@@ -6,7 +6,7 @@ import {
   createAdminTrustLevelError,
   isAdminTrustLevelAtLeast,
 } from "../config/adminTrust";
-import { IMAGES_DIR, VIDEOS_DIR } from "../config/paths";
+import { IMAGES_DIR, MUSIC_DIR, VIDEOS_DIR } from "../config/paths";
 import * as storageService from "../services/storageService";
 import { scrapeMetadataFromTMDB } from "../services/tmdbService";
 import { formatVideoFilename } from "../utils/helpers";
@@ -27,6 +27,7 @@ import {
 } from "../utils/security";
 
 const VIDEO_EXTENSIONS = [".mp4", ".mkv", ".webm", ".avi", ".mov"];
+const AUDIO_EXTENSIONS = [".mp3", ".m4a", ".flac", ".wav", ".ogg"];
 const DEFAULT_SCAN_FILE_CONCURRENCY = 3;
 const DEFAULT_SCAN_FFPROBE_TIMEOUT_MS = 15000;
 const DEFAULT_SCAN_FFMPEG_TIMEOUT_MS = 30000;
@@ -104,9 +105,10 @@ type RecursiveCollectionMode = "local" | "mount";
 
 const resolveDirectoryForCollection = (
   dir: string,
-  mode: RecursiveCollectionMode
+  mode: RecursiveCollectionMode,
+  rootDir: string = VIDEOS_DIR
 ): string => {
-  return mode === "mount" ? validateMountDirectory(dir) : resolveSafePath(dir, VIDEOS_DIR);
+  return mode === "mount" ? validateMountDirectory(dir) : resolveSafePath(dir, rootDir);
 };
 
 const collectFilesRecursively = async (
@@ -179,6 +181,11 @@ const getFilesRecursively = async (dir: string): Promise<string[]> => {
   return collectFilesRecursively(dir, "local", VIDEOS_DIR);
 };
 
+// Recursive function to get all files in a directory (restricted to MUSIC_DIR)
+const getAudioFilesRecursively = async (dir: string): Promise<string[]> => {
+  return collectFilesRecursively(dir, "local", MUSIC_DIR);
+};
+
 const validateMountDirectory = (dir: string): string => {
   if (!path.isAbsolute(dir)) {
     throw new Error(`Mount directory must be an absolute path: ${dir}`);
@@ -204,9 +211,12 @@ const isSameOrNestedDirectory = (targetDir: string, baseDir: string): boolean =>
 const overlapsLocalVideosDirectory = (dir: string): boolean => {
   const normalizedDir = normalizeSafeAbsolutePath(dir);
   const normalizedVideosDir = normalizeSafeAbsolutePath(VIDEOS_DIR);
+  const normalizedMusicDir = normalizeSafeAbsolutePath(MUSIC_DIR);
   return (
     isSameOrNestedDirectory(normalizedDir, normalizedVideosDir) ||
-    isSameOrNestedDirectory(normalizedVideosDir, normalizedDir)
+    isSameOrNestedDirectory(normalizedVideosDir, normalizedDir) ||
+    isSameOrNestedDirectory(normalizedDir, normalizedMusicDir) ||
+    isSameOrNestedDirectory(normalizedMusicDir, normalizedDir)
   );
 };
 
@@ -227,7 +237,14 @@ const buildVideoWebPath = (
   }
 
   const relativePath = path.relative(normalizedDirectory, filePath);
-  return `/videos/${relativePath.split(path.sep).join("/")}`;
+  // Use /music/ prefix for files in MUSIC_DIR, /videos/ for everything else
+  const normalizedMusicDir = normalizeSafeAbsolutePath(MUSIC_DIR);
+  const normalizedFilePath = normalizeSafeAbsolutePath(filePath);
+  const prefix = normalizedFilePath.startsWith(normalizedMusicDir + path.sep) ||
+    normalizedFilePath === normalizedMusicDir
+    ? "music"
+    : "videos";
+  return `/${prefix}/${relativePath.split(path.sep).join("/")}`;
 };
 
 const getSafeFilePathForProcessing = (
@@ -247,12 +264,37 @@ const getSafeFilePathForProcessing = (
     return normalizeSafeAbsolutePath(filePath);
   }
 
-  try {
-    return resolveSafePath(filePath, VIDEOS_DIR);
-  } catch {
-    logger.warn(`Skipping unsafe local path: ${filePath}`);
-    return null;
+  // Allow paths under VIDEOS_DIR or MUSIC_DIR
+  const normalizedFilePath = normalizeSafeAbsolutePath(filePath);
+  const normalizedVideosDir = normalizeSafeAbsolutePath(VIDEOS_DIR);
+  const normalizedMusicDir = normalizeSafeAbsolutePath(MUSIC_DIR);
+
+  if (
+    normalizedFilePath.startsWith(normalizedVideosDir + path.sep) ||
+    normalizedFilePath === normalizedVideosDir
+  ) {
+    try {
+      return resolveSafePath(filePath, VIDEOS_DIR);
+    } catch {
+      logger.warn(`Skipping unsafe local path: ${filePath}`);
+      return null;
+    }
   }
+
+  if (
+    normalizedFilePath.startsWith(normalizedMusicDir + path.sep) ||
+    normalizedFilePath === normalizedMusicDir
+  ) {
+    try {
+      return resolveSafePath(filePath, MUSIC_DIR);
+    } catch {
+      logger.warn(`Skipping unsafe local audio path: ${filePath}`);
+      return null;
+    }
+  }
+
+  logger.warn(`Skipping path outside managed media directories: ${filePath}`);
+  return null;
 };
 
 const extractDuration = async (
@@ -472,12 +514,13 @@ const processDirectoryFiles = async (
   directory: string,
   existingVideosByPath: Map<string, ExistingVideoSnapshot>,
   videoExtensions: string[],
-  options: ProcessDirectoryOptions = {}
+  options: ProcessDirectoryOptions & { rootDir?: string } = {}
 ): Promise<{ addedCount: number; updatedCount: number; allFiles: string[] }> => {
   const isMountDirectory = options.isMountDirectory || false;
+  const rootDir = options.rootDir ?? VIDEOS_DIR;
   const normalizedDirectory = isMountDirectory
     ? validateMountDirectory(directory)
-    : resolveSafePath(directory, VIDEOS_DIR);
+    : resolveSafePath(directory, rootDir);
 
   if (!(await pathExistsTrusted(normalizedDirectory))) {
     logger.warn(`Directory does not exist: ${normalizedDirectory}`);
@@ -488,7 +531,9 @@ const processDirectoryFiles = async (
     options.scannedFiles ||
     (isMountDirectory
       ? await getFilesRecursivelyFromMount(normalizedDirectory)
-      : await getFilesRecursively(normalizedDirectory));
+      : rootDir === MUSIC_DIR
+        ? await getAudioFilesRecursively(normalizedDirectory)
+        : await getFilesRecursively(normalizedDirectory));
 
   const videoFiles = allFiles.filter((filePath) =>
     videoExtensions.includes(path.extname(filePath).toLowerCase())
@@ -593,7 +638,10 @@ export const scanFiles = async (
   const videosToDelete: string[] = [];
 
   for (const video of existingVideos) {
-    if (video.videoPath?.startsWith("/videos/")) {
+    if (
+      video.videoPath?.startsWith("/videos/") ||
+      video.videoPath?.startsWith("/music/")
+    ) {
       existingVideosByPath.set(video.videoPath, {
         id: video.id,
         fileSize: video.fileSize,
@@ -601,41 +649,50 @@ export const scanFiles = async (
     }
   }
 
-  if (!(await pathExistsTrusted(VIDEOS_DIR))) {
+  const videosExists = await pathExistsTrusted(VIDEOS_DIR);
+  const musicExists = await pathExistsTrusted(MUSIC_DIR);
+
+  if (!videosExists && !musicExists) {
     res
       .status(200)
       .json(
         successResponse(
           { addedCount: 0, deletedCount: 0 },
-          "Videos directory does not exist"
+          "Media directories do not exist"
         )
       );
     return;
   }
 
-  const allFiles = await getFilesRecursively(VIDEOS_DIR);
-  const actualVideoWebPathsOnDisk = new Set<string>();
+  const actualMediaWebPathsOnDisk = new Set<string>();
 
-  for (const filePath of allFiles) {
+  // Scan VIDEOS_DIR
+  const allVideoFiles = videosExists ? await getFilesRecursively(VIDEOS_DIR) : [];
+  for (const filePath of allVideoFiles) {
     const ext = path.extname(filePath).toLowerCase();
-    if (!VIDEO_EXTENSIONS.includes(ext)) {
-      continue;
-    }
-
+    if (!VIDEO_EXTENSIONS.includes(ext)) continue;
     const relativePath = path.relative(VIDEOS_DIR, filePath);
-    const webPath = `/videos/${relativePath.split(path.sep).join("/")}`;
-    actualVideoWebPathsOnDisk.add(webPath);
+    actualMediaWebPathsOnDisk.add(`/videos/${relativePath.split(path.sep).join("/")}`);
+  }
+
+  // Scan MUSIC_DIR
+  const allAudioFiles = musicExists ? await getAudioFilesRecursively(MUSIC_DIR) : [];
+  for (const filePath of allAudioFiles) {
+    const ext = path.extname(filePath).toLowerCase();
+    if (!AUDIO_EXTENSIONS.includes(ext)) continue;
+    const relativePath = path.relative(MUSIC_DIR, filePath);
+    actualMediaWebPathsOnDisk.add(`/music/${relativePath.split(path.sep).join("/")}`);
   }
 
   for (const video of existingVideos) {
-    if (video.videoPath?.startsWith("/videos/")) {
-      if (!actualVideoWebPathsOnDisk.has(video.videoPath)) {
-        logger.info(`Video missing: ${video.title} (${video.videoPath})`);
+    if (video.videoPath?.startsWith("/videos/") || video.videoPath?.startsWith("/music/")) {
+      if (!actualMediaWebPathsOnDisk.has(video.videoPath)) {
+        logger.info(`Media missing: ${video.title} (${video.videoPath})`);
         videosToDelete.push(video.id);
       }
     } else if (video.videoFilename && !video.videoPath) {
       const inferredPath = `/videos/${video.videoFilename}`;
-      if (!actualVideoWebPathsOnDisk.has(inferredPath)) {
+      if (!actualMediaWebPathsOnDisk.has(inferredPath)) {
         logger.info(
           `Video missing (legacy path): ${video.title} (${video.videoFilename})`
         );
@@ -650,16 +707,34 @@ export const scanFiles = async (
       deletedCount += 1;
     }
   }
-  logger.info(`Deleted ${deletedCount} missing videos.`);
+  logger.info(`Deleted ${deletedCount} missing media files.`);
 
-  const { addedCount, updatedCount } = await processDirectoryFiles(
-    VIDEOS_DIR,
-    existingVideosByPath,
-    VIDEO_EXTENSIONS,
-    { scannedFiles: allFiles }
-  );
+  let addedCount = 0;
+  let updatedCount = 0;
 
-  const message = `Scan complete. Added ${addedCount} new videos. Updated ${updatedCount} existing videos. Deleted ${deletedCount} missing videos.`;
+  if (videosExists) {
+    const videoResult = await processDirectoryFiles(
+      VIDEOS_DIR,
+      existingVideosByPath,
+      VIDEO_EXTENSIONS,
+      { scannedFiles: allVideoFiles, rootDir: VIDEOS_DIR }
+    );
+    addedCount += videoResult.addedCount;
+    updatedCount += videoResult.updatedCount;
+  }
+
+  if (musicExists) {
+    const audioResult = await processDirectoryFiles(
+      MUSIC_DIR,
+      existingVideosByPath,
+      AUDIO_EXTENSIONS,
+      { scannedFiles: allAudioFiles, rootDir: MUSIC_DIR }
+    );
+    addedCount += audioResult.addedCount;
+    updatedCount += audioResult.updatedCount;
+  }
+
+  const message = `Scan complete. Added ${addedCount} new items. Updated ${updatedCount} existing items. Deleted ${deletedCount} missing items.`;
   logger.info(message);
 
   res.status(200).json({ addedCount, deletedCount });

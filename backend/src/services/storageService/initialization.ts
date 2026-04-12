@@ -6,6 +6,7 @@ import {
     AVATARS_DIR,
     DATA_DIR,
     IMAGES_DIR,
+    MUSIC_DIR,
     STATUS_DATA_PATH,
     SUBTITLES_DIR,
     UPLOADS_DIR,
@@ -294,6 +295,7 @@ function normalizeLegacyTwitchDownloads(): void {
 export function initializeStorage(): void {
   fs.ensureDirSync(UPLOADS_DIR);
   fs.ensureDirSync(VIDEOS_DIR);
+  fs.ensureDirSync(MUSIC_DIR);
   fs.ensureDirSync(IMAGES_DIR);
   fs.ensureDirSync(AVATARS_DIR);
   fs.ensureDirSync(SUBTITLES_DIR);

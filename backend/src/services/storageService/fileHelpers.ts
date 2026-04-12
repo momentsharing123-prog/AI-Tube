@@ -4,6 +4,7 @@ import {
   AVATARS_DIR,
   IMAGES_DIR,
   IMAGES_SMALL_DIR,
+  MUSIC_DIR,
   SUBTITLES_DIR,
   VIDEOS_DIR,
 } from "../../config/paths";
@@ -20,6 +21,7 @@ import { Collection } from "./types";
 
 const ALLOWED_STORAGE_DIRS = [
   VIDEOS_DIR,
+  MUSIC_DIR,
   IMAGES_DIR,
   IMAGES_SMALL_DIR,
   SUBTITLES_DIR,
@@ -211,7 +213,18 @@ export function findVideoFile(
   filename: string,
   collections: Collection[] = []
 ): string | null {
-  return findFileInStorage(VIDEOS_DIR, "video", filename, collections);
+  // Check VIDEOS_DIR first, then fall back to MUSIC_DIR for audio files
+  return (
+    findFileInStorage(VIDEOS_DIR, "video", filename, collections) ??
+    findFileInStorage(MUSIC_DIR, "audio", filename, collections)
+  );
+}
+
+export function findAudioFile(
+  filename: string,
+  collections: Collection[] = []
+): string | null {
+  return findFileInStorage(MUSIC_DIR, "audio", filename, collections);
 }
 
 export function findImageFile(

@@ -1,6 +1,6 @@
 import fs from "fs-extra";
 import path from "path";
-import { AVATARS_DIR, IMAGES_DIR, VIDEOS_DIR } from "../../../config/paths";
+import { AVATARS_DIR, IMAGES_DIR, MUSIC_DIR, VIDEOS_DIR } from "../../../config/paths";
 import { ValidationError } from "../../../errors/DownloadErrors";
 import { downloadAndProcessAvatar } from "../../../utils/avatarUtils";
 import {
@@ -113,8 +113,13 @@ export async function downloadVideo(
   const timestamp = Date.now();
   const safeBaseFilename = `video_${timestamp}`;
 
+  // Determine media type and destination directory
+  const isAudio = format === "mp3";
+  const mediaDir = isAudio ? MUSIC_DIR : VIDEOS_DIR;
+  const mediaUrlPrefix = isAudio ? "music" : "videos";
+
   // Add extensions for video and thumbnail
-  const fileExt = format === "mp3" ? "mp3" : "mp4";
+  const fileExt = isAudio ? "mp3" : "mp4";
   const videoFilename = `${safeBaseFilename}.${fileExt}`;
   const thumbnailFilename = `${safeBaseFilename}.jpg`;
 
@@ -235,12 +240,13 @@ export async function downloadVideo(
     logger.info("File location settings:", {
       moveThumbnailsToVideoFolder,
       moveSubtitlesToVideoFolder,
-      videoDir: VIDEOS_DIR,
+      mediaDir,
       imageDir: IMAGES_DIR,
     });
 
-    const newVideoPath = resolveSafeChildPath(VIDEOS_DIR, finalVideoFilename);
-    let newThumbnailPath = moveThumbnailsToVideoFolder
+    const newVideoPath = resolveSafeChildPath(mediaDir, finalVideoFilename);
+    // Audio files never co-locate thumbnails; thumbnails always go to images dir
+    let newThumbnailPath = (!isAudio && moveThumbnailsToVideoFolder)
       ? resolveSafeChildPath(VIDEOS_DIR, finalThumbnailFilename)
       : resolveSafeChildPath(IMAGES_DIR, finalThumbnailFilename);
 
@@ -292,12 +298,12 @@ export async function downloadVideo(
     );
 
     // If file already exists (e.g. redownload), deduplicate the filename
-    if (pathExistsSafeSync(newVideoPathWithFormat, VIDEOS_DIR)) {
+    if (pathExistsSafeSync(newVideoPathWithFormat, mediaDir)) {
       let counter = 1;
       const ext = `.${videoExtension}`;
       const basePath = stripTrailingExtension(newVideoPathWithFormat, ext);
       const baseName = stripTrailingExtension(finalVideoFilename, ext);
-      while (pathExistsSafeSync(`${basePath}_${counter}${ext}`, VIDEOS_DIR)) {
+      while (pathExistsSafeSync(`${basePath}_${counter}${ext}`, mediaDir)) {
         counter++;
       }
       newVideoPathWithFormat = `${basePath}_${counter}${ext}`;
@@ -306,7 +312,7 @@ export async function downloadVideo(
         /\.jpg$/,
         `_${counter}.jpg`
       );
-      newThumbnailPath = moveThumbnailsToVideoFolder
+      newThumbnailPath = (!isAudio && moveThumbnailsToVideoFolder)
         ? resolveSafeChildPath(VIDEOS_DIR, finalThumbnailFilename)
         : resolveSafeChildPath(IMAGES_DIR, finalThumbnailFilename);
       logger.info(`File exists, using deduplicated filename: ${finalVideoFilename}`);
@@ -333,11 +339,11 @@ export async function downloadVideo(
 
         // Use fresh cleanup based on settings
         const currentSettings = storageService.getSettings();
-        if (!currentSettings.moveThumbnailsToVideoFolder) {
+        if (!isAudio && !currentSettings.moveThumbnailsToVideoFolder) {
           await cleanupVideoArtifacts(newSafeBaseFilename, IMAGES_DIR);
         }
 
-        await removeSafe(newThumbnailPath, [VIDEOS_DIR, IMAGES_DIR]);
+        await removeSafe(newThumbnailPath, [VIDEOS_DIR, MUSIC_DIR, IMAGES_DIR]);
         await cleanupSubtitleFiles(newSafeBaseFilename);
       });
     }
@@ -614,9 +620,9 @@ export async function downloadVideo(
     videoFilename: finalVideoFilename,
     thumbnailFilename: thumbnailSaved ? finalThumbnailFilename : undefined,
     thumbnailUrl: thumbnailUrl || undefined,
-    videoPath: `/videos/${finalVideoFilename}`,
+    videoPath: `/${mediaUrlPrefix}/${finalVideoFilename}`,
     thumbnailPath: thumbnailSaved
-      ? moveThumbnailsToVideoFolder
+      ? (!isAudio && moveThumbnailsToVideoFolder)
         ? `/videos/${finalThumbnailFilename}`
         : `/images/${finalThumbnailFilename}`
       : null,
@@ -636,7 +642,7 @@ export async function downloadVideo(
   };
 
   // If duration is missing from info, try to extract it from file
-  const finalVideoPath = resolveSafeChildPath(VIDEOS_DIR, finalVideoFilename);
+  const finalVideoPath = resolveSafeChildPath(mediaDir, finalVideoFilename);
 
   try {
     const { getVideoDuration } = await import(
@@ -652,8 +658,8 @@ export async function downloadVideo(
 
   // Get file size
   try {
-    if (pathExistsSafeSync(finalVideoPath, VIDEOS_DIR)) {
-      const stats = statSafeSync(finalVideoPath, VIDEOS_DIR);
+    if (pathExistsSafeSync(finalVideoPath, mediaDir)) {
+      const stats = statSafeSync(finalVideoPath, mediaDir);
       videoData.fileSize = stats.size.toString();
     }
   } catch (e) {
@@ -669,15 +675,16 @@ export async function downloadVideo(
       "Video with same sourceUrl exists, updating subtitle information"
     );
 
-    // Delete old video file if filename changed
+    // Delete old video file if filename changed — search both VIDEOS_DIR and MUSIC_DIR
     if (existingVideo.videoFilename && existingVideo.videoFilename !== finalVideoFilename) {
+      const oldMediaDir = existingVideo.videoPath?.startsWith("/music/") ? MUSIC_DIR : VIDEOS_DIR;
       const oldVideoPath = resolveSafeChildPath(
-        VIDEOS_DIR,
+        oldMediaDir,
         existingVideo.videoFilename
       );
       try {
-        if (pathExistsSafeSync(oldVideoPath, VIDEOS_DIR)) {
-          unlinkSafeSync(oldVideoPath, VIDEOS_DIR);
+        if (pathExistsSafeSync(oldVideoPath, oldMediaDir)) {
+          unlinkSafeSync(oldVideoPath, oldMediaDir);
           logger.info(`Deleted old video file: ${existingVideo.videoFilename}`);
         }
       } catch (e) {
@@ -700,13 +707,13 @@ export async function downloadVideo(
           : resolveSafeChildPath(IMAGES_DIR, existingVideo.thumbnailFilename);
       try {
         if (
-          pathExistsSafeSync(oldThumbnailPath, [VIDEOS_DIR, IMAGES_DIR]) &&
+          pathExistsSafeSync(oldThumbnailPath, [VIDEOS_DIR, MUSIC_DIR, IMAGES_DIR]) &&
           !storageService.isThumbnailReferencedByOtherVideo(
             existingVideo,
             existingVideo.id,
           )
         ) {
-          unlinkSafeSync(oldThumbnailPath, [VIDEOS_DIR, IMAGES_DIR]);
+          unlinkSafeSync(oldThumbnailPath, [VIDEOS_DIR, MUSIC_DIR, IMAGES_DIR]);
           deleteSmallThumbnailMirrorSync(oldThumbnailPath);
           logger.info(`Deleted old thumbnail file: ${existingVideo.thumbnailFilename}`);
         }
@@ -722,12 +729,12 @@ export async function downloadVideo(
     const updatedVideo = storageService.updateVideo(existingVideo.id, {
       subtitles: subtitles.length > 0 ? subtitles : undefined,
       videoFilename: finalVideoFilename,
-      videoPath: `/videos/${finalVideoFilename}`,
+      videoPath: `/${mediaUrlPrefix}/${finalVideoFilename}`,
       thumbnailFilename: thumbnailSaved
         ? finalThumbnailFilename
         : existingVideo.thumbnailFilename,
       thumbnailPath: thumbnailSaved
-        ? moveThumbnailsToVideoFolder
+        ? (!isAudio && moveThumbnailsToVideoFolder)
           ? `/videos/${finalThumbnailFilename}`
           : `/images/${finalThumbnailFilename}`
         : existingVideo.thumbnailPath,

@@ -3,6 +3,7 @@ import path from "path";
 import {
     AVATARS_DIR,
     IMAGES_DIR,
+    MUSIC_DIR,
     SUBTITLES_DIR,
     UPLOADS_DIR,
     VIDEOS_DIR,
@@ -603,7 +604,11 @@ export function deleteVideo(id: string): boolean {
 function isLocalManagedVideo(
   video: import("./types").Video
 ): boolean {
-  return !video.videoPath || video.videoPath.startsWith("/videos/");
+  return (
+    !video.videoPath ||
+    video.videoPath.startsWith("/videos/") ||
+    video.videoPath.startsWith("/music/")
+  );
 }
 
 export function isThumbnailReferencedByOtherVideo(
@@ -666,6 +671,12 @@ function deleteThumbnailFile(
         thumbnailPath = buildStoragePath(
           VIDEOS_DIR,
           video.thumbnailPath.replace(/^\/videos\//, "")
+        );
+      } else if (video.thumbnailPath.startsWith("/music/")) {
+        // Thumbnail co-located in music folder (unlikely but safe to handle)
+        thumbnailPath = buildStoragePath(
+          MUSIC_DIR,
+          video.thumbnailPath.replace(/^\/music\//, "")
         );
       } else if (video.thumbnailPath.startsWith("/images/")) {
         // Thumbnail is in images directory (may be in collection subdirectory)

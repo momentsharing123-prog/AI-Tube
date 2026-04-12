@@ -14,11 +14,11 @@ services:
       - PGID=${PGID:-1000}
       - JWT_SECRET=${JWT_SECRET}
       - CSRF_SECRET=${CSRF_SECRET}
-      - MYTUBE_AUTO_FIX_PERMISSIONS=1
-      - MYTUBE_ADMIN_TRUST_LEVEL=container
-      # API token config — leave MYTUBE_API_TOKEN blank to auto-generate
-      - MYTUBE_API_ENABLED=${MYTUBE_API_ENABLED:-true}
-      - MYTUBE_API_TOKEN=${MYTUBE_API_TOKEN:-}
+      - AITUBE_AUTO_FIX_PERMISSIONS=1
+      - AITUBE_ADMIN_TRUST_LEVEL=container
+      # API token config — leave AITUBE_API_TOKEN blank to auto-generate
+      - AITUBE_API_ENABLED=${AITUBE_API_ENABLED:-true}
+      - AITUBE_API_TOKEN=${AITUBE_API_TOKEN:-}
     restart: unless-stopped
     networks:
       - ai-tube-network

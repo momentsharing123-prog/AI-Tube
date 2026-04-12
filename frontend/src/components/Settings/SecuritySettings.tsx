@@ -63,7 +63,7 @@ const SecuritySettings: React.FC<SecuritySettingsProps> = ({ settings, onChange 
 
             // Step 1: Get registration options
             const optionsResponse = await api.post('/settings/passkeys/register', {
-                userName: 'MyTube User',
+                userName: 'AI Tube User',
             });
             const { options, challenge } = optionsResponse.data;
 

@@ -18,7 +18,7 @@ const Logo: React.FC<LogoProps> = ({ websiteName, onResetSearch }) => {
     return (
         <Link to="/" onClick={onResetSearch} style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', color: 'inherit' }}>
             <Box sx={{ position: 'relative' }}>
-                <img src={logo} alt="MyTube Logo" height={40} />
+                <img src={logo} alt="AI Tube Logo" height={40} />
                 {cloudflaredStatus?.isRunning && (
                     <Box
                         sx={{
@@ -38,9 +38,9 @@ const Logo: React.FC<LogoProps> = ({ websiteName, onResetSearch }) => {
                 <Typography variant="h5" sx={{ fontWeight: 'bold', lineHeight: 1 }}>
                     {websiteName}
                 </Typography>
-                {websiteName !== 'MyTube' && (
+                {websiteName !== 'AI Tube' && (
                     <Typography variant="caption" color="text.secondary" sx={{ fontSize: '0.6rem', lineHeight: 1 }}>
-                        Powered by MyTube
+                        Powered by AI Tube
                     </Typography>
                 )}
             </Box>

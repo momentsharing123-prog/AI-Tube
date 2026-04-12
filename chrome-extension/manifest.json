@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
-  "name": "MyTube Downloader",
+  "name": "AI Tube Downloader",
   "version": "1.0.1",
-  "description": "One-click download videos from yt-dlp supported sites to MyTube",
+  "description": "One-click download videos from yt-dlp supported sites to AI Tube",
   "permissions": ["storage", "activeTab", "alarms"],
   "host_permissions": ["<all_urls>"],
   "background": {

@@ -1,6 +1,6 @@
 # Release Process
 
-MyTube follows [Semantic Versioning 2.0.0](https://semver.org/).
+AI Tube follows [Semantic Versioning 2.0.0](https://semver.org/).
 
 ## Versioning Scheme
 

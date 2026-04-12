@@ -141,13 +141,13 @@ describe('Header', () => {
         // The Header component makes multiple axios calls (subscriptions, tasks, settings)
         // Note: Due to dynamic import mocking limitations in Vitest, the settings call may fail
         // and fall back to the default name. We verify the component renders correctly either way.
-        const logo = screen.getByAltText('MyTube Logo');
+        const logo = screen.getByAltText('AI Tube Logo');
         expect(logo).toBeInTheDocument();
 
         // Wait for the component to stabilize after async operations
         await waitFor(() => {
-            // The title should be either "TestTube" (if settings succeeds) or "MyTube" (default)
-            const title = screen.queryByText('TestTube') || screen.queryByText('MyTube');
+            // The title should be either "TestTube" (if settings succeeds) or "AI Tube" (default)
+            const title = screen.queryByText('TestTube') || screen.queryByText('AI Tube');
             expect(title).toBeInTheDocument();
         }, { timeout: 2000 });
 

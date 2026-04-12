@@ -1,6 +1,6 @@
 export const fr = {
   // Header
-  myTube: "MyTube",
+  myTube: "AI Tube",
   manage: "Gérer",
   settings: "Paramètres",
   logout: "Déconnexion",
@@ -169,26 +169,26 @@ export const fr = {
   twitchClientId: "ID client Twitch",
   twitchClientSecret: "Secret client Twitch",
   twitchSubscriptionCredentialsHelper:
-    "Les identifiants client Twitch sont facultatifs. Sans eux, MyTube utilise un sondage yt-dlp en mode best-effort, mais les ajouter rend la détection de chaîne plus fiable.",
+    "Les identifiants client Twitch sont facultatifs. Sans eux, AI Tube utilise un sondage yt-dlp en mode best-effort, mais les ajouter rend la détection de chaîne plus fiable.",
   twitchSubscriptionDescription:
-    "MyTube vérifiera si cette chaîne Twitch publie de nouveaux VOD et les téléchargera une fois qu'ils seront publiés sur Twitch.",
+    "AI Tube vérifiera si cette chaîne Twitch publie de nouveaux VOD et les téléchargera une fois qu'ils seront publiés sur Twitch.",
   twitchSubscriptionCredentialsMissing:
     "L'abonnement Twitch a échoué. Les identifiants client sont facultatifs, mais recommandés pour des abonnements de chaîne plus fiables.",
   twitchSubscriptionVodsOnly:
-    "MyTube télécharge les VOD Twitch après leur publication. La capture des diffusions en direct n'est pas incluse dans cette version.",
+    "AI Tube télécharge les VOD Twitch après leur publication. La capture des diffusions en direct n'est pas incluse dans cette version.",
   twitchClientHelpLink: "Comment obtenir l'ID client et le secret Twitch",
   twitchClientHelpTitle: "Obtenir l'ID client et le secret Twitch",
   twitchClientHelpIntro:
     "Vous devez d'abord créer une application Twitch dans la console développeur Twitch.",
   twitchClientHelpStep1:
     "Ouvrez la console développeur Twitch et connectez-vous avec votre compte Twitch.",
-  twitchClientHelpStep2: "Créez une nouvelle application pour MyTube.",
+  twitchClientHelpStep2: "Créez une nouvelle application pour AI Tube.",
   twitchClientHelpStep3:
     "Définissez une URL de redirection OAuth. Si vous utilisez uniquement des abonnements côté serveur, une valeur comme http://localhost suffit.",
   twitchClientHelpStep4:
     "Une fois l'application créée, copiez l'ID client depuis la page de détails de l'application.",
   twitchClientHelpStep5:
-    "Générez ou affichez un secret client, puis collez ces deux valeurs dans les paramètres de MyTube.",
+    "Générez ou affichez un secret client, puis collez ces deux valeurs dans les paramètres de AI Tube.",
   twitchClientHelpSecurity:
     "Gardez le secret client privé et ne le partagez pas dans des captures d'écran ou sur des pages publiques.",
   twitchDeveloperConsole: "Console développeur Twitch",
@@ -275,7 +275,7 @@ export const fr = {
   // Task Hooks
   taskHooks: "Crochets de Tâche",
   taskHooksDescription:
-    "Exécutez des commandes shell personnalisées à des points spécifiques du cycle de vie de la tâche. Variables d'environnement disponibles : MYTUBE_TASK_ID, MYTUBE_TASK_TITLE, MYTUBE_SOURCE_URL, MYTUBE_VIDEO_PATH.",
+    "Exécutez des commandes shell personnalisées à des points spécifiques du cycle de vie de la tâche. Variables d'environnement disponibles : AITUBE_TASK_ID, AITUBE_TASK_TITLE, AITUBE_SOURCE_URL, AITUBE_VIDEO_PATH.",
   taskHooksWarning:
     "Avertissement : Les commandes s'exécutent avec les permissions du serveur. À utiliser avec prudence.",
   deploymentSecurityTitle: "Modèle de sécurité du déploiement",
@@ -311,15 +311,15 @@ export const fr = {
     "Fonctionnalités futures de maintenance des chemins hôte",
   deploymentSecurityConfigurationTitle: "Comment configurer",
   deploymentSecurityConfigurationValuesNote:
-    "Utilisez MYTUBE_ADMIN_TRUST_LEVEL avec application, container ou host. Si la valeur est absente ou invalide, MyTube revient à container.",
+    "Utilisez AITUBE_ADMIN_TRUST_LEVEL avec application, container ou host. Si la valeur est absente ou invalide, AI Tube revient à container.",
   deploymentSecurityDockerConfigTitle: "Docker / Docker Compose",
   deploymentSecurityDockerConfigDescription:
-    "Définissez MYTUBE_ADMIN_TRUST_LEVEL dans l'environnement du service. Remplacez application par container ou host selon vos besoins.",
+    "Définissez AITUBE_ADMIN_TRUST_LEVEL dans l'environnement du service. Remplacez application par container ou host selon vos besoins.",
   deploymentSecurityDockerPermissionsNote:
     "Si vous mettez à niveau une installation avec bind mounts créée avant la version 1.9.0, assurez-vous que les dossiers uploads et data côté hôte sont inscriptibles par uid/gid 1000 (`node`). Cela corrige aussi les dossiers uploads/images-small appartenant à root, qui peuvent sinon faire échouer la génération des miniatures ou les scans avec EACCES.",
   deploymentSecurityLocalConfigTitle: "Exécution locale depuis le code source",
   deploymentSecurityLocalConfigDescription:
-    "Exportez MYTUBE_ADMIN_TRUST_LEVEL avant de démarrer MyTube, ou passez la variable en ligne avec npm run dev.",
+    "Exportez AITUBE_ADMIN_TRUST_LEVEL avant de démarrer AI Tube, ou passez la variable en ligne avec npm run dev.",
   deploymentSecurityLocalEnvFileNote:
     "Vous pouvez aussi ajouter la même ligne dans backend/.env.",
   taskHooksPolicyNotice:
@@ -402,7 +402,7 @@ export const fr = {
     "Domaine public pour accéder aux fichiers (ex. https://your-cloudflare-tunnel-domain.com). S'il est défini, il sera utilisé à la place de l'URL de l'API pour accéder aux fichiers.",
   uploadPath: "Chemin de téléchargement",
   cloudDrivePathHelper:
-    "Chemin du répertoire dans le cloud, ex. /mytube-uploads",
+    "Chemin du répertoire dans le cloud, ex. /aitube-uploads",
   scanPaths: "Chemins d'analyse",
   scanPathsHelper:
     "Un chemin par ligne. Les vidéos seront analysées à partir de ces chemins. Si vide, le chemin de téléchargement sera utilisé. Exemple :\n/a/Films\n/b/Documentaires",
@@ -572,11 +572,11 @@ export const fr = {
   resetPasswordRecoveryMessage:
     "La récupération du mot de passe doit être effectuée depuis l'environnement backend. Définissez explicitement un nouveau mot de passe au lieu de vous fier à des identifiants générés dans les journaux.",
   resetPasswordRecoveryGuide:
-    "Choisissez la commande correspondant à votre environnement :\n\nShell backend\n  node dist/scripts/reset-password.js <new-password>\n\nHôte Docker\n  docker exec -it mytube-backend node /app/dist/scripts/reset-password.js <new-password>\n\nUtilisez le répertoire ou le conteneur backend qui a accès aux données persistantes de l'application.",
+    "Choisissez la commande correspondant à votre environnement :\n\nShell backend\n  node dist/scripts/reset-password.js <new-password>\n\nHôte Docker\n  docker exec -it aitube-backend node /app/dist/scripts/reset-password.js <new-password>\n\nUtilisez le répertoire ou le conteneur backend qui a accès aux données persistantes de l'application.",
   resetPasswordDisabledInfo:
-    "La réinitialisation du mot de passe est désactivée dans l'interface web. Pour réinitialiser votre mot de passe, exécutez l'une des commandes suivantes depuis l'environnement backend :\n\nShell backend\n  node dist/scripts/reset-password.js <new-password>\n\nHôte Docker\n  docker exec -it mytube-backend node /app/dist/scripts/reset-password.js <new-password>\n\nUtilisez le répertoire ou le conteneur backend qui a accès aux données persistantes de l'application.",
+    "La réinitialisation du mot de passe est désactivée dans l'interface web. Pour réinitialiser votre mot de passe, exécutez l'une des commandes suivantes depuis l'environnement backend :\n\nShell backend\n  node dist/scripts/reset-password.js <new-password>\n\nHôte Docker\n  docker exec -it aitube-backend node /app/dist/scripts/reset-password.js <new-password>\n\nUtilisez le répertoire ou le conteneur backend qui a accès aux données persistantes de l'application.",
   resetPasswordScriptGuide:
-    "Pour réinitialiser le mot de passe manuellement, exécutez l'une des commandes suivantes et indiquez explicitement le nouveau mot de passe :\n\nShell backend\n  node dist/scripts/reset-password.js <new-password>\n\nHôte Docker\n  docker exec -it mytube-backend node /app/dist/scripts/reset-password.js <new-password>\n\nLe script ne génère ni n'affiche de mots de passe aléatoires.",
+    "Pour réinitialiser le mot de passe manuellement, exécutez l'une des commandes suivantes et indiquez explicitement le nouveau mot de passe :\n\nShell backend\n  node dist/scripts/reset-password.js <new-password>\n\nHôte Docker\n  docker exec -it aitube-backend node /app/dist/scripts/reset-password.js <new-password>\n\nLe script ne génère ni n'affiche de mots de passe aléatoires.",
   waitTimeMessage: "Veuillez attendre {time} avant de réessayer.",
   tooManyAttempts: "Trop de tentatives échouées.",
 
@@ -980,7 +980,7 @@ export const fr = {
   videoSkippedDeleted:
     "La vidéo a été supprimée précédemment, téléchargement ignoré",
   downloading: "Téléchargement...",
-  poweredBy: "Propulsé par MyTube",
+  poweredBy: "Propulsé par AI Tube",
   changeSettings: "Modifier les paramètres",
 
 
@@ -1066,7 +1066,7 @@ export const fr = {
   importDatabaseWarning:
     "Avertissement : L'importation d'une base de données remplacera toutes les données existantes. Assurez-vous d'abord d'exporter votre base de données actuelle en tant que sauvegarde.",
   mergeDatabaseWarning:
-    "Fusionnez une autre sauvegarde MyTube dans cette instance. Les enregistrements existants sont conservés et seules les données manquantes du fichier importé sont ajoutées.",
+    "Fusionnez une autre sauvegarde AI Tube dans cette instance. Les enregistrements existants sont conservés et seules les données manquantes du fichier importé sont ajoutées.",
   mergeDatabaseContentsVideos:
     "Les vidéos sont mises en correspondance par URL source et les vidéos existantes sont conservées.",
   mergeDatabaseContentsCollections:
@@ -1105,7 +1105,7 @@ export const fr = {
   databaseMergeFailed: "Échec de la fusion de la base de données",
   cleanupBackupDatabases: "Nettoyer les Bases de Données de Sauvegarde",
   cleanupBackupDatabasesWarning:
-    "Avertissement : Cela supprimera définitivement tous les fichiers de base de données de sauvegarde (mytube-backup-*.db.backup) qui ont été créés lors d'importations précédentes. Cette action ne peut pas être annulée. Êtes-vous sûr de vouloir continuer ?",
+    "Avertissement : Cela supprimera définitivement tous les fichiers de base de données de sauvegarde (aitube-backup-*.db.backup) qui ont été créés lors d'importations précédentes. Cette action ne peut pas être annulée. Êtes-vous sûr de vouloir continuer ?",
   backupDatabasesCleanedUp:
     "Bases de données de sauvegarde nettoyées avec succès",
 

@@ -1,4 +1,4 @@
-// Options page script for MyTube Downloader extension
+// Options page script for AI Tube Downloader extension
 
 import type { Translations } from './types';
 
@@ -28,24 +28,24 @@ function init(): void {
 
 function applyStaticTranslations(t: Translations): void {
   const h1 = document.querySelector('h1');
-  if (h1) h1.textContent = t.mytubeDownloader || 'MyTube Downloader';
+  if (h1) h1.textContent = t.aitubeDownloader || 'AI Tube Downloader';
 
   const subtitle = document.querySelector('.subtitle');
   if (subtitle) {
     subtitle.textContent =
-      t.configureConnection || 'Configure your MyTube server connection';
+      t.configureConnection || 'Configure your AI Tube server connection';
   }
 
   const serverUrlLabel = document.getElementById('serverUrlLabel');
   if (serverUrlLabel) {
-    serverUrlLabel.textContent = t.serverUrl || 'MyTube Server URL';
+    serverUrlLabel.textContent = t.serverUrl || 'AI Tube Server URL';
   }
 
   const serverUrlHint = document.getElementById('serverUrlHint');
   if (serverUrlHint) {
     serverUrlHint.textContent =
       t.serverUrlHint ||
-      'Enter the URL of your MyTube server (e.g., http://localhost:3000)';
+      'Enter the URL of your AI Tube server (e.g., http://localhost:3000)';
   }
 
   const apiKeyLabel = document.getElementById('apiKeyLabel');
@@ -57,7 +57,7 @@ function applyStaticTranslations(t: Translations): void {
   if (apiKeyHint) {
     apiKeyHint.textContent =
       t.apiKeyHint ||
-      'Paste your API key from MyTube Security Settings. Used only for download requests.';
+      'Paste your API key from AI Tube Security Settings. Used only for download requests.';
   }
 
   const testBtnText = document.getElementById('testConnectionText');

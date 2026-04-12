@@ -1,6 +1,6 @@
-# MyTube Download Skill
+# AI Tube Download Skill
 
-Help the user download YouTube / web videos or audio via the local MyTube server.
+Help the user download YouTube / web videos or audio via the local AI Tube server.
 
 ---
 
@@ -9,21 +9,21 @@ Help the user download YouTube / web videos or audio via the local MyTube server
 Check if a token is already saved:
 
 ```bash
-cat ~/.mytube-token 2>/dev/null || echo "NO_TOKEN"
+cat ~/.aitube-token 2>/dev/null || echo "NO_TOKEN"
 ```
 
-- If a token exists, store it as `MYTUBE_TOKEN` and skip to Step 2.
+- If a token exists, store it as `AITUBE_TOKEN` and skip to Step 2.
 - If `NO_TOKEN`, go to Step 1a.
 
 ### Step 1a — Ask for token
 
 Use AskUserQuestion:
 
-> I need your MyTube API token to continue.
+> I need your AI Tube API token to continue.
 >
 > You can find it by running:
 > ```
-> docker logs mytube-api | grep "API access key"
+> docker logs ai-tube-prod | grep "API access key"
 > ```
 >
 > Paste your token here:
@@ -31,8 +31,8 @@ Use AskUserQuestion:
 Take the user's answer, save it, and confirm:
 
 ```bash
-echo "PASTE_TOKEN_HERE" > ~/.mytube-token
-chmod 600 ~/.mytube-token
+echo "PASTE_TOKEN_HERE" > ~/.aitube-token
+chmod 600 ~/.aitube-token
 echo "Token saved."
 ```
 
@@ -82,15 +82,15 @@ Options:
 Read the saved token:
 
 ```bash
-MYTUBE_TOKEN=$(cat ~/.mytube-token)
-echo "Token loaded: ${MYTUBE_TOKEN:0:8}..."
+AITUBE_TOKEN=$(cat ~/.aitube-token)
+echo "Token loaded: ${AITUBE_TOKEN:0:8}..."
 ```
 
 Submit via the local REST API:
 
 ```powershell
 powershell -Command "
-\$token = (Get-Content '\$env:USERPROFILE\.mytube-token' -Raw).Trim()
+\$token = (Get-Content '\$env:USERPROFILE\.aitube-token' -Raw).Trim()
 \$body = ConvertTo-Json @{
   url    = 'VIDEO_URL'
   format = 'FORMAT'
@@ -126,7 +126,7 @@ If the user asks "is it done?" or "how's the download?", check status:
 
 ```powershell
 powershell -Command "
-\$token = (Get-Content '\$env:USERPROFILE\.mytube-token' -Raw).Trim()
+\$token = (Get-Content '\$env:USERPROFILE\.aitube-token' -Raw).Trim()
 \$r = Invoke-RestMethod -Uri 'http://localhost:6001/api/download-status' \`
   -Headers @{'X-API-Key'=\$token}
 \$r | ConvertTo-Json -Depth 5
@@ -143,7 +143,7 @@ Parse and summarise:
 ## Reference
 
 **Server:** `http://localhost:6001`
-**Token file:** `~/.mytube-token`
+**Token file:** `~/.aitube-token`
 
 | Endpoint | Method | Purpose |
 |----------|--------|---------|

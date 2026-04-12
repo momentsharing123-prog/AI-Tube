@@ -1,6 +1,6 @@
 export const ar = {
   // Header
-  myTube: "MyTube",
+  myTube: "AI Tube",
   manage: "إدارة",
   settings: "الإعدادات",
   logout: "تسجيل الخروج",
@@ -161,26 +161,26 @@ export const ar = {
   twitchClientId: "معرّف عميل Twitch",
   twitchClientSecret: "سرّ عميل Twitch",
   twitchSubscriptionCredentialsHelper:
-    "بيانات اعتماد عميل Twitch اختيارية. بدونها سيعود MyTube إلى الاستطلاع عبر yt-dlp بوضع best-effort، لكن إضافتها تجعل اكتشاف القناة أكثر موثوقية.",
+    "بيانات اعتماد عميل Twitch اختيارية. بدونها سيعود AI Tube إلى الاستطلاع عبر yt-dlp بوضع best-effort، لكن إضافتها تجعل اكتشاف القناة أكثر موثوقية.",
   twitchSubscriptionDescription:
-    "سيتحقق MyTube من هذه القناة على Twitch بحثًا عن ملفات VOD جديدة ويقوم بتنزيلها بعد أن ينشرها Twitch.",
+    "سيتحقق AI Tube من هذه القناة على Twitch بحثًا عن ملفات VOD جديدة ويقوم بتنزيلها بعد أن ينشرها Twitch.",
   twitchSubscriptionCredentialsMissing:
     "فشل الاشتراك في Twitch. بيانات اعتماد العميل ليست مطلوبة، لكنها مُستحسنة لاشتراكات القنوات الأكثر موثوقية.",
   twitchSubscriptionVodsOnly:
-    "يقوم MyTube بتنزيل ملفات VOD الخاصة بـ Twitch بعد نشرها. التقاط البث المباشر غير متاح في هذا الإصدار.",
+    "يقوم AI Tube بتنزيل ملفات VOD الخاصة بـ Twitch بعد نشرها. التقاط البث المباشر غير متاح في هذا الإصدار.",
   twitchClientHelpLink: "كيفية الحصول على Twitch Client ID و Secret",
   twitchClientHelpTitle: "الحصول على Twitch Client ID و Secret",
   twitchClientHelpIntro:
     "تحتاج أولاً إلى إنشاء تطبيق Twitch داخل لوحة مطوري Twitch.",
   twitchClientHelpStep1:
     "افتح لوحة مطوري Twitch وسجّل الدخول باستخدام حساب Twitch الخاص بك.",
-  twitchClientHelpStep2: "أنشئ تطبيقًا جديدًا لـ MyTube.",
+  twitchClientHelpStep2: "أنشئ تطبيقًا جديدًا لـ AI Tube.",
   twitchClientHelpStep3:
     "حدّد عنوان OAuth Redirect URL. إذا كنت تستخدم الاشتراكات من جهة الخادم فقط، فإن قيمة مثل http://localhost تكفي.",
   twitchClientHelpStep4:
     "بعد إنشاء التطبيق، انسخ Client ID من صفحة تفاصيل التطبيق.",
   twitchClientHelpStep5:
-    "أنشئ أو اعرض Client Secret ثم الصق القيمتين في إعدادات MyTube.",
+    "أنشئ أو اعرض Client Secret ثم الصق القيمتين في إعدادات AI Tube.",
   twitchClientHelpSecurity:
     "حافظ على سرية Client Secret ولا تشاركه في لقطات الشاشة أو الصفحات العامة.",
   twitchDeveloperConsole: "لوحة مطوري Twitch",
@@ -267,7 +267,7 @@ export const ar = {
   // Task Hooks
   taskHooks: "خطافات المهام",
   taskHooksDescription:
-    "نفذ أوامر shell مخصصة في نقاط محددة من دورة حياة المهمة. متغيرات البيئة المتاحة: MYTUBE_TASK_ID, MYTUBE_TASK_TITLE, MYTUBE_SOURCE_URL, MYTUBE_VIDEO_PATH.",
+    "نفذ أوامر shell مخصصة في نقاط محددة من دورة حياة المهمة. متغيرات البيئة المتاحة: AITUBE_TASK_ID, AITUBE_TASK_TITLE, AITUBE_SOURCE_URL, AITUBE_VIDEO_PATH.",
   taskHooksWarning: "تحذير: يتم تشغيل الأوامر بصلاحيات الخادم. استخدم بحذر.",
   deploymentSecurityTitle: "نموذج أمان النشر",
   deploymentSecurityLoading:
@@ -301,15 +301,15 @@ export const ar = {
     "ميزات صيانة مسارات المضيف المستقبلية",
   deploymentSecurityConfigurationTitle: "كيفية الإعداد",
   deploymentSecurityConfigurationValuesNote:
-    "استخدم MYTUBE_ADMIN_TRUST_LEVEL مع application أو container أو host. إذا كانت القيمة مفقودة أو غير صالحة فسيتم الرجوع إلى container.",
+    "استخدم AITUBE_ADMIN_TRUST_LEVEL مع application أو container أو host. إذا كانت القيمة مفقودة أو غير صالحة فسيتم الرجوع إلى container.",
   deploymentSecurityDockerConfigTitle: "Docker / Docker Compose",
   deploymentSecurityDockerConfigDescription:
-    "اضبط MYTUBE_ADMIN_TRUST_LEVEL في environment الخاصة بالخدمة. استبدل application بـ container أو host حسب الحاجة.",
+    "اضبط AITUBE_ADMIN_TRUST_LEVEL في environment الخاصة بالخدمة. استبدل application بـ container أو host حسب الحاجة.",
   deploymentSecurityDockerPermissionsNote:
     "إذا كنت تقوم بترقية تثبيت يستخدم bind mounts وتم إنشاؤه قبل الإصدار 1.9.0، فتأكد من أن مجلدي uploads و data على المضيف قابلان للكتابة بواسطة uid/gid 1000 (`node`). سيؤدي ذلك أيضًا إلى إصلاح أدلة uploads/images-small المملوكة لـ root والتي قد تتسبب في فشل إنشاء الصور المصغرة أو الفحص بسبب EACCES.",
   deploymentSecurityLocalConfigTitle: "تشغيل المصدر محليًا",
   deploymentSecurityLocalConfigDescription:
-    "قم بتصدير MYTUBE_ADMIN_TRUST_LEVEL قبل تشغيل MyTube، أو مرره inline عند تشغيل npm run dev.",
+    "قم بتصدير AITUBE_ADMIN_TRUST_LEVEL قبل تشغيل AI Tube، أو مرره inline عند تشغيل npm run dev.",
   deploymentSecurityLocalEnvFileNote:
     "يمكنك أيضًا وضع السطر نفسه في backend/.env.",
   taskHooksPolicyNotice:
@@ -386,7 +386,7 @@ export const ar = {
   publicUrlHelper:
     "النطاق العام للوصول إلى الملفات (مثال: https://your-cloudflare-tunnel-domain.com). إذا تم تعيينه، سيتم استخدامه بدلاً من عنوان API للوصول إلى الملفات.",
   uploadPath: "مسار التحميل",
-  cloudDrivePathHelper: "مسار الدليل في التخزين السحابي، مثال: /mytube-uploads",
+  cloudDrivePathHelper: "مسار الدليل في التخزين السحابي، مثال: /aitube-uploads",
   scanPaths: "مسارات المسح",
   scanPathsHelper:
     "مسار واحد في كل سطر. سيتم مسح مقاطع الفيديو من هذه المسارات. إذا كانت فارغة، سيتم استخدام مسار التحميل. مثال:\n/a/أفلام\n/b/وثائقيات",
@@ -551,11 +551,11 @@ export const ar = {
   resetPasswordRecoveryMessage:
     "يجب تنفيذ استعادة كلمة المرور من بيئة الخادم الخلفي. عيّن كلمة مرور جديدة بشكل صريح بدلاً من الاعتماد على بيانات اعتماد مولدة داخل السجلات.",
   resetPasswordRecoveryGuide:
-    "اختر الأمر المناسب لبيئتك:\n\nواجهة الخادم الخلفي\n  node dist/scripts/reset-password.js <new-password>\n\nمضيف Docker\n  docker exec -it mytube-backend node /app/dist/scripts/reset-password.js <new-password>\n\nاستخدم دليل أو حاوية الخادم الخلفي التي لديها وصول إلى بيانات التطبيق الدائمة.",
+    "اختر الأمر المناسب لبيئتك:\n\nواجهة الخادم الخلفي\n  node dist/scripts/reset-password.js <new-password>\n\nمضيف Docker\n  docker exec -it aitube-backend node /app/dist/scripts/reset-password.js <new-password>\n\nاستخدم دليل أو حاوية الخادم الخلفي التي لديها وصول إلى بيانات التطبيق الدائمة.",
   resetPasswordDisabledInfo:
-    "إعادة تعيين كلمة المرور معطلة في واجهة الويب. لإعادة تعيين كلمة المرور، شغّل أحد الأوامر التالية من بيئة الخادم الخلفي:\n\nواجهة الخادم الخلفي\n  node dist/scripts/reset-password.js <new-password>\n\nمضيف Docker\n  docker exec -it mytube-backend node /app/dist/scripts/reset-password.js <new-password>\n\nاستخدم دليل أو حاوية الخادم الخلفي التي لديها وصول إلى بيانات التطبيق الدائمة.",
+    "إعادة تعيين كلمة المرور معطلة في واجهة الويب. لإعادة تعيين كلمة المرور، شغّل أحد الأوامر التالية من بيئة الخادم الخلفي:\n\nواجهة الخادم الخلفي\n  node dist/scripts/reset-password.js <new-password>\n\nمضيف Docker\n  docker exec -it aitube-backend node /app/dist/scripts/reset-password.js <new-password>\n\nاستخدم دليل أو حاوية الخادم الخلفي التي لديها وصول إلى بيانات التطبيق الدائمة.",
   resetPasswordScriptGuide:
-    "لإعادة تعيين كلمة المرور يدويًا، شغّل أحد الأوامر التالية وقدّم كلمة المرور الجديدة بشكل صريح:\n\nواجهة الخادم الخلفي\n  node dist/scripts/reset-password.js <new-password>\n\nمضيف Docker\n  docker exec -it mytube-backend node /app/dist/scripts/reset-password.js <new-password>\n\nلا يقوم السكربت بإنشاء أو عرض كلمات مرور عشوائية.",
+    "لإعادة تعيين كلمة المرور يدويًا، شغّل أحد الأوامر التالية وقدّم كلمة المرور الجديدة بشكل صريح:\n\nواجهة الخادم الخلفي\n  node dist/scripts/reset-password.js <new-password>\n\nمضيف Docker\n  docker exec -it aitube-backend node /app/dist/scripts/reset-password.js <new-password>\n\nلا يقوم السكربت بإنشاء أو عرض كلمات مرور عشوائية.",
   waitTimeMessage: "يرجى الانتظار {time} قبل المحاولة مرة أخرى.",
   tooManyAttempts: "محاولات فاشلة كثيرة جداً.",
 
@@ -937,7 +937,7 @@ export const ar = {
   videoSkippedExists: "الفيديو موجود بالفعل، تم تخطي التنزيل",
   videoSkippedDeleted: "تم حذف الفيديو سابقًا، تم تخطي التنزيل",
   downloading: "جاري التنزيل...",
-  poweredBy: "مدعوم من MyTube",
+  poweredBy: "مدعوم من AI Tube",
   changeSettings: "تغيير الإعدادات",
 
 
@@ -1019,7 +1019,7 @@ export const ar = {
   importDatabaseWarning:
     "تحذير: سيؤدي استيراد قاعدة البيانات إلى استبدال جميع البيانات الموجودة. تأكد من تصدير قاعدة البيانات الحالية أولاً كنسخة احتياطية.",
   mergeDatabaseWarning:
-    "ادمج نسخة MyTube احتياطية أخرى في هذه النسخة. ستبقى السجلات الحالية كما هي، وسيتم فقط إضافة السجلات المفقودة من النسخة المرفوعة.",
+    "ادمج نسخة AI Tube احتياطية أخرى في هذه النسخة. ستبقى السجلات الحالية كما هي، وسيتم فقط إضافة السجلات المفقودة من النسخة المرفوعة.",
   mergeDatabaseContentsVideos:
     "تتم مطابقة الفيديوهات حسب رابط المصدر، ويتم الاحتفاظ بالفيديوهات الموجودة.",
   mergeDatabaseContentsCollections:
@@ -1057,7 +1057,7 @@ export const ar = {
   databaseMergeFailed: "فشل دمج قاعدة البيانات",
   cleanupBackupDatabases: "تنظيف قواعد البيانات الاحتياطية",
   cleanupBackupDatabasesWarning:
-    "تحذير: سيؤدي هذا إلى حذف جميع ملفات قاعدة البيانات الاحتياطية (mytube-backup-*.db.backup) التي تم إنشاؤها أثناء عمليات الاستيراد السابقة بشكل دائم. لا يمكن التراجع عن هذا الإجراء. هل أنت متأكد أنك تريد المتابعة؟",
+    "تحذير: سيؤدي هذا إلى حذف جميع ملفات قاعدة البيانات الاحتياطية (aitube-backup-*.db.backup) التي تم إنشاؤها أثناء عمليات الاستيراد السابقة بشكل دائم. لا يمكن التراجع عن هذا الإجراء. هل أنت متأكد أنك تريد المتابعة؟",
   backupDatabasesCleanedUp: "تم تنظيف قواعد البيانات الاحتياطية بنجاح",
 
   // History Filter

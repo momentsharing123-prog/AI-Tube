@@ -9,7 +9,7 @@ import * as schema from "./schema";
 // Ensure data directory exists
 fs.ensureDirSync(DATA_DIR);
 
-const dbPath = path.join(DATA_DIR, "mytube.db");
+const dbPath = path.join(DATA_DIR, "aitube.db");
 const DB_RETRY_BASE_DELAY_MS = 250;
 const DB_RETRY_BACKOFF_MULTIPLIER = 2;
 
@@ -86,10 +86,10 @@ function createDatabaseConnection(
         const gid = typeof process.getgid === "function" ? process.getgid() : undefined;
         const identity = uid != null && gid != null ? `uid/gid ${uid}/${gid}` : "the current user";
         const hint = uid != null && gid != null
-          ? `If this is a Docker bind mount, fix the host-side permissions: chown -R ${uid}:${gid} /path/to/mytube/data /path/to/mytube/uploads`
-          : "Ensure the data directory and database file are writable by the user running MyTube.";
+          ? `If this is a Docker bind mount, fix the host-side permissions: chown -R ${uid}:${gid} /path/to/aitube/data /path/to/aitube/uploads`
+          : "Ensure the data directory and database file are writable by the user running AI Tube.";
         throw new Error(
-          `Permission denied: cannot open database at ${dbPath}. MyTube is running as ${identity}. ${hint}`
+          `Permission denied: cannot open database at ${dbPath}. AI Tube is running as ${identity}. ${hint}`
         );
       }
       // If it's not a busy/locked/permission error, or we've exhausted retries, throw

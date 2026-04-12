@@ -23,7 +23,7 @@ describe('HeaderToolbarContent', () => {
         isMobile: false,
         isScrolled: false,
         isVisitor: false,
-        websiteName: 'MyTube',
+        websiteName: 'AI Tube',
         onResetSearch: vi.fn(),
         activeDownloads: [],
         queuedDownloads: [],
@@ -64,7 +64,7 @@ describe('HeaderToolbarContent', () => {
             />
         );
 
-        expect(screen.getByTestId('logo')).toHaveTextContent('MyTube');
+        expect(screen.getByTestId('logo')).toHaveTextContent('AI Tube');
         expect(screen.queryByTestId('action-buttons')).not.toBeInTheDocument();
         expect(screen.queryByTestId('mobile-menu')).not.toBeInTheDocument();
     });

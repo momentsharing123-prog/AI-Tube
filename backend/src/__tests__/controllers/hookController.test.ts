@@ -7,7 +7,7 @@ import { HookService } from "../../services/hookService";
 vi.mock("../../services/hookService");
 
 describe("HookController", () => {
-    const originalTrustLevel = process.env.MYTUBE_ADMIN_TRUST_LEVEL;
+    const originalTrustLevel = process.env.AITUBE_ADMIN_TRUST_LEVEL;
     let req: Partial<Request>;
     let res: Partial<Response>;
     let json: any;
@@ -15,9 +15,9 @@ describe("HookController", () => {
 
     afterEach(() => {
         if (originalTrustLevel === undefined) {
-            delete process.env.MYTUBE_ADMIN_TRUST_LEVEL;
+            delete process.env.AITUBE_ADMIN_TRUST_LEVEL;
         } else {
-            process.env.MYTUBE_ADMIN_TRUST_LEVEL = originalTrustLevel;
+            process.env.AITUBE_ADMIN_TRUST_LEVEL = originalTrustLevel;
         }
     });
 
@@ -140,7 +140,7 @@ describe("HookController", () => {
         });
 
         it("should reject uploads when deployment trust is application", async () => {
-            process.env.MYTUBE_ADMIN_TRUST_LEVEL = "application";
+            process.env.AITUBE_ADMIN_TRUST_LEVEL = "application";
             req.params = { name: "task_success" };
             req.file = { buffer: Buffer.from("#!/bin/bash\necho hello") } as any;
 
@@ -180,7 +180,7 @@ describe("HookController", () => {
         });
 
         it("should reject delete when deployment trust is application", async () => {
-            process.env.MYTUBE_ADMIN_TRUST_LEVEL = "application";
+            process.env.AITUBE_ADMIN_TRUST_LEVEL = "application";
             req.params = { name: "task_success" };
 
             await deleteHook(req as Request, res as Response);
@@ -201,7 +201,7 @@ describe("HookController", () => {
         });
 
         it("should reject status reads when deployment trust is application", async () => {
-            process.env.MYTUBE_ADMIN_TRUST_LEVEL = "application";
+            process.env.AITUBE_ADMIN_TRUST_LEVEL = "application";
 
             await getHookStatus(req as Request, res as Response);
 

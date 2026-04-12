@@ -2,10 +2,10 @@
 # Usage: docker compose -f docker/docker-compose.single-container.yml up -d
 
 services:
-  mytube:
-    image: ${MYTUBE_SINGLE_IMAGE:-ghcr.io/franklioxygen/mytube:latest}
+  aitube:
+    image: ${AITUBE_SINGLE_IMAGE:-ghcr.io/franklioxygen/mytube:latest}
     pull_policy: always
-    container_name: mytube
+    container_name: aitube
     ports:
       - "5551:5551"
     volumes:
@@ -17,9 +17,9 @@ services:
       - PUID=${PUID:-1000}
       - PGID=${PGID:-1000}
       # Set to 0 to disable the startup chown pass for bind-mounted data/uploads.
-      - MYTUBE_AUTO_FIX_PERMISSIONS=${MYTUBE_AUTO_FIX_PERMISSIONS:-1}
+      - AITUBE_AUTO_FIX_PERMISSIONS=${AITUBE_AUTO_FIX_PERMISSIONS:-1}
       # Optional: declare the admin trust boundary for this deployment.
       # Valid values: application | container | host
       # Docs: documents/en/deployment-security-model.md
-      - MYTUBE_ADMIN_TRUST_LEVEL=container
+      - AITUBE_ADMIN_TRUST_LEVEL=container
     restart: unless-stopped

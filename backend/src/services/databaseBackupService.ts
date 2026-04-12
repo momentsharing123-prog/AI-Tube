@@ -18,8 +18,8 @@ import {
   unlinkSafeSync,
   writeFileSafeSync,
 } from "../utils/security";
-const dbPath = path.join(DATA_DIR, "mytube.db");
-const backupPattern = /^mytube-backup-(.+)\.db\.backup$/;
+const dbPath = path.join(DATA_DIR, "aitube.db");
+const backupPattern = /^aitube-backup-(.+)\.db\.backup$/;
 const RESOLVED_DATA_DIR = path.resolve(DATA_DIR);
 const RESOLVED_DB_PATH = path.resolve(dbPath);
 
@@ -918,7 +918,7 @@ function getBackupFiles(): Array<{
  * Create a backup of the current database
  */
 function createBackup(): string {
-  const backupFilename = `mytube-backup-${generateTimestamp()}.db.backup`;
+  const backupFilename = `aitube-backup-${generateTimestamp()}.db.backup`;
   const backupPath = resolveSafePath(path.join(DATA_DIR, backupFilename), DATA_DIR);
   const resolvedBackupPath = path.resolve(backupPath);
   const isSafeBackupPath = isPathWithinDirectory(
@@ -958,7 +958,7 @@ function reinitializeDatabase(): void {
  */
 export function exportDatabase(): string {
   if (!pathExistsSafeSync(dbPath, DATA_DIR)) {
-    throw new NotFoundError("Database file", "mytube.db");
+    throw new NotFoundError("Database file", "aitube.db");
   }
   return dbPath;
 }
@@ -1036,7 +1036,7 @@ export function previewMergeDatabase(fileBuffer: Buffer): DatabaseMergeSummary {
     );
     if (!hasMergeableData) {
       throw new ValidationError(
-        "Uploaded database does not contain compatible MyTube tables to merge.",
+        "Uploaded database does not contain compatible AI Tube tables to merge.",
         "file"
       );
     }
@@ -1076,7 +1076,7 @@ export function mergeDatabase(fileBuffer: Buffer): DatabaseMergeSummary {
     );
     if (!hasMergeableData) {
       throw new ValidationError(
-        "Uploaded database does not contain compatible MyTube tables to merge.",
+        "Uploaded database does not contain compatible AI Tube tables to merge.",
         "file"
       );
     }
@@ -1140,7 +1140,7 @@ export function restoreFromLastBackup(): void {
   if (backupFiles.length === 0) {
     throw new NotFoundError(
       "Backup database file",
-      "mytube-backup-*.db.backup"
+      "aitube-backup-*.db.backup"
     );
   }
 

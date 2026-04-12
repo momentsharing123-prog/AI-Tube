@@ -66,8 +66,8 @@ if not exist "%ENV_FILE%" (
         echo CSRF_SECRET=!CSRF_SECRET!
         echo PUID=1000
         echo PGID=1000
-        echo MYTUBE_API_ENABLED=true
-        echo MYTUBE_API_TOKEN=
+        echo AITUBE_API_ENABLED=true
+        echo AITUBE_API_TOKEN=
     ) > "%ENV_FILE%"
 
     echo  Created: .env ^(JWT_SECRET and CSRF_SECRET auto-generated^)

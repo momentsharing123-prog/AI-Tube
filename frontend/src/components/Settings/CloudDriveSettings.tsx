@@ -82,7 +82,7 @@ const CloudDriveSettings: React.FC<CloudDriveSettingsProps> = ({ settings, onCha
             return null; // Optional field, but recommend starting with /
         }
         if (!path.startsWith('/')) {
-            return 'Path should start with / (e.g., /mytube-uploads)';
+            return 'Path should start with / (e.g., /aitube-uploads)';
         }
         return null;
     };
@@ -353,7 +353,7 @@ const CloudDriveSettings: React.FC<CloudDriveSettingsProps> = ({ settings, onCha
                         onChange={(e) => onChange('cloudDrivePath', e.target.value)}
                         helperText={t('cloudDrivePathHelper')}
                         error={!!uploadPathError}
-                        placeholder="/mytube-uploads"
+                        placeholder="/aitube-uploads"
                         fullWidth
                     />
                     {uploadPathError && (

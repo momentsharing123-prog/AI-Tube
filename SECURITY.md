@@ -12,7 +12,7 @@ Use this section to tell people about which versions of your project are current
 
 ## Reporting a Vulnerability
 
-We take the security of our software seriously. If you believe you have found a security vulnerability in MyTube, please report it to us as described below.
+We take the security of our software seriously. If you believe you have found a security vulnerability in AI Tube, please report it to us as described below.
 
 **Please do not report security vulnerabilities through public GitHub issues.**
 

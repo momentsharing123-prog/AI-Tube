@@ -181,7 +181,7 @@ export async function scanCloudFiles(
         if (!videoSignedUrl && file.sign) {
           const domain =
             config.publicUrl || config.apiUrl.replace("/api/fs/put", "");
-          // filePath is the full path from upload root (e.g., /mytube-uploads/subfolder/video.mp4)
+          // filePath is the full path from upload root (e.g., /aitube-uploads/subfolder/video.mp4)
           videoSignedUrl = `${domain}/d${filePath}?sign=${encodeURIComponent(
             file.sign
           )}`;

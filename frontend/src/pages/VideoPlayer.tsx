@@ -86,7 +86,7 @@ const VideoPlayer: React.FC = () => {
     // Update document title
     useEffect(() => {
         if (video?.title) {
-            const siteName = settings?.websiteName || 'MyTube';
+            const siteName = settings?.websiteName || 'AI Tube';
             document.title = `${video.title} - ${siteName}`;
         }
 
@@ -95,7 +95,7 @@ const VideoPlayer: React.FC = () => {
             if (settings?.websiteName) {
                 document.title = settings.websiteName;
             } else {
-                document.title = "MyTube - My Videos, My Rules.";
+                document.title = "AI Tube - My Videos, My Rules.";
             }
         };
     }, [video?.title, settings?.websiteName]);

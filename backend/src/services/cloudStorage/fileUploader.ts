@@ -102,7 +102,7 @@ export async function uploadFile(
       // Absolute path - use it directly (e.g., /a/movies/video/thumbnail.jpg)
       destinationPath = normalizedRemotePath;
     } else {
-      // Relative path - append to uploadPath (e.g., "subdir/file.jpg" -> "/mytube-uploads/subdir/file.jpg")
+      // Relative path - append to uploadPath (e.g., "subdir/file.jpg" -> "/aitube-uploads/subdir/file.jpg")
       destinationPath = normalizedUploadPath.endsWith("/")
         ? `${normalizedUploadPath}${normalizedRemotePath}`
         : `${normalizedUploadPath}/${normalizedRemotePath}`;

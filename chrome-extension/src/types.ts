@@ -2,7 +2,7 @@
 
 export interface Translations {
   // Popup
-  mytube: string;
+  aitube: string;
   downloadCurrentPage: string;
   worksOnAllSites: string;
   checkingServer: string;
@@ -11,7 +11,7 @@ export interface Translations {
   settings: string;
   
   // Options
-  mytubeDownloader: string;
+  aitubeDownloader: string;
   configureConnection: string;
   serverUrl: string;
   serverUrlHint: string;

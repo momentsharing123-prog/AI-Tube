@@ -77,11 +77,11 @@ const BasicSettings: React.FC<BasicSettingsProps> = ({ language, theme, showThem
                             label={t('websiteName')}
                             value={websiteName || ''}
                             onChange={(e) => onChange('websiteName', e.target.value)}
-                            placeholder="MyTube"
+                            placeholder="AI Tube"
                             helperText={t('websiteNameHelper', {
                                 current: (websiteName || '').length,
                                 max: 15,
-                                default: 'MyTube'
+                                default: 'AI Tube'
                             })}
                             slotProps={{ htmlInput: { maxLength: 15 } }}
                         />

@@ -105,25 +105,25 @@ describe("server/cors", () => {
 
   it("isOriginAllowed should allow same host even if scheme differs", () => {
     const req = createRequest({
-      origin: "https://mytube.example.com",
-      host: "mytube.example.com",
+      origin: "https://aitube.example.com",
+      host: "aitube.example.com",
     });
     const allowed = new Set<string>();
     expect(
-      isOriginAllowed("https://mytube.example.com", req, allowed)
+      isOriginAllowed("https://aitube.example.com", req, allowed)
     ).toBe(true);
   });
 
   it("isOriginAllowed should respect x-forwarded host/proto", () => {
     const req = createRequest({
-      origin: "https://mytube.example.com",
+      origin: "https://aitube.example.com",
       host: "backend:5551",
-      "x-forwarded-host": "mytube.example.com",
+      "x-forwarded-host": "aitube.example.com",
       "x-forwarded-proto": "https",
     });
     const allowed = new Set<string>();
     expect(
-      isOriginAllowed("https://mytube.example.com", req, allowed)
+      isOriginAllowed("https://aitube.example.com", req, allowed)
     ).toBe(true);
   });
 

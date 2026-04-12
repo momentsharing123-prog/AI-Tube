@@ -239,7 +239,7 @@ describe("databaseBackupService", () => {
 
       const exported = databaseBackupService.exportDatabase();
 
-      expect(exported).toContain("mytube.db");
+      expect(exported).toContain("aitube.db");
     });
 
     it("throws when database is missing", () => {
@@ -263,7 +263,7 @@ describe("databaseBackupService", () => {
 
     it("rejects when resolved db path is unsafe", () => {
       vi.mocked(isPathWithinDirectory as any).mockImplementation(
-        (candidate: string) => !candidate.includes("mytube.db")
+        (candidate: string) => !candidate.includes("aitube.db")
       );
 
       expect(() =>
@@ -720,7 +720,7 @@ describe("databaseBackupService", () => {
 
       expect(() =>
         databaseBackupService.mergeDatabase(Buffer.from("sqlite-bytes"))
-      ).toThrow("compatible MyTube tables");
+      ).toThrow("compatible AI Tube tables");
       expect(logger.error).toHaveBeenCalledWith(
         "Database merge failed:",
         expect.any(Error)
@@ -813,8 +813,8 @@ describe("databaseBackupService", () => {
 
     it("returns latest backup file by mtime", () => {
       vi.mocked(fs.readdirSync as any).mockReturnValue([
-        "mytube-backup-old.db.backup",
-        "mytube-backup-new.db.backup",
+        "aitube-backup-old.db.backup",
+        "aitube-backup-new.db.backup",
       ]);
       vi.mocked(fs.statSync as any).mockImplementation((targetPath: string) => {
         if (targetPath.includes("old")) {
@@ -827,7 +827,7 @@ describe("databaseBackupService", () => {
 
       expect(result).toEqual({
         exists: true,
-        filename: "mytube-backup-new.db.backup",
+        filename: "aitube-backup-new.db.backup",
         timestamp: "new",
       });
       expect(resolveSafePath).toHaveBeenCalled();
@@ -845,7 +845,7 @@ describe("databaseBackupService", () => {
 
     it("throws when backup path is unsafe", () => {
       vi.mocked(fs.readdirSync as any).mockReturnValue([
-        "mytube-backup-unsafe.db.backup",
+        "aitube-backup-unsafe.db.backup",
       ]);
       vi.mocked(fs.statSync as any).mockReturnValue({ mtimeMs: 500 });
       vi.mocked(isPathWithinDirectory as any).mockImplementation(
@@ -859,7 +859,7 @@ describe("databaseBackupService", () => {
 
     it("throws when backup file is not a valid sqlite database", () => {
       vi.mocked(fs.readdirSync as any).mockReturnValue([
-        "mytube-backup-corrupt.db.backup",
+        "aitube-backup-corrupt.db.backup",
       ]);
       vi.mocked(fs.statSync as any).mockReturnValue({ mtimeMs: 500 });
       vi.mocked(Database as any).mockImplementation(() => {
@@ -873,7 +873,7 @@ describe("databaseBackupService", () => {
 
     it("restores from latest backup and reinitializes DB", () => {
       vi.mocked(fs.readdirSync as any).mockReturnValue([
-        "mytube-backup-ok.db.backup",
+        "aitube-backup-ok.db.backup",
       ]);
       vi.mocked(fs.statSync as any).mockReturnValue({ mtimeMs: 500 });
 
@@ -891,8 +891,8 @@ describe("databaseBackupService", () => {
   describe("cleanupBackupDatabases", () => {
     it("deletes backups and records failures", () => {
       vi.mocked(fs.readdirSync as any).mockReturnValue([
-        "mytube-backup-a.db.backup",
-        "mytube-backup-b.db.backup",
+        "aitube-backup-a.db.backup",
+        "aitube-backup-b.db.backup",
         "note.txt",
       ]);
       vi.mocked(fs.unlinkSync as any)
@@ -906,7 +906,7 @@ describe("databaseBackupService", () => {
       expect(result.deleted).toBe(1);
       expect(result.failed).toBe(1);
       expect(result.errors).toHaveLength(1);
-      expect(result.errors[0]).toContain("Failed to delete mytube-backup-b.db.backup");
+      expect(result.errors[0]).toContain("Failed to delete aitube-backup-b.db.backup");
     });
 
     it("throws when listing directory fails", () => {

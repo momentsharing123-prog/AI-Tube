@@ -26,7 +26,7 @@
     boxShadowHover: string;
   }
 
-  const DOWNLOAD_BUTTON_TEXT = "📥 Download to MyTube";
+  const DOWNLOAD_BUTTON_TEXT = "📥 Download to AI Tube";
   const DOWNLOAD_BUTTON_PENDING_TEXT = "⏳ Sending...";
 
   const supportedSites: Record<string, SiteConfig> = {
@@ -127,14 +127,14 @@
   }
 
   function getDownloadButtonElement(): HTMLButtonElement | null {
-    const element = document.getElementById("mytube-download-btn");
+    const element = document.getElementById("aitube-download-btn");
     return element instanceof HTMLButtonElement ? element : null;
   }
 
   // Create download button
   function createDownloadButton(): HTMLButtonElement {
     const downloadButton = document.createElement("button");
-    downloadButton.id = "mytube-download-btn";
+    downloadButton.id = "aitube-download-btn";
     downloadButton.textContent = DOWNLOAD_BUTTON_TEXT;
 
     const isDark = isDarkTheme();
@@ -241,7 +241,7 @@
     type: NotificationType = "info",
   ): void {
     // Remove existing notification
-    const existing = document.getElementById("mytube-notification");
+    const existing = document.getElementById("aitube-notification");
     if (existing) {
       existing.remove();
     }
@@ -256,7 +256,7 @@
     const sanitizedMessage = message.replace(/[<>]/g, "");
 
     const notification = document.createElement("div");
-    notification.id = "mytube-notification";
+    notification.id = "aitube-notification";
     notification.textContent = sanitizedMessage;
     notification.style.cssText = `
       position: fixed;
@@ -337,7 +337,7 @@
 
   function addButton(): void {
     // Don't add if already exists
-    if (document.getElementById("mytube-download-btn")) {
+    if (document.getElementById("aitube-download-btn")) {
       return;
     }
 
@@ -351,7 +351,7 @@
   }
 
   function removeButton(): void {
-    const button = document.getElementById("mytube-download-btn");
+    const button = document.getElementById("aitube-download-btn");
     if (button) {
       button.remove();
     }

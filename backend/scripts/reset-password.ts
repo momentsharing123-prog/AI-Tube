@@ -35,7 +35,7 @@ const ROOT_DIR = process.cwd();
 const DATA_DIR = process.env.DATA_DIR || path.join(ROOT_DIR, "data");
 // Normalize and resolve paths to prevent path traversal
 const normalizedDataDir = path.normalize(path.resolve(DATA_DIR));
-const dbPath = path.normalize(path.resolve(normalizedDataDir, "mytube.db"));
+const dbPath = path.normalize(path.resolve(normalizedDataDir, "aitube.db"));
 
 // Validate that the database path is within the expected directory
 // This prevents path traversal attacks via environment variables
@@ -71,7 +71,7 @@ async function resetPassword(newPassword: string): Promise<void> {
   // Check if database exists
   if (!pathExistsTrustedSync(dbPath)) {
     console.error(`Error: Database not found at ${dbPath}`);
-    console.error("Please ensure the MyTube backend has been started at least once.");
+    console.error("Please ensure the AI Tube backend has been started at least once.");
     process.exit(1);
   }
 

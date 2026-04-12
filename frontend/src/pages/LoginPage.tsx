@@ -36,7 +36,7 @@ const LoginPage: React.FC = () => {
     const [alertOpen, setAlertOpen] = useState(false);
     const [alertTitle, setAlertTitle] = useState('');
     const [alertMessage, setAlertMessage] = useState('');
-    const [websiteName, setWebsiteName] = useState('MyTube');
+    const [websiteName, setWebsiteName] = useState('AI Tube');
     const { t } = useLanguage();
     const { login } = useAuth();
 
@@ -175,7 +175,7 @@ const LoginPage: React.FC = () => {
                 '  node dist/scripts/reset-password.js <new-password>',
                 '',
                 'Docker host',
-                '  docker exec -it mytube-backend node /app/dist/scripts/reset-password.js <new-password>',
+                '  docker exec -it aitube-backend node /app/dist/scripts/reset-password.js <new-password>',
                 '',
                 'Use the backend directory/container that has access to the persistent app data.',
             ].join('\n')
@@ -408,9 +408,9 @@ const LoginPage: React.FC = () => {
                                     <Typography variant="h4" sx={{ fontWeight: 'bold', lineHeight: 1 }}>
                                         {websiteName}
                                     </Typography>
-                                    {websiteName !== 'MyTube' && (
+                                    {websiteName !== 'AI Tube' && (
                                         <Typography variant="caption" color="text.secondary" sx={{ fontSize: '0.65rem', lineHeight: 1.2, mt: 0.25 }}>
-                                            Powered by MyTube
+                                            Powered by AI Tube
                                         </Typography>
                                     )}
                                 </Box>

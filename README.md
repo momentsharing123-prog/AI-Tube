@@ -43,7 +43,7 @@ Self-hosted downloader and player for YouTube, Bilibili, Twitch, MissAV, and [yt
 - **Cookie Management**: Support for uploading `cookies.txt` to enable downloading of age-restricted or premium content.
 - **yt-dlp Configuration**: Customize global `yt-dlp` arguments, network proxy, and other advanced settings via settings page.
 - **TMDB Integration**: Configure your TMDB API key in settings to enable automatic metadata scraping for local video files. The scraper intelligently parses filenames to extract titles and matches them with TMDB database.
-- **Cloudflare Tunnel Integration**: Built-in Cloudflare Tunnel support to easily expose your local MyTube instance to the internet without port forwarding.
+- **Cloudflare Tunnel Integration**: Built-in Cloudflare Tunnel support to easily expose your local AI Tube instance to the internet without port forwarding.
 - **Task Hooks**: Execute custom shell scripts at various stages of a download task (start, success, fail, cancel) for integration and automation. See [Task Hooks Guide](documents/en/hooks-guide.md).
 - **Telegram Notifications**: Receive instant notifications via Telegram bot when a download task succeeds or fails.
 - **Browser Extension**: A Chrome extension to download videos directly from your browser. Supports all yt-dlp supported sites.
@@ -74,12 +74,12 @@ Copy the skill into your Claude Code global skills folder:
 
 ```bash
 # macOS / Linux
-mkdir -p ~/.claude/skills/mytube-download
-cp .claude/skills/mytube-download/SKILL.md ~/.claude/skills/mytube-download/SKILL.md
+mkdir -p ~/.claude/skills/aitube-download
+cp .claude/skills/aitube-download/SKILL.md ~/.claude/skills/aitube-download/SKILL.md
 
 # Windows (PowerShell)
-New-Item -ItemType Directory -Force "$env:USERPROFILE\.claude\skills\mytube-download"
-Copy-Item ".claude\skills\mytube-download\SKILL.md" "$env:USERPROFILE\.claude\skills\mytube-download\SKILL.md"
+New-Item -ItemType Directory -Force "$env:USERPROFILE\.claude\skills\aitube-download"
+Copy-Item ".claude\skills\aitube-download\SKILL.md" "$env:USERPROFILE\.claude\skills\aitube-download\SKILL.md"
 ```
 
 ### Enable the API
@@ -87,14 +87,14 @@ Copy-Item ".claude\skills\mytube-download\SKILL.md" "$env:USERPROFILE\.claude\sk
 Set these environment variables before starting the container (see [docker/docker-compose.local.yml](docker/docker-compose.local.yml)):
 
 ```env
-MYTUBE_API_ENABLED=true
-MYTUBE_API_TOKEN=        # leave blank to auto-generate a token on first start
+AITUBE_API_ENABLED=true
+AITUBE_API_TOKEN=        # leave blank to auto-generate a token on first start
 ```
 
 On first start, the generated token is printed to the container log:
 
 ```bash
-docker logs mytube-api | grep "API access key"
+docker logs ai-tube-prod | grep "API access key"
 ```
 
 ### Use the skill
@@ -102,11 +102,11 @@ docker logs mytube-api | grep "API access key"
 In Claude Code, type:
 
 ```
-/mytube-download  download https://www.youtube.com/watch?v=xxxx as mp3
+/aitube-download  download https://www.youtube.com/watch?v=xxxx as mp3
 ```
 
 The skill will:
-1. Load (or prompt for) your API token and save it to `~/.mytube-token`
+1. Load (or prompt for) your API token and save it to `~/.aitube-token`
 2. Verify the token against the running container
 3. Submit the download job via the REST API
 4. Report back the download ID and let you poll progress on demand
@@ -169,7 +169,7 @@ PORT=5551
 # Optional: declare the admin trust boundary for this deployment.
 # Valid values: application | container | host
 # Default: container
-# MYTUBE_ADMIN_TRUST_LEVEL=container
+# AITUBE_ADMIN_TRUST_LEVEL=container
 ```
 
 Data and uploads are stored under `backend/data` and `backend/uploads` by default (relative to the backend working directory).
@@ -178,9 +178,9 @@ Copy `backend/.env.example` to `backend/.env` and adjust as needed. The frontend
 
 ## Database
 
-MyTube uses **SQLite** with **Drizzle ORM** for data persistence. The database is automatically created and migrated on first startup:
+AI Tube uses **SQLite** with **Drizzle ORM** for data persistence. The database is automatically created and migrated on first startup:
 
-- **Location**: `backend/data/mytube.db`
+- **Location**: `backend/data/aitube.db`
 - **Migrations**: Automatically run on server startup
 - **Schema**: Managed through Drizzle Kit migrations
 - **Legacy Support**: Migration tools available to convert from JSON-based storage

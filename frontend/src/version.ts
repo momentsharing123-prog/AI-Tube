@@ -1,11 +1,11 @@
 /**
- * MyTube Frontend Version Information
+ * AI Tube Frontend Version Information
  */
 
 const VERSION = {
   number: "1.0.0",
   buildDate: new Date().toISOString().split("T")[0],
-  name: "MyTube Frontend",
+  name: "AI Tube Frontend",
   displayVersion: function () {
     console.log(`
 ╔═══════════════════════════════════════════════╗

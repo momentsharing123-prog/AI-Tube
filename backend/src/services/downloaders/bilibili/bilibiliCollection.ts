@@ -251,18 +251,18 @@ export async function downloadCollection(
     const videos = videosResult.videos;
     logger.info(`Found ${videos.length} videos to download`);
 
-    // Create a MyTube collection for these videos
-    const mytubeCollection: Collection = {
+    // Create a AI Tube collection for these videos
+    const aitubeCollection: Collection = {
       id: Date.now().toString(),
       name: collectionName || title || "Collection",
       videos: [],
       createdAt: new Date().toISOString(),
       title: collectionName || title || "Collection",
     };
-    storageService.saveCollection(mytubeCollection);
-    const mytubeCollectionId = mytubeCollection.id;
+    storageService.saveCollection(aitubeCollection);
+    const aitubeCollectionId = aitubeCollection.id;
 
-    logger.info(`Created MyTube collection: ${mytubeCollection.name}`);
+    logger.info(`Created AI Tube collection: ${aitubeCollection.name}`);
 
     // Download each video sequentially
     for (let i = 0; i < videos.length; i++) {
@@ -293,13 +293,13 @@ export async function downloadCollection(
           title || "Collection",
           downloadId,
           undefined, // onStart
-          mytubeCollection.name || mytubeCollection.title // collectionName
+          aitubeCollection.name || aitubeCollection.title // collectionName
         );
 
         // If download was successful, add to collection
         if (result.success && result.videoData) {
           storageService.atomicUpdateCollection(
-            mytubeCollectionId,
+            aitubeCollectionId,
             (collection: Collection) => {
               collection.videos.push(result.videoData!.id);
               return collection;
@@ -335,7 +335,7 @@ export async function downloadCollection(
 
     return {
       success: true,
-      collectionId: mytubeCollectionId,
+      collectionId: aitubeCollectionId,
       videosDownloaded: videos.length,
     };
   } catch (error: any) {

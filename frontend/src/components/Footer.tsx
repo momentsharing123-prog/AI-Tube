@@ -32,7 +32,7 @@ const Footer = () => {
                             sx={{ display: 'flex', alignItems: 'center', mr: 2 }}
                         >
                             <GitHub sx={{ fontSize: 'inherit', mr: 0.5 }} />
-                            MyTube
+                            AI Tube
                         </Link>
                         <VersionInfo />
                     </Box>

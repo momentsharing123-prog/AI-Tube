@@ -14,7 +14,7 @@ describe('settings types', () => {
                 cloudDriveEnabled: false,
                 homeSidebarOpen: true,
                 subtitlesEnabled: true,
-                websiteName: "MyTube",
+                websiteName: "AI Tube",
                 itemsPerPage: 12,
                 showYoutubeSearch: true,
                 infiniteScroll: false,

@@ -1,5 +1,5 @@
 {
-  "name": "mytube",
+  "name": "aitube",
   "version": "1.9.12",
   "description": "Multiple platform video downloader and player application",
   "main": "index.js",

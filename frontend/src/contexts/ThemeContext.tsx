@@ -79,8 +79,8 @@ export const ThemeContextProvider: React.FC<{ children: React.ReactNode }> = ({ 
     // Listen for login events to refetch
     useEffect(() => {
         const onLogin = () => syncThemePreference();
-        window.addEventListener('mytube-login', onLogin);
-        return () => window.removeEventListener('mytube-login', onLogin);
+        window.addEventListener('aitube-login', onLogin);
+        return () => window.removeEventListener('aitube-login', onLogin);
     }, [queryClient, syncThemePreference]);
 
     const setPreference = async (newPreference: ThemePreference) => {

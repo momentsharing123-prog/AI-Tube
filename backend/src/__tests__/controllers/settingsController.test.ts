@@ -25,7 +25,7 @@ vi.mock('../../services/migrationService', () => ({
 }));
 
 describe('SettingsController', () => {
-  const originalTrustLevel = process.env.MYTUBE_ADMIN_TRUST_LEVEL;
+  const originalTrustLevel = process.env.AITUBE_ADMIN_TRUST_LEVEL;
   let req: Partial<Request>;
   let res: Partial<Response>;
   let json: any;
@@ -33,9 +33,9 @@ describe('SettingsController', () => {
 
   afterEach(() => {
     if (originalTrustLevel === undefined) {
-      delete process.env.MYTUBE_ADMIN_TRUST_LEVEL;
+      delete process.env.AITUBE_ADMIN_TRUST_LEVEL;
     } else {
-      process.env.MYTUBE_ADMIN_TRUST_LEVEL = originalTrustLevel;
+      process.env.AITUBE_ADMIN_TRUST_LEVEL = originalTrustLevel;
     }
   });
 
@@ -236,7 +236,7 @@ describe('SettingsController', () => {
     });
 
     it('should reject raw yt-dlp config changes in application trust mode', async () => {
-      process.env.MYTUBE_ADMIN_TRUST_LEVEL = 'application';
+      process.env.AITUBE_ADMIN_TRUST_LEVEL = 'application';
       req.body = { ytDlpConfig: '--exec echo hi' };
       (storageService.getSettings as any).mockReturnValue({
         ytDlpConfig: '',
@@ -249,7 +249,7 @@ describe('SettingsController', () => {
     });
 
     it('should reject mount directory changes unless trust level is host', async () => {
-      process.env.MYTUBE_ADMIN_TRUST_LEVEL = 'container';
+      process.env.AITUBE_ADMIN_TRUST_LEVEL = 'container';
       req.body = { mountDirectories: '/mnt/videos' };
       (storageService.getSettings as any).mockReturnValue({
         mountDirectories: '',
@@ -262,7 +262,7 @@ describe('SettingsController', () => {
     });
 
     it('should ignore unchanged gated fields when trust level is lower', async () => {
-      process.env.MYTUBE_ADMIN_TRUST_LEVEL = 'application';
+      process.env.AITUBE_ADMIN_TRUST_LEVEL = 'application';
       req.body = {
         ytDlpConfig: '--format best',
         theme: 'light',
@@ -282,7 +282,7 @@ describe('SettingsController', () => {
     });
 
     it('should treat proxyOnlyYoutube null as unchanged false in application trust mode', async () => {
-      process.env.MYTUBE_ADMIN_TRUST_LEVEL = 'application';
+      process.env.AITUBE_ADMIN_TRUST_LEVEL = 'application';
       req.body = {
         proxyOnlyYoutube: null,
         theme: 'light',

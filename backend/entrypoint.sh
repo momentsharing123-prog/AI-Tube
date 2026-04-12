@@ -1,15 +1,15 @@
 #!/bin/bash
 set -Eeuo pipefail
 
-DATA_DIR="${MYTUBE_DATA_DIR:-/app/data}"
-UPLOADS_DIR="${MYTUBE_UPLOADS_DIR:-/app/uploads}"
+DATA_DIR="${AITUBE_DATA_DIR:-/app/data}"
+UPLOADS_DIR="${AITUBE_UPLOADS_DIR:-/app/uploads}"
 HOME_DIR="${DATA_DIR}/.home"
 TARGET_UID="${PUID:-1000}"
 TARGET_GID="${PGID:-1000}"
-AUTO_FIX_PERMISSIONS="${MYTUBE_AUTO_FIX_PERMISSIONS:-1}"
+AUTO_FIX_PERMISSIONS="${AITUBE_AUTO_FIX_PERMISSIONS:-1}"
 
 log() {
-  printf '[mytube-entrypoint] %s\n' "$*"
+  printf '[aitube-entrypoint] %s\n' "$*"
 }
 
 die() {
@@ -30,7 +30,7 @@ is_truthy() {
   case "${1,,}" in
     1|true|yes|on) return 0 ;;
     0|false|no|off) return 1 ;;
-    *) die "MYTUBE_AUTO_FIX_PERMISSIONS must be one of: 1, 0, true, false, yes, no, on, off." ;;
+    *) die "AITUBE_AUTO_FIX_PERMISSIONS must be one of: 1, 0, true, false, yes, no, on, off." ;;
   esac
 }
 
@@ -100,7 +100,7 @@ if [ "$(id -u)" = "0" ]; then
     # single inaccessible file), the targeted calls may still fix the critical
     # paths needed for startup.
     reconcile_path_if_needed "$DATA_DIR" 1
-    reconcile_path_if_needed "$DATA_DIR/mytube.db"
+    reconcile_path_if_needed "$DATA_DIR/aitube.db"
     reconcile_path_if_needed "$UPLOADS_DIR" 1
     reconcile_path_if_needed "$UPLOADS_DIR/images-small" 1
     reconcile_path_if_needed "$UPLOADS_DIR/videos" 1
@@ -109,7 +109,7 @@ if [ "$(id -u)" = "0" ]; then
     reconcile_path_if_needed "$UPLOADS_DIR/avatars" 1
     reconcile_path_if_needed "$UPLOADS_DIR/cloud-thumbnail-cache" 1
   else
-    log "Skipping automatic permission reconciliation because MYTUBE_AUTO_FIX_PERMISSIONS=${AUTO_FIX_PERMISSIONS}"
+    log "Skipping automatic permission reconciliation because AITUBE_AUTO_FIX_PERMISSIONS=${AUTO_FIX_PERMISSIONS}"
   fi
 
   export HOME="$HOME_DIR"
@@ -118,20 +118,20 @@ if [ "$(id -u)" = "0" ]; then
   ensure_writable_as_target "$UPLOADS_DIR" "Uploads directory"
   ensure_writable_as_target "$HOME_DIR" "Runtime home directory"
 
-  if [ -e "$DATA_DIR/mytube.db" ]; then
-    ensure_writable_as_target "$DATA_DIR/mytube.db" "SQLite database file"
+  if [ -e "$DATA_DIR/aitube.db" ]; then
+    ensure_writable_as_target "$DATA_DIR/aitube.db" "SQLite database file"
   fi
 
   # Ensure /etc/passwd and /etc/group contain entries for PUID/PGID so that
   # child processes (npm, git, yt-dlp) do not warn about unknown uid/gid.
   if ! getent group "$TARGET_GID" > /dev/null 2>&1; then
-    groupadd -g "$TARGET_GID" -o mytube 2>/dev/null || true
+    groupadd -g "$TARGET_GID" -o aitube 2>/dev/null || true
   fi
   if ! getent passwd "$TARGET_UID" > /dev/null 2>&1; then
-    useradd -u "$TARGET_UID" -g "$TARGET_GID" -o -s /sbin/nologin -M -d "$HOME_DIR" mytube 2>/dev/null || true
+    useradd -u "$TARGET_UID" -g "$TARGET_GID" -o -s /sbin/nologin -M -d "$HOME_DIR" aitube 2>/dev/null || true
   fi
 
-  log "Starting MyTube as uid/gid ${TARGET_UID}:${TARGET_GID}"
+  log "Starting AI Tube as uid/gid ${TARGET_UID}:${TARGET_GID}"
   exec gosu "${TARGET_UID}:${TARGET_GID}" "$@"
 fi
 

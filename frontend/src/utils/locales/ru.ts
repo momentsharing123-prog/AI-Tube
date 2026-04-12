@@ -1,6 +1,6 @@
 export const ru = {
   // Header
-  myTube: "MyTube",
+  myTube: "AI Tube",
   manage: "Управление",
   settings: "Настройки",
   logout: "Выйти",
@@ -168,26 +168,26 @@ export const ru = {
   twitchClientId: "Идентификатор клиента Twitch",
   twitchClientSecret: "Секрет клиента Twitch",
   twitchSubscriptionCredentialsHelper:
-    "Клиентские данные Twitch необязательны. Без них MyTube переключается на опрос через yt-dlp в best-effort режиме, но с ними определение канала работает надежнее.",
+    "Клиентские данные Twitch необязательны. Без них AI Tube переключается на опрос через yt-dlp в best-effort режиме, но с ними определение канала работает надежнее.",
   twitchSubscriptionDescription:
-    "MyTube будет проверять этот канал Twitch на наличие новых VOD и загружать их после публикации на Twitch.",
+    "AI Tube будет проверять этот канал Twitch на наличие новых VOD и загружать их после публикации на Twitch.",
   twitchSubscriptionCredentialsMissing:
     "Не удалось оформить подписку Twitch. Клиентские данные необязательны, но рекомендуются для более надежных подписок на каналы.",
   twitchSubscriptionVodsOnly:
-    "MyTube загружает VOD Twitch после их публикации. Захват прямых эфиров в этой версии не поддерживается.",
+    "AI Tube загружает VOD Twitch после их публикации. Захват прямых эфиров в этой версии не поддерживается.",
   twitchClientHelpLink: "Как получить Twitch Client ID и Secret",
   twitchClientHelpTitle: "Получить Twitch Client ID и Secret",
   twitchClientHelpIntro:
     "Сначала нужно создать приложение Twitch в консоли разработчика Twitch.",
   twitchClientHelpStep1:
     "Откройте консоль разработчика Twitch и войдите под своей учетной записью Twitch.",
-  twitchClientHelpStep2: "Создайте новое приложение для MyTube.",
+  twitchClientHelpStep2: "Создайте новое приложение для AI Tube.",
   twitchClientHelpStep3:
     "Укажите OAuth Redirect URL. Если вы используете только серверные подписки, достаточно значения вроде http://localhost.",
   twitchClientHelpStep4:
     "После создания приложения скопируйте Client ID со страницы сведений о приложении.",
   twitchClientHelpStep5:
-    "Создайте или отобразите Client Secret, затем вставьте оба значения в настройки MyTube.",
+    "Создайте или отобразите Client Secret, затем вставьте оба значения в настройки AI Tube.",
   twitchClientHelpSecurity:
     "Храните Client Secret в секрете и не публикуйте его в скриншотах или на публичных страницах.",
   twitchDeveloperConsole: "Консоль разработчика Twitch",
@@ -273,7 +273,7 @@ export const ru = {
   // Task Hooks
   taskHooks: "Хуки Задач",
   taskHooksDescription:
-    "Выполняйте пользовательские shell-команды в определенные моменты жизненного цикла задачи. Доступные переменные окружения: MYTUBE_TASK_ID, MYTUBE_TASK_TITLE, MYTUBE_SOURCE_URL, MYTUBE_VIDEO_PATH.",
+    "Выполняйте пользовательские shell-команды в определенные моменты жизненного цикла задачи. Доступные переменные окружения: AITUBE_TASK_ID, AITUBE_TASK_TITLE, AITUBE_SOURCE_URL, AITUBE_VIDEO_PATH.",
   taskHooksWarning:
     "Предупреждение: Команды выполняются с правами сервера. Используйте с осторожностью.",
   deploymentSecurityTitle: "Модель безопасности развертывания",
@@ -309,15 +309,15 @@ export const ru = {
     "Будущие функции обслуживания путей хоста",
   deploymentSecurityConfigurationTitle: "Как настроить",
   deploymentSecurityConfigurationValuesNote:
-    "Используйте MYTUBE_ADMIN_TRUST_LEVEL со значением application, container или host. При отсутствии или некорректном значении MyTube возвращается к container.",
+    "Используйте AITUBE_ADMIN_TRUST_LEVEL со значением application, container или host. При отсутствии или некорректном значении AI Tube возвращается к container.",
   deploymentSecurityDockerConfigTitle: "Docker / Docker Compose",
   deploymentSecurityDockerConfigDescription:
-    "Задайте MYTUBE_ADMIN_TRUST_LEVEL в environment сервиса. При необходимости замените application на container или host.",
+    "Задайте AITUBE_ADMIN_TRUST_LEVEL в environment сервиса. При необходимости замените application на container или host.",
   deploymentSecurityDockerPermissionsNote:
     "Если вы обновляете установку с bind mounts, созданную до версии 1.9.0, убедитесь, что каталоги uploads и data на хосте доступны на запись для uid/gid 1000 (`node`). Это также исправит каталоги uploads/images-small, принадлежащие root, из-за которых генерация миниатюр или сканирование могут завершаться с EACCES.",
   deploymentSecurityLocalConfigTitle: "Локальный запуск из исходников",
   deploymentSecurityLocalConfigDescription:
-    "Экспортируйте MYTUBE_ADMIN_TRUST_LEVEL перед запуском MyTube или передайте переменную inline при запуске npm run dev.",
+    "Экспортируйте AITUBE_ADMIN_TRUST_LEVEL перед запуском AI Tube или передайте переменную inline при запуске npm run dev.",
   deploymentSecurityLocalEnvFileNote:
     "Ту же строку можно добавить и в backend/.env.",
   taskHooksPolicyNotice:
@@ -397,7 +397,7 @@ export const ru = {
   publicUrlHelper:
     "Публичный домен для доступа к файлам (напр. https://your-cloudflare-tunnel-domain.com). Если установлен, будет использоваться вместо URL API для доступа к файлам.",
   uploadPath: "Путь загрузки",
-  cloudDrivePathHelper: "Путь к каталогу в облаке, напр. /mytube-uploads",
+  cloudDrivePathHelper: "Путь к каталогу в облаке, напр. /aitube-uploads",
   scanPaths: "Пути сканирования",
   scanPathsHelper:
     "Один путь в строке. Видео будут сканироваться из этих путей. Если пусто, будет использоваться путь загрузки. Пример:\n/a/Фильмы\n/b/Документальные",
@@ -564,11 +564,11 @@ export const ru = {
   resetPasswordRecoveryMessage:
     "Восстановление пароля должно выполняться из среды бэкенда. Задайте новый пароль явно, а не полагайтесь на сгенерированные учетные данные в логах.",
   resetPasswordRecoveryGuide:
-    "Выберите команду, соответствующую вашей среде:\n\nОболочка бэкенда\n  node dist/scripts/reset-password.js <new-password>\n\nХост Docker\n  docker exec -it mytube-backend node /app/dist/scripts/reset-password.js <new-password>\n\nИспользуйте каталог или контейнер бэкенда, у которого есть доступ к постоянным данным приложения.",
+    "Выберите команду, соответствующую вашей среде:\n\nОболочка бэкенда\n  node dist/scripts/reset-password.js <new-password>\n\nХост Docker\n  docker exec -it aitube-backend node /app/dist/scripts/reset-password.js <new-password>\n\nИспользуйте каталог или контейнер бэкенда, у которого есть доступ к постоянным данным приложения.",
   resetPasswordDisabledInfo:
-    "Сброс пароля отключён в веб-интерфейсе. Чтобы сбросить пароль, выполните одну из следующих команд из среды бэкенда:\n\nОболочка бэкенда\n  node dist/scripts/reset-password.js <new-password>\n\nХост Docker\n  docker exec -it mytube-backend node /app/dist/scripts/reset-password.js <new-password>\n\nИспользуйте каталог или контейнер бэкенда, у которого есть доступ к постоянным данным приложения.",
+    "Сброс пароля отключён в веб-интерфейсе. Чтобы сбросить пароль, выполните одну из следующих команд из среды бэкенда:\n\nОболочка бэкенда\n  node dist/scripts/reset-password.js <new-password>\n\nХост Docker\n  docker exec -it aitube-backend node /app/dist/scripts/reset-password.js <new-password>\n\nИспользуйте каталог или контейнер бэкенда, у которого есть доступ к постоянным данным приложения.",
   resetPasswordScriptGuide:
-    "Чтобы вручную сбросить пароль, выполните одну из следующих команд и явно укажите новый пароль:\n\nОболочка бэкенда\n  node dist/scripts/reset-password.js <new-password>\n\nХост Docker\n  docker exec -it mytube-backend node /app/dist/scripts/reset-password.js <new-password>\n\nСкрипт не генерирует и не показывает случайные пароли.",
+    "Чтобы вручную сбросить пароль, выполните одну из следующих команд и явно укажите новый пароль:\n\nОболочка бэкенда\n  node dist/scripts/reset-password.js <new-password>\n\nХост Docker\n  docker exec -it aitube-backend node /app/dist/scripts/reset-password.js <new-password>\n\nСкрипт не генерирует и не показывает случайные пароли.",
   waitTimeMessage: "Пожалуйста, подождите {time} перед повторной попыткой.",
   tooManyAttempts: "Слишком много неудачных попыток.",
 
@@ -960,7 +960,7 @@ export const ru = {
   videoSkippedExists: "Видео уже существует, загрузка пропущена",
   videoSkippedDeleted: "Видео было ранее удалено, загрузка пропущена",
   downloading: "Скачивание...",
-  poweredBy: "Работает на MyTube",
+  poweredBy: "Работает на AI Tube",
   changeSettings: "Изменить настройки",
 
 
@@ -1043,7 +1043,7 @@ export const ru = {
   importDatabaseWarning:
     "Предупреждение: Импорт базы данных перезапишет все существующие данные. Убедитесь, что вы сначала экспортировали текущую базу данных в качестве резервной копии.",
   mergeDatabaseWarning:
-    "Объедините другую резервную копию MyTube с этим экземпляром. Существующие записи сохраняются, а из загруженной базы добавляются только отсутствующие записи.",
+    "Объедините другую резервную копию AI Tube с этим экземпляром. Существующие записи сохраняются, а из загруженной базы добавляются только отсутствующие записи.",
   mergeDatabaseContentsVideos:
     "Видео сопоставляются по исходному URL, существующие видео сохраняются.",
   mergeDatabaseContentsCollections:
@@ -1081,7 +1081,7 @@ export const ru = {
   databaseMergeFailed: "Не удалось объединить базу данных",
   cleanupBackupDatabases: "Очистить Резервные Копии Базы Данных",
   cleanupBackupDatabasesWarning:
-    "Предупреждение: Это навсегда удалит все файлы резервных копий базы данных (mytube-backup-*.db.backup), которые были созданы во время предыдущих импортов. Это действие нельзя отменить. Вы уверены, что хотите продолжить?",
+    "Предупреждение: Это навсегда удалит все файлы резервных копий базы данных (aitube-backup-*.db.backup), которые были созданы во время предыдущих импортов. Это действие нельзя отменить. Вы уверены, что хотите продолжить?",
   backupDatabasesCleanedUp: "Резервные копии базы данных успешно очищены",
 
   // History Filter

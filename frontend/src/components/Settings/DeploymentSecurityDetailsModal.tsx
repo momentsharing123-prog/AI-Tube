@@ -157,7 +157,7 @@ const DeploymentSecurityDetailsModal: React.FC<DeploymentSecurityDetailsModalPro
                         <Typography variant="body2" sx={{ mt: 0.5 }}>
                             {translateOrFallback(
                                 'deploymentSecurityConfigurationValuesNote',
-                                'Use MYTUBE_ADMIN_TRUST_LEVEL with application, container, or host. Missing or invalid values fall back to container.'
+                                'Use AITUBE_ADMIN_TRUST_LEVEL with application, container, or host. Missing or invalid values fall back to container.'
                             )}
                         </Typography>
                     </Box>
@@ -168,12 +168,12 @@ const DeploymentSecurityDetailsModal: React.FC<DeploymentSecurityDetailsModalPro
                         <Typography variant="body2" sx={{ mt: 0.5 }}>
                             {translateOrFallback(
                                 'deploymentSecurityDockerConfigDescription',
-                                'Set MYTUBE_ADMIN_TRUST_LEVEL in the service environment. Replace application with container or host as needed.'
+                                'Set AITUBE_ADMIN_TRUST_LEVEL in the service environment. Replace application with container or host as needed.'
                             )}
                         </Typography>
                         <Box component="pre" sx={codeBlockSx}>
 {`environment:
-  - MYTUBE_ADMIN_TRUST_LEVEL=application`}
+  - AITUBE_ADMIN_TRUST_LEVEL=application`}
                         </Box>
                         <Typography variant="body2" sx={{ mt: 1 }}>
                             {translateOrFallback(
@@ -182,7 +182,7 @@ const DeploymentSecurityDetailsModal: React.FC<DeploymentSecurityDetailsModalPro
                             )}
                         </Typography>
                         <Box component="pre" sx={codeBlockSx}>
-{`chown -R 1000:1000 /path/to/mytube/uploads /path/to/mytube/data`}
+{`chown -R 1000:1000 /path/to/aitube/uploads /path/to/aitube/data`}
                         </Box>
                     </Box>
                     <Box>
@@ -192,11 +192,11 @@ const DeploymentSecurityDetailsModal: React.FC<DeploymentSecurityDetailsModalPro
                         <Typography variant="body2" sx={{ mt: 0.5 }}>
                             {translateOrFallback(
                                 'deploymentSecurityLocalConfigDescription',
-                                'Export MYTUBE_ADMIN_TRUST_LEVEL before starting MyTube, or pass it inline when running npm run dev.'
+                                'Export AITUBE_ADMIN_TRUST_LEVEL before starting AI Tube, or pass it inline when running npm run dev.'
                             )}
                         </Typography>
                         <Box component="pre" sx={codeBlockSx}>
-{`MYTUBE_ADMIN_TRUST_LEVEL=application npm run dev`}
+{`AITUBE_ADMIN_TRUST_LEVEL=application npm run dev`}
                         </Box>
                         <Typography variant="body2" sx={{ mt: 1 }}>
                             {translateOrFallback(
@@ -206,7 +206,7 @@ const DeploymentSecurityDetailsModal: React.FC<DeploymentSecurityDetailsModalPro
                         </Typography>
                         <Box component="pre" sx={codeBlockSx}>
 {`# backend/.env
-MYTUBE_ADMIN_TRUST_LEVEL=application`}
+AITUBE_ADMIN_TRUST_LEVEL=application`}
                         </Box>
                     </Box>
                 </Box>

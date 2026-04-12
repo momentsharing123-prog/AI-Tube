@@ -67,7 +67,7 @@ export const getLatestVersion = async (req: Request, res: Response) => {
       {
         headers: {
           Accept: "application/vnd.github.v3+json",
-          "User-Agent": "MyTube-App",
+          "User-Agent": "AI-Tube-App",
         },
         timeout: 5000, // 5 second timeout
       }
@@ -86,7 +86,7 @@ export const getLatestVersion = async (req: Request, res: Response) => {
           {
             headers: {
               Accept: "application/vnd.github.v3+json",
-              "User-Agent": "MyTube-App",
+              "User-Agent": "AI-Tube-App",
             },
             timeout: 5000,
           }

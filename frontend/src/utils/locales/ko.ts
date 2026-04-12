@@ -1,6 +1,6 @@
 export const ko = {
   // Header
-  myTube: "MyTube",
+  myTube: "AI Tube",
   manage: "관리",
   settings: "설정",
   logout: "로그아웃",
@@ -165,26 +165,26 @@ export const ko = {
   twitchClientId: "Twitch 클라이언트 ID",
   twitchClientSecret: "Twitch 클라이언트 시크릿",
   twitchSubscriptionCredentialsHelper:
-    "Twitch 클라이언트 자격 증명은 선택 사항입니다. 없어도 MyTube가 yt-dlp 폴링의 best-effort 모드로 대체하지만, 입력하면 채널 감지가 더 안정적입니다.",
+    "Twitch 클라이언트 자격 증명은 선택 사항입니다. 없어도 AI Tube가 yt-dlp 폴링의 best-effort 모드로 대체하지만, 입력하면 채널 감지가 더 안정적입니다.",
   twitchSubscriptionDescription:
-    "MyTube는 이 Twitch 채널에 새 VOD가 올라왔는지 확인하고 Twitch에 게시된 뒤 다운로드합니다.",
+    "AI Tube는 이 Twitch 채널에 새 VOD가 올라왔는지 확인하고 Twitch에 게시된 뒤 다운로드합니다.",
   twitchSubscriptionCredentialsMissing:
     "Twitch 구독에 실패했습니다. 클라이언트 자격 증명은 필수는 아니지만, 더 안정적인 채널 구독을 위해 입력을 권장합니다.",
   twitchSubscriptionVodsOnly:
-    "MyTube는 Twitch VOD가 게시된 뒤에 다운로드합니다. 라이브 스트림 녹화는 이 버전에 포함되어 있지 않습니다.",
+    "AI Tube는 Twitch VOD가 게시된 뒤에 다운로드합니다. 라이브 스트림 녹화는 이 버전에 포함되어 있지 않습니다.",
   twitchClientHelpLink: "Twitch Client ID와 Secret을 얻는 방법",
   twitchClientHelpTitle: "Twitch Client ID와 Secret 얻기",
   twitchClientHelpIntro:
     "먼저 Twitch 개발자 콘솔에서 Twitch 애플리케이션을 만들어야 합니다.",
   twitchClientHelpStep1:
     "Twitch 개발자 콘솔을 열고 Twitch 계정으로 로그인하세요.",
-  twitchClientHelpStep2: "MyTube용 새 애플리케이션을 만드세요.",
+  twitchClientHelpStep2: "AI Tube용 새 애플리케이션을 만드세요.",
   twitchClientHelpStep3:
     "OAuth Redirect URL을 설정하세요. 서버 측 구독에만 사용할 경우 http://localhost 같은 값이면 충분합니다.",
   twitchClientHelpStep4:
     "앱이 생성되면 앱 상세 페이지에서 Client ID를 복사하세요.",
   twitchClientHelpStep5:
-    "Client Secret을 생성하거나 표시한 뒤 두 값을 MyTube 설정에 붙여 넣으세요.",
+    "Client Secret을 생성하거나 표시한 뒤 두 값을 AI Tube 설정에 붙여 넣으세요.",
   twitchClientHelpSecurity:
     "Client Secret은 비공개로 유지하고 스크린샷이나 공개 페이지에 공유하지 마세요.",
   twitchDeveloperConsole: "Twitch 개발자 콘솔",
@@ -271,7 +271,7 @@ export const ko = {
   // Task Hooks
   taskHooks: "태스크 훅",
   taskHooksDescription:
-    "태스크 수명 주기의 특정 지점에서 사용자 지정 셸 명령을 실행합니다. 사용 가능한 환경 변수: MYTUBE_TASK_ID, MYTUBE_TASK_TITLE, MYTUBE_SOURCE_URL, MYTUBE_VIDEO_PATH.",
+    "태스크 수명 주기의 특정 지점에서 사용자 지정 셸 명령을 실행합니다. 사용 가능한 환경 변수: AITUBE_TASK_ID, AITUBE_TASK_TITLE, AITUBE_SOURCE_URL, AITUBE_VIDEO_PATH.",
   taskHooksWarning:
     "경고: 명령은 서버 권한으로 실행됩니다. 주의해서 사용하십시오.",
   deploymentSecurityTitle: "배포 보안 모델",
@@ -307,15 +307,15 @@ export const ko = {
     "향후 호스트 경로 유지보수 기능",
   deploymentSecurityConfigurationTitle: "설정 방법",
   deploymentSecurityConfigurationValuesNote:
-    "MYTUBE_ADMIN_TRUST_LEVEL 에 application, container, host 중 하나를 사용하세요. 값이 없거나 잘못되면 container 로 되돌아갑니다.",
+    "AITUBE_ADMIN_TRUST_LEVEL 에 application, container, host 중 하나를 사용하세요. 값이 없거나 잘못되면 container 로 되돌아갑니다.",
   deploymentSecurityDockerConfigTitle: "Docker / Docker Compose",
   deploymentSecurityDockerConfigDescription:
-    "서비스 environment 에서 MYTUBE_ADMIN_TRUST_LEVEL 을 설정하세요. 필요에 따라 application 을 container 또는 host 로 바꾸면 됩니다.",
+    "서비스 environment 에서 AITUBE_ADMIN_TRUST_LEVEL 을 설정하세요. 필요에 따라 application 을 container 또는 host 로 바꾸면 됩니다.",
   deploymentSecurityDockerPermissionsNote:
     "v1.9.0 이전에 만든 bind mount 설치를 업그레이드하는 경우, 호스트 측 uploads 및 data 디렉터리가 uid/gid 1000(`node`)에 쓰기 가능해야 합니다. 이렇게 하면 root 소유의 uploads/images-small 디렉터리 때문에 썸네일 생성이나 스캔이 EACCES로 실패하는 문제도 함께 해결됩니다.",
   deploymentSecurityLocalConfigTitle: "로컬 소스 실행",
   deploymentSecurityLocalConfigDescription:
-    "MyTube 를 시작하기 전에 MYTUBE_ADMIN_TRUST_LEVEL 을 export 하거나 npm run dev 실행 시 인라인으로 전달하세요.",
+    "AI Tube 를 시작하기 전에 AITUBE_ADMIN_TRUST_LEVEL 을 export 하거나 npm run dev 실행 시 인라인으로 전달하세요.",
   deploymentSecurityLocalEnvFileNote:
     "같은 줄을 backend/.env 에 넣어도 됩니다.",
   taskHooksPolicyNotice:
@@ -395,7 +395,7 @@ export const ko = {
     "파일 액세스를 위한 공개 도메인 (예: https://your-cloudflare-tunnel-domain.com). 설정된 경우 파일 액세스에 API URL 대신 이것이 사용됩니다.",
   uploadPath: "업로드 경로",
   cloudDrivePathHelper:
-    "클라우드 드라이브 내 디렉토리 경로, 예: /mytube-uploads",
+    "클라우드 드라이브 내 디렉토리 경로, 예: /aitube-uploads",
   scanPaths: "스캔 경로",
   scanPathsHelper:
     "줄당 하나의 경로. 이 경로에서 동영상을 스캔합니다. 비어 있으면 업로드 경로를 사용합니다. 예:\n/a/영화\n/b/다큐멘터리",
@@ -558,11 +558,11 @@ export const ko = {
   resetPasswordRecoveryMessage:
     "비밀번호 복구는 백엔드 환경에서 수행해야 합니다. 로그에 생성된 자격 증명에 의존하지 말고 새 비밀번호를 명시적으로 설정하세요.",
   resetPasswordRecoveryGuide:
-    "환경에 맞는 명령을 선택하세요:\n\n백엔드 셸\n  node dist/scripts/reset-password.js <new-password>\n\nDocker 호스트\n  docker exec -it mytube-backend node /app/dist/scripts/reset-password.js <new-password>\n\n영구 앱 데이터에 접근할 수 있는 백엔드 디렉터리 또는 컨테이너를 사용하세요.",
+    "환경에 맞는 명령을 선택하세요:\n\n백엔드 셸\n  node dist/scripts/reset-password.js <new-password>\n\nDocker 호스트\n  docker exec -it aitube-backend node /app/dist/scripts/reset-password.js <new-password>\n\n영구 앱 데이터에 접근할 수 있는 백엔드 디렉터리 또는 컨테이너를 사용하세요.",
   resetPasswordDisabledInfo:
-    "웹 UI에서는 비밀번호 재설정이 비활성화되어 있습니다. 비밀번호를 재설정하려면 백엔드 환경에서 다음 명령 중 하나를 실행하세요:\n\n백엔드 셸\n  node dist/scripts/reset-password.js <new-password>\n\nDocker 호스트\n  docker exec -it mytube-backend node /app/dist/scripts/reset-password.js <new-password>\n\n영구 앱 데이터에 접근할 수 있는 백엔드 디렉터리 또는 컨테이너를 사용하세요.",
+    "웹 UI에서는 비밀번호 재설정이 비활성화되어 있습니다. 비밀번호를 재설정하려면 백엔드 환경에서 다음 명령 중 하나를 실행하세요:\n\n백엔드 셸\n  node dist/scripts/reset-password.js <new-password>\n\nDocker 호스트\n  docker exec -it aitube-backend node /app/dist/scripts/reset-password.js <new-password>\n\n영구 앱 데이터에 접근할 수 있는 백엔드 디렉터리 또는 컨테이너를 사용하세요.",
   resetPasswordScriptGuide:
-    "비밀번호를 수동으로 재설정하려면 다음 명령 중 하나를 실행하고 새 비밀번호를 명시적으로 지정하세요:\n\n백엔드 셸\n  node dist/scripts/reset-password.js <new-password>\n\nDocker 호스트\n  docker exec -it mytube-backend node /app/dist/scripts/reset-password.js <new-password>\n\n이 스크립트는 임의 비밀번호를 생성하거나 표시하지 않습니다.",
+    "비밀번호를 수동으로 재설정하려면 다음 명령 중 하나를 실행하고 새 비밀번호를 명시적으로 지정하세요:\n\n백엔드 셸\n  node dist/scripts/reset-password.js <new-password>\n\nDocker 호스트\n  docker exec -it aitube-backend node /app/dist/scripts/reset-password.js <new-password>\n\n이 스크립트는 임의 비밀번호를 생성하거나 표시하지 않습니다.",
   waitTimeMessage: "다시 시도하기 전에 {time} 기다려 주세요.",
   tooManyAttempts: "실패한 시도가 너무 많습니다.",
 
@@ -946,7 +946,7 @@ export const ko = {
   videoSkippedExists: "동영상이 이미 존재하여 다운로드를 건너뛰었습니다",
   videoSkippedDeleted: "동영상이 이전에 삭제되어 다운로드를 건너뛰었습니다",
   downloading: "다운로드 중...",
-  poweredBy: "MyTube 제공",
+  poweredBy: "AI Tube 제공",
   changeSettings: "설정 변경",
 
 
@@ -1029,7 +1029,7 @@ export const ko = {
   importDatabaseWarning:
     "경고: 데이터베이스를 가져오면 모든 기존 데이터가 덮어씌워집니다. 먼저 현재 데이터베이스를 백업으로 내보내야 합니다.",
   mergeDatabaseWarning:
-    "다른 MyTube 백업을 현재 인스턴스에 병합합니다. 기존 레코드는 유지되고 업로드한 백업에만 있는 레코드만 추가됩니다.",
+    "다른 AI Tube 백업을 현재 인스턴스에 병합합니다. 기존 레코드는 유지되고 업로드한 백업에만 있는 레코드만 추가됩니다.",
   mergeDatabaseContentsVideos: "동영상은 원본 URL로 매칭되며, 기존 동영상은 유지됩니다.",
   mergeDatabaseContentsCollections:
     "컬렉션과 컬렉션 내 비디오 관계는 같은 이름의 컬렉션으로 병합됩니다.",
@@ -1066,7 +1066,7 @@ export const ko = {
   databaseMergeFailed: "데이터베이스 병합 실패",
   cleanupBackupDatabases: "백업 데이터베이스 정리",
   cleanupBackupDatabasesWarning:
-    "경고: 이 작업은 이전 가져오기 중에 생성된 모든 백업 데이터베이스 파일(mytube-backup-*.db.backup)을 영구적으로 삭제합니다. 이 작업은 취소할 수 없습니다. 계속하시겠습니까?",
+    "경고: 이 작업은 이전 가져오기 중에 생성된 모든 백업 데이터베이스 파일(aitube-backup-*.db.backup)을 영구적으로 삭제합니다. 이 작업은 취소할 수 없습니다. 계속하시겠습니까?",
   backupDatabasesCleanedUp: "백업 데이터베이스 정리 성공",
 
   // History Filter

@@ -1,6 +1,6 @@
-# MyTube Downloader Chrome Extension
+# AI Tube Downloader Chrome Extension
 
-A Chrome extension that allows one-click downloading of videos from YouTube, Bilibili, MissAV, and **all yt-dlp supported sites** (see [yt-dlp supported sites](https://github.com/yt-dlp/yt-dlp/blob/master/supportedsites.md)) to your MyTube server.
+A Chrome extension that allows one-click downloading of videos from YouTube, Bilibili, MissAV, and **all yt-dlp supported sites** (see [yt-dlp supported sites](https://github.com/yt-dlp/yt-dlp/blob/master/supportedsites.md)) to your AI Tube server.
 
 ## Features
 
@@ -8,13 +8,13 @@ A Chrome extension that allows one-click downloading of videos from YouTube, Bil
 - ⚙️ Easy server configuration in extension options
 - 🔍 Connection testing to verify server accessibility
 - 🎯 Supports YouTube, Bilibili, MissAV, and all yt-dlp supported sites
-- 🚀 Works with both local and remote MyTube servers
+- 🚀 Works with both local and remote AI Tube servers
 
 ## Installation
 
 ### Quick Install (Recommended)
 
-1. Download the [mytube-extension-v1.0.2.zip](mytube-extension-v1.0.2.zip) file.
+1. Download the [aitube-extension-v1.0.2.zip](aitube-extension-v1.0.2.zip) file.
 2. Unzip the file to a folder.
 3. Open Chrome and navigate to `chrome://extensions/`
 4. Enable "Developer mode" (toggle in the top right)
@@ -41,8 +41,8 @@ A Chrome extension that allows one-click downloading of videos from YouTube, Bil
 
 1. Click the extension icon in your browser toolbar
 2. Click "⚙️ Settings" button
-3. Enter your MyTube server URL (e.g., `http://localhost:3000` or `https://your-server.com`)
-4. Optional: paste your API key from MyTube Security Settings
+3. Enter your AI Tube server URL (e.g., `http://localhost:3000` or `https://your-server.com`)
+4. Optional: paste your API key from AI Tube Security Settings
 5. Click "Test Connection" to verify the connection
 6. Click "Save Settings"
 
@@ -50,7 +50,7 @@ A Chrome extension that allows one-click downloading of videos from YouTube, Bil
 
 ### Option 1: Download Button on Video Pages
 
-When you visit a supported video site, a floating download button will appear in the bottom-right corner of the page. Simply click it to add the video to your MyTube download queue.
+When you visit a supported video site, a floating download button will appear in the bottom-right corner of the page. Simply click it to add the video to your AI Tube download queue.
 
 ### Option 2: Extension Popup
 
@@ -79,7 +79,7 @@ The extension requires icons in the `icons/` directory:
 - `icon48.png` (48x48 pixels)
 - `icon128.png` (128x128 pixels)
 
-You can create simple icons or use placeholder images. The icons should represent the MyTube downloader concept (e.g., a download arrow with a video icon).
+You can create simple icons or use placeholder images. The icons should represent the AI Tube downloader concept (e.g., a download arrow with a video icon).
 
 ## Development
 
@@ -129,7 +129,7 @@ chrome-extension/
 
 ### API Integration
 
-The extension communicates with your MyTube server using the following endpoints:
+The extension communicates with your AI Tube server using the following endpoints:
 
 - `GET /api/settings` - Used for connection testing
 - `POST /api/download` - Used to queue video downloads
@@ -142,7 +142,7 @@ When API key is configured, the extension only uses API key auth on `POST /api/d
 
 ### Connection Failed
 
-- Verify your MyTube server is running
+- Verify your AI Tube server is running
 - Check that the server URL is correct (including protocol: `http://` or `https://`)
 - Ensure there are no firewall or CORS restrictions blocking the connection
 - Try the "Test Connection" button in the options page
@@ -158,7 +158,7 @@ When API key is configured, the extension only uses API key auth on `POST /api/d
 
 - Verify the server connection is working (use "Test Connection")
 - Check the browser console for any error messages
-- Ensure your MyTube server is accessible from your network
+- Ensure your AI Tube server is accessible from your network
 
 ## Packaging for Chrome Web Store
 
@@ -171,7 +171,7 @@ npm run package
 This will:
 
 1. Build the TypeScript files to JavaScript
-2. Create a zip file named `mytube-extension-v{version}.zip`
+2. Create a zip file named `aitube-extension-v{version}.zip`
 3. Include only the necessary files (manifest.json, compiled JS files, HTML, CSS, icons, locales)
 4. Exclude development files (TypeScript sources, node_modules, etc.)
 
@@ -191,4 +191,4 @@ If you prefer to create the zip file manually:
 
 ## License
 
-Same license as the main MyTube project.
+Same license as the main AI Tube project.

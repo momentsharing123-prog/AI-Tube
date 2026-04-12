@@ -5,13 +5,13 @@ import {
 } from "../adminTrust";
 
 describe("adminTrust config", () => {
-  const originalTrustLevel = process.env.MYTUBE_ADMIN_TRUST_LEVEL;
+  const originalTrustLevel = process.env.AITUBE_ADMIN_TRUST_LEVEL;
 
   afterEach(() => {
     if (originalTrustLevel === undefined) {
-      delete process.env.MYTUBE_ADMIN_TRUST_LEVEL;
+      delete process.env.AITUBE_ADMIN_TRUST_LEVEL;
     } else {
-      process.env.MYTUBE_ADMIN_TRUST_LEVEL = originalTrustLevel;
+      process.env.AITUBE_ADMIN_TRUST_LEVEL = originalTrustLevel;
     }
   });
 
@@ -28,7 +28,7 @@ describe("adminTrust config", () => {
   });
 
   it("builds deployment security metadata from env", () => {
-    process.env.MYTUBE_ADMIN_TRUST_LEVEL = "host";
+    process.env.AITUBE_ADMIN_TRUST_LEVEL = "host";
 
     expect(getDeploymentSecurityModel()).toEqual({
       adminTrustLevel: "host",

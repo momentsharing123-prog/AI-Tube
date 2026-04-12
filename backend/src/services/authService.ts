@@ -9,7 +9,7 @@ if (!process.env.JWT_SECRET && process.env.NODE_ENV === "production") {
 
 const JWT_SECRET = process.env.JWT_SECRET || "default_development_secret_do_not_use_in_production";
 const JWT_EXPIRES_IN = "24h";
-const SESSION_COOKIE_NAME = "mytube_auth_session";
+const SESSION_COOKIE_NAME = "aitube_auth_session";
 const SESSION_MAX_AGE_MS = 24 * 60 * 60 * 1000;
 
 interface AuthSession {
@@ -119,7 +119,7 @@ export const clearAuthCookie = (res: Response): void => {
     path: "/",
   });
   // Legacy cleanup for older clients.
-  res.clearCookie("mytube_role", {
+  res.clearCookie("aitube_role", {
     httpOnly: false,
     secure: isSecure,
     sameSite: "lax",

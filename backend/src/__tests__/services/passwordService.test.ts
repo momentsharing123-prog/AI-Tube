@@ -32,7 +32,7 @@ const buildSettings = (overrides: Record<string, unknown> = {}) => ({
   visitorUserEnabled: true,
   password: BCRYPT_HASH,
   visitorPassword: "",
-  websiteName: "MyTube",
+  websiteName: "AI Tube",
   ...overrides,
 });
 
@@ -79,7 +79,7 @@ describe("passwordService", () => {
         visitorUserEnabled: true,
         isVisitorPasswordSet: true,
         passwordLoginAllowed: true,
-        websiteName: "MyTube",
+        websiteName: "AI Tube",
       });
     });
 

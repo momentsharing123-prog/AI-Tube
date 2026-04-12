@@ -12,16 +12,16 @@ interface TelegramStrings {
 }
 
 const translations: Record<string, TelegramStrings> = {
-  en: { taskSuccess: "Task Success", taskFailed: "Task Failed", title: "Title", url: "URL", error: "Error", testSuccess: "MyTube Telegram notification test successful!" },
-  zh: { taskSuccess: "任务成功", taskFailed: "任务失败", title: "标题", url: "链接", error: "错误", testSuccess: "MyTube Telegram 通知测试成功！" },
-  ja: { taskSuccess: "タスク成功", taskFailed: "タスク失敗", title: "タイトル", url: "URL", error: "エラー", testSuccess: "MyTube Telegram 通知テスト成功！" },
-  ko: { taskSuccess: "작업 성공", taskFailed: "작업 실패", title: "제목", url: "URL", error: "오류", testSuccess: "MyTube Telegram 알림 테스트 성공!" },
-  fr: { taskSuccess: "Tâche réussie", taskFailed: "Tâche échouée", title: "Titre", url: "URL", error: "Erreur", testSuccess: "Test de notification Telegram MyTube réussi !" },
-  de: { taskSuccess: "Aufgabe erfolgreich", taskFailed: "Aufgabe fehlgeschlagen", title: "Titel", url: "URL", error: "Fehler", testSuccess: "MyTube Telegram-Benachrichtigungstest erfolgreich!" },
-  es: { taskSuccess: "Tarea exitosa", taskFailed: "Tarea fallida", title: "Título", url: "URL", error: "Error", testSuccess: "¡Prueba de notificación de Telegram de MyTube exitosa!" },
-  pt: { taskSuccess: "Tarefa concluída", taskFailed: "Tarefa falhou", title: "Título", url: "URL", error: "Erro", testSuccess: "Teste de notificação Telegram do MyTube bem-sucedido!" },
-  ru: { taskSuccess: "Задача выполнена", taskFailed: "Задача не выполнена", title: "Название", url: "URL", error: "Ошибка", testSuccess: "Тест уведомлений Telegram MyTube успешен!" },
-  ar: { taskSuccess: "نجحت المهمة", taskFailed: "فشلت المهمة", title: "العنوان", url: "الرابط", error: "خطأ", testSuccess: "اختبار إشعارات تيليجرام MyTube ناجح!" },
+  en: { taskSuccess: "Task Success", taskFailed: "Task Failed", title: "Title", url: "URL", error: "Error", testSuccess: "AI Tube Telegram notification test successful!" },
+  zh: { taskSuccess: "任务成功", taskFailed: "任务失败", title: "标题", url: "链接", error: "错误", testSuccess: "AI Tube Telegram 通知测试成功！" },
+  ja: { taskSuccess: "タスク成功", taskFailed: "タスク失敗", title: "タイトル", url: "URL", error: "エラー", testSuccess: "AI Tube Telegram 通知テスト成功！" },
+  ko: { taskSuccess: "작업 성공", taskFailed: "작업 실패", title: "제목", url: "URL", error: "오류", testSuccess: "AI Tube Telegram 알림 테스트 성공!" },
+  fr: { taskSuccess: "Tâche réussie", taskFailed: "Tâche échouée", title: "Titre", url: "URL", error: "Erreur", testSuccess: "Test de notification Telegram AI Tube réussi !" },
+  de: { taskSuccess: "Aufgabe erfolgreich", taskFailed: "Aufgabe fehlgeschlagen", title: "Titel", url: "URL", error: "Fehler", testSuccess: "AI Tube Telegram-Benachrichtigungstest erfolgreich!" },
+  es: { taskSuccess: "Tarea exitosa", taskFailed: "Tarea fallida", title: "Título", url: "URL", error: "Error", testSuccess: "¡Prueba de notificación de Telegram de AI Tube exitosa!" },
+  pt: { taskSuccess: "Tarefa concluída", taskFailed: "Tarefa falhou", title: "Título", url: "URL", error: "Erro", testSuccess: "Teste de notificação Telegram do AI Tube bem-sucedido!" },
+  ru: { taskSuccess: "Задача выполнена", taskFailed: "Задача не выполнена", title: "Название", url: "URL", error: "Ошибка", testSuccess: "Тест уведомлений Telegram AI Tube успешен!" },
+  ar: { taskSuccess: "نجحت المهمة", taskFailed: "فشلت المهمة", title: "العنوان", url: "الرابط", error: "خطأ", testSuccess: "اختبار إشعارات تيليجرام AI Tube ناجح!" },
 };
 
 function getStrings(lang?: string): TelegramStrings {

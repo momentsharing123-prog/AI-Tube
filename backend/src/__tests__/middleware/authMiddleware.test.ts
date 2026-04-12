@@ -29,7 +29,7 @@ describe("authMiddleware", () => {
     req = { headers: {}, cookies: {} };
     res = {};
     next = vi.fn();
-    vi.mocked(getAuthCookieName).mockReturnValue("mytube_auth_session");
+    vi.mocked(getAuthCookieName).mockReturnValue("aitube_auth_session");
     vi.mocked(getSettings).mockReturnValue({
       apiKeyEnabled: false,
       apiKey: "",
@@ -38,7 +38,7 @@ describe("authMiddleware", () => {
 
   it("uses session cookie first and sets req.user", () => {
     const payload = { role: "admin", id: "u1" } as const;
-    req.cookies = { mytube_auth_session: "sid-1" };
+    req.cookies = { aitube_auth_session: "sid-1" };
     vi.mocked(getUserPayloadFromSession).mockReturnValue(payload as any);
 
     authMiddleware(req as Request, res as Response, next);
@@ -86,7 +86,7 @@ describe("authMiddleware", () => {
 
   it("tries bearer token if session exists but is not resolvable", () => {
     const payload = { role: "admin", id: "u3" } as const;
-    req.cookies = { mytube_auth_session: "expired-or-missing" };
+    req.cookies = { aitube_auth_session: "expired-or-missing" };
     req.headers = { authorization: "Bearer t2" };
     vi.mocked(getUserPayloadFromSession).mockReturnValue(null);
     vi.mocked(verifyToken).mockReturnValue(payload as any);
@@ -133,7 +133,7 @@ describe("authMiddleware", () => {
 
   it("prefers valid session auth even when API key is present", () => {
     const payload = { role: "admin", id: "u1" } as const;
-    req.cookies = { mytube_auth_session: "sid-1" };
+    req.cookies = { aitube_auth_session: "sid-1" };
     req.headers = { "x-api-key": "my-valid-key" };
     vi.mocked(getUserPayloadFromSession).mockReturnValue(payload as any);
     vi.mocked(getSettings).mockReturnValue({

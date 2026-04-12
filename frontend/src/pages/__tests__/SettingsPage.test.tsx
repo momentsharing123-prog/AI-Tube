@@ -736,7 +736,7 @@ describe('SettingsPage', () => {
     expect(screen.getByText('How to configure')).toBeInTheDocument();
     expect(screen.getByText('Docker / Docker Compose')).toBeInTheDocument();
     expect(screen.getByText('Local source run')).toBeInTheDocument();
-    expect(screen.getByText('MYTUBE_ADMIN_TRUST_LEVEL=application npm run dev')).toBeInTheDocument();
+    expect(screen.getByText('AITUBE_ADMIN_TRUST_LEVEL=application npm run dev')).toBeInTheDocument();
   });
 
   it('fails closed for container-only features until deployment security is loaded', () => {

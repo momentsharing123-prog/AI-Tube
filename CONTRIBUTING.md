@@ -1,8 +1,8 @@
-# Contributing to MyTube
+# Contributing to AI Tube
 
 First off, thanks for taking the time to contribute! 🎉
 
-The following is a set of guidelines for contributing to MyTube. These are mostly guidelines, not rules. Use your best judgment, and feel free to propose changes to this document in a pull request.
+The following is a set of guidelines for contributing to AI Tube. These are mostly guidelines, not rules. Use your best judgment, and feel free to propose changes to this document in a pull request.
 
 ## Getting Started
 
@@ -18,8 +18,8 @@ Before you begin, ensure you have the following installed:
 1.  **Fork the repository** on GitHub.
 2.  **Clone your fork** locally:
     ```bash
-    git clone https://github.com/your-username/mytube.git
-    cd mytube
+    git clone https://github.com/your-username/ai-tube.git
+    cd ai-tube
     ```
 3.  **Install dependencies** for both frontend and backend:
     ```bash

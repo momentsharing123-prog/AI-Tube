@@ -90,7 +90,7 @@ vi.mock("fs-extra", () => ({
 }));
 
 describe("scanController extra coverage", () => {
-  const originalTrustLevel = process.env.MYTUBE_ADMIN_TRUST_LEVEL;
+  const originalTrustLevel = process.env.AITUBE_ADMIN_TRUST_LEVEL;
   let randomUuidSpy: { mockRestore: () => void };
   let req: Partial<Request>;
   let res: Partial<Response>;
@@ -100,9 +100,9 @@ describe("scanController extra coverage", () => {
   afterEach(() => {
     randomUuidSpy.mockRestore();
     if (originalTrustLevel === undefined) {
-      delete process.env.MYTUBE_ADMIN_TRUST_LEVEL;
+      delete process.env.AITUBE_ADMIN_TRUST_LEVEL;
     } else {
-      process.env.MYTUBE_ADMIN_TRUST_LEVEL = originalTrustLevel;
+      process.env.AITUBE_ADMIN_TRUST_LEVEL = originalTrustLevel;
     }
   });
 
@@ -122,7 +122,7 @@ describe("scanController extra coverage", () => {
             typeof crypto.randomUUID
           >)
       );
-    process.env.MYTUBE_ADMIN_TRUST_LEVEL = "host";
+    process.env.AITUBE_ADMIN_TRUST_LEVEL = "host";
     json = vi.fn();
     status = vi.fn(() => ({ json }));
     req = { body: {} };

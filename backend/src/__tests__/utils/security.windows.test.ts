@@ -24,7 +24,7 @@ describe("security windows paths", () => {
 
   it("resolves absolute drive-letter paths without duplication", async () => {
     const security = await loadSecurityWithWin32Path();
-    const allowedDir = "D:\\Software\\MyTube\\backend\\uploads\\videos";
+    const allowedDir = "D:\\Software\\AI Tube\\backend\\uploads\\videos";
     const filePath = `${allowedDir}\\video_1772440055028.mp4`;
 
     const resolved = security.resolveSafePath(filePath, allowedDir);
@@ -35,7 +35,7 @@ describe("security windows paths", () => {
 
   it("validates drive-letter paths inside/outside allowed directory", async () => {
     const security = await loadSecurityWithWin32Path();
-    const allowedDir = "D:\\Software\\MyTube\\backend\\uploads\\videos";
+    const allowedDir = "D:\\Software\\AI Tube\\backend\\uploads\\videos";
     const insidePath = `${allowedDir}\\movie.mp4`;
     const outsidePath = "E:\\Other\\movie.mp4";
 

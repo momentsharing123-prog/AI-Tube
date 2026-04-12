@@ -13,7 +13,7 @@ See `../ICONS.md` for instructions on creating icons.
 
 ## Quick Option
 
-You can use the MyTube favicon as a base:
+You can use the AI Tube favicon as a base:
 1. Copy `../../frontend/public/favicon.png`
 2. Resize to the required sizes (16x16, 32x32, 48x48, 128x128)
 3. Save in this directory with the appropriate names

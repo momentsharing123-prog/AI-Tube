@@ -176,7 +176,7 @@ function getTMDBCredentialAuthType(
 function hashTMDBCredential(credential: string): string {
   return crypto.scryptSync(
     normalizeTMDBCredential(credential),
-    "mytube:tmdb-cache-key",
+    "aitube:tmdb-cache-key",
     32
   ).toString("hex");
 }

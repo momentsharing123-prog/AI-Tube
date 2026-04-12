@@ -12,7 +12,7 @@ interface LanguageContextType {
 
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
 
-const LANGUAGE_STORAGE_SLOT = 'mytube_language';
+const LANGUAGE_STORAGE_SLOT = 'aitube_language';
 
 const normalizeLanguage = (value: unknown): Language => {
     switch (value) {
@@ -101,8 +101,8 @@ export const LanguageProvider: React.FC<{ children: ReactNode }> = ({ children }
     // Refetch settings when user logs in (e.g. opening app in another browser)
     useEffect(() => {
         const onLogin = () => syncLanguagePreference();
-        window.addEventListener('mytube-login', onLogin);
-        return () => window.removeEventListener('mytube-login', onLogin);
+        window.addEventListener('aitube-login', onLogin);
+        return () => window.removeEventListener('aitube-login', onLogin);
     }, [queryClient, syncLanguagePreference]);
 
     const setLanguage = async (lang: Language) => {

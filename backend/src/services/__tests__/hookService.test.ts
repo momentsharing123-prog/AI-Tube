@@ -50,9 +50,9 @@ describe("HookService", () => {
       [expectedPath],
       expect.objectContaining({
         env: expect.objectContaining({
-          MYTUBE_TASK_ID: "123",
-          MYTUBE_TASK_TITLE: "Test Task",
-          MYTUBE_TASK_STATUS: "start",
+          AITUBE_TASK_ID: "123",
+          AITUBE_TASK_TITLE: "Test Task",
+          AITUBE_TASK_STATUS: "start",
         }),
       }),
     );
@@ -79,9 +79,9 @@ describe("HookService", () => {
       [path.join(HOOKS_DIR, "task_start.sh")],
       expect.objectContaining({
         env: expect.objectContaining({
-          MYTUBE_TASK_TITLE: "Test Task",
-          MYTUBE_SOURCE_URL: "https://example.com/watch SECOND",
-          MYTUBE_ERROR: "first line second line",
+          AITUBE_TASK_TITLE: "Test Task",
+          AITUBE_SOURCE_URL: "https://example.com/watch SECOND",
+          AITUBE_ERROR: "first line second line",
         }),
       }),
     );

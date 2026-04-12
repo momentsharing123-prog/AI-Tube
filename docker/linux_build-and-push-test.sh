@@ -16,8 +16,8 @@ VITE_BACKEND_URL=${VITE_BACKEND_URL:-"http://localhost:5551"}
 PLATFORMS=("linux/amd64")
 
 # Tag definitions for TEST
-BACKEND_TEST_AMD64="$USERNAME/mytube:backend-test-amd64"
-FRONTEND_TEST_AMD64="$USERNAME/mytube:frontend-test-amd64"
+BACKEND_TEST_AMD64="$USERNAME/aitube:backend-test-amd64"
+FRONTEND_TEST_AMD64="$USERNAME/aitube:frontend-test-amd64"
 
 # Ensure Docker is running
 echo "🔍 Checking if Docker is running..."
@@ -101,8 +101,8 @@ echo "Platforms: ${PLATFORMS[*]}"
 echo ""
 
 # Tag definitions for main test tags (without platform suffix)
-BACKEND_TEST="$USERNAME/mytube:backend-test"
-FRONTEND_TEST="$USERNAME/mytube:frontend-test"
+BACKEND_TEST="$USERNAME/aitube:backend-test"
+FRONTEND_TEST="$USERNAME/aitube:frontend-test"
 
 # Build backend for all platforms
 for platform in "${PLATFORMS[@]}"; do

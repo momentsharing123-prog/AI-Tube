@@ -27,7 +27,7 @@ describe('Footer', () => {
             </ThemeProvider>
         );
 
-        const link = screen.getByRole('link', { name: /MyTube/i });
+        const link = screen.getByRole('link', { name: /AI Tube/i });
         expect(link).toHaveAttribute('href', 'https://github.com/franklioxygen/MyTube');
     });
 

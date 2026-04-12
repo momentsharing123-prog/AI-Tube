@@ -1,6 +1,6 @@
 export const en = {
   // Header
-  myTube: "MyTube",
+  myTube: "AI Tube",
   manage: "Manage",
   settings: "Settings",
   logout: "Logout",
@@ -159,26 +159,26 @@ export const en = {
   twitchClientId: "Twitch Client ID",
   twitchClientSecret: "Twitch Client Secret",
   twitchSubscriptionCredentialsHelper:
-    "Twitch client credentials are optional. Without them, MyTube falls back to yt-dlp polling in best-effort mode. Adding credentials makes channel detection more reliable.",
+    "Twitch client credentials are optional. Without them, AI Tube falls back to yt-dlp polling in best-effort mode. Adding credentials makes channel detection more reliable.",
   twitchSubscriptionDescription:
-    "MyTube will check this Twitch channel for new VODs and download them after Twitch publishes them.",
+    "AI Tube will check this Twitch channel for new VODs and download them after Twitch publishes them.",
   twitchSubscriptionCredentialsMissing:
     "Twitch subscription failed. Client credentials are optional, but recommended for more reliable channel subscriptions.",
   twitchSubscriptionVodsOnly:
-    "MyTube downloads Twitch VODs after they are published. Live stream capture is not included in this version.",
+    "AI Tube downloads Twitch VODs after they are published. Live stream capture is not included in this version.",
   twitchClientHelpLink: "How to get Twitch Client ID and Secret",
   twitchClientHelpTitle: "Get Twitch Client ID and Secret",
   twitchClientHelpIntro:
     "You need to create a Twitch application in the Twitch Developer Console first.",
   twitchClientHelpStep1:
     "Open the Twitch Developer Console and sign in with your Twitch account.",
-  twitchClientHelpStep2: "Create a new application for MyTube.",
+  twitchClientHelpStep2: "Create a new application for AI Tube.",
   twitchClientHelpStep3:
     "Set an OAuth Redirect URL. If you only use server-side subscriptions, a placeholder such as http://localhost is sufficient.",
   twitchClientHelpStep4:
     "After the app is created, copy the Client ID from the application details page.",
   twitchClientHelpStep5:
-    "Generate or reveal a Client Secret, then paste both values into MyTube settings.",
+    "Generate or reveal a Client Secret, then paste both values into AI Tube settings.",
   twitchClientHelpSecurity:
     "Keep the Client Secret private and do not share it in screenshots or public pages.",
   twitchDeveloperConsole: "Twitch Developer Console",
@@ -263,7 +263,7 @@ export const en = {
   // Task Hooks
   taskHooks: "Task Hooks",
   taskHooksDescription:
-    "Execute custom shell commands at specific points in the task lifecycle. Available environment variables: MYTUBE_TASK_ID, MYTUBE_TASK_TITLE, MYTUBE_SOURCE_URL, MYTUBE_VIDEO_PATH.",
+    "Execute custom shell commands at specific points in the task lifecycle. Available environment variables: AITUBE_TASK_ID, AITUBE_TASK_TITLE, AITUBE_SOURCE_URL, AITUBE_VIDEO_PATH.",
   taskHooksWarning:
     "Warning: Commands run with the server's permissions. Use with caution.",
   deploymentSecurityTitle: "Deployment Security Model",
@@ -299,15 +299,15 @@ export const en = {
     "Future host-path maintenance features",
   deploymentSecurityConfigurationTitle: "How to configure",
   deploymentSecurityConfigurationValuesNote:
-    "Use MYTUBE_ADMIN_TRUST_LEVEL with application, container, or host. Missing or invalid values fall back to container.",
+    "Use AITUBE_ADMIN_TRUST_LEVEL with application, container, or host. Missing or invalid values fall back to container.",
   deploymentSecurityDockerConfigTitle: "Docker / Docker Compose",
   deploymentSecurityDockerConfigDescription:
-    "Set MYTUBE_ADMIN_TRUST_LEVEL in the service environment. Replace application with container or host as needed.",
+    "Set AITUBE_ADMIN_TRUST_LEVEL in the service environment. Replace application with container or host as needed.",
   deploymentSecurityDockerPermissionsNote:
     "If you are upgrading a bind-mounted installation created before v1.9.0, make sure the host-side uploads and data folders are writable by uid/gid 1000 (`node`). This also fixes root-owned uploads/images-small directories that can cause thumbnail generation or scans to fail with EACCES.",
   deploymentSecurityLocalConfigTitle: "Local source run",
   deploymentSecurityLocalConfigDescription:
-    "Export MYTUBE_ADMIN_TRUST_LEVEL before starting MyTube, or pass it inline when running npm run dev.",
+    "Export AITUBE_ADMIN_TRUST_LEVEL before starting AI Tube, or pass it inline when running npm run dev.",
   deploymentSecurityLocalEnvFileNote:
     "You can also put the same line in backend/.env.",
   taskHooksPolicyNotice:
@@ -383,7 +383,7 @@ export const en = {
   publicUrlHelper:
     "Public domain for accessing files (e.g., https://your-cloudflare-tunnel-domain.com). If set, this will be used instead of the API URL for file access.",
   uploadPath: "Upload Path",
-  cloudDrivePathHelper: "Directory path in cloud drive, e.g. /mytube-uploads",
+  cloudDrivePathHelper: "Directory path in cloud drive, e.g. /aitube-uploads",
   scanPaths: "Scan Paths",
   scanPathsHelper:
     "One path per line. Videos will be scanned from these paths. If empty, will use upload path. Example:\n/a/Movies\n/b/Documentaries",
@@ -545,11 +545,11 @@ export const en = {
   resetPasswordRecoveryMessage:
     "Password recovery must be performed from the backend environment. Set a new password explicitly instead of relying on generated credentials in logs.",
   resetPasswordRecoveryGuide:
-    "Choose the command that matches your environment:\n\nBackend shell\n  node dist/scripts/reset-password.js <new-password>\n\nDocker host\n  docker exec -it mytube-backend node /app/dist/scripts/reset-password.js <new-password>\n\nUse the backend directory/container that has access to the persistent app data.",
+    "Choose the command that matches your environment:\n\nBackend shell\n  node dist/scripts/reset-password.js <new-password>\n\nDocker host\n  docker exec -it aitube-backend node /app/dist/scripts/reset-password.js <new-password>\n\nUse the backend directory/container that has access to the persistent app data.",
   resetPasswordDisabledInfo:
-    "Password reset is disabled in the web UI. To reset your password, run one of the following commands from the backend environment:\n\nBackend shell\n  node dist/scripts/reset-password.js <new-password>\n\nDocker host\n  docker exec -it mytube-backend node /app/dist/scripts/reset-password.js <new-password>\n\nUse the backend directory/container that has access to the persistent app data.",
+    "Password reset is disabled in the web UI. To reset your password, run one of the following commands from the backend environment:\n\nBackend shell\n  node dist/scripts/reset-password.js <new-password>\n\nDocker host\n  docker exec -it aitube-backend node /app/dist/scripts/reset-password.js <new-password>\n\nUse the backend directory/container that has access to the persistent app data.",
   resetPasswordScriptGuide:
-    "To reset the password manually, run one of the following commands and provide the new password explicitly:\n\nBackend shell\n  node dist/scripts/reset-password.js <new-password>\n\nDocker host\n  docker exec -it mytube-backend node /app/dist/scripts/reset-password.js <new-password>\n\nThe script does not generate or display random passwords.",
+    "To reset the password manually, run one of the following commands and provide the new password explicitly:\n\nBackend shell\n  node dist/scripts/reset-password.js <new-password>\n\nDocker host\n  docker exec -it aitube-backend node /app/dist/scripts/reset-password.js <new-password>\n\nThe script does not generate or display random passwords.",
   waitTimeMessage: "Please wait {time} before trying again.",
   tooManyAttempts: "Too many failed attempts.",
   // Passkeys
@@ -915,7 +915,7 @@ export const en = {
   videoSkippedExists: "Video already exists, skipped download",
   videoSkippedDeleted: "Video was previously deleted, skipped download",
   downloading: "Downloading...",
-  poweredBy: "Powered by MyTube",
+  poweredBy: "Powered by AI Tube",
   changeSettings: "Change Settings",
 
   // Sorting
@@ -994,7 +994,7 @@ export const en = {
   importDatabaseWarning:
     "Warning: Importing a database will overwrite all existing data. Make sure to export your current database first as a backup.",
   mergeDatabaseWarning:
-    "Merge another MyTube backup into this instance. Existing records stay as-is, and only missing records from the uploaded backup are added.",
+    "Merge another AI Tube backup into this instance. Existing records stay as-is, and only missing records from the uploaded backup are added.",
   mergeDatabaseContentsVideos:
     "Videos are matched by source URL, and existing videos are kept.",
   mergeDatabaseContentsCollections:
@@ -1033,7 +1033,7 @@ export const en = {
   databaseMergeFailed: "Failed to merge database",
   cleanupBackupDatabases: "Clean Up Backup Databases",
   cleanupBackupDatabasesWarning:
-    "Warning: This will permanently delete all backup database files (mytube-backup-*.db.backup) that were created during previous imports. This action cannot be undone. Are you sure you want to continue?",
+    "Warning: This will permanently delete all backup database files (aitube-backup-*.db.backup) that were created during previous imports. This action cannot be undone. Are you sure you want to continue?",
   backupDatabasesCleanedUp: "Backup databases cleaned up successfully",
 
   // History Filter

@@ -36,7 +36,7 @@ describe('databaseBackupController', () => {
 
             expect(databaseBackupService.exportDatabase).toHaveBeenCalled();
             expect(mockRes.setHeader).toHaveBeenCalledWith('Content-Type', 'application/octet-stream');
-            expect(mockRes.setHeader).toHaveBeenCalledWith('Content-Disposition', expect.stringContaining('mytube-backup-'));
+            expect(mockRes.setHeader).toHaveBeenCalledWith('Content-Disposition', expect.stringContaining('aitube-backup-'));
             expect(sendFileMock).toHaveBeenCalledWith('/path/to/backup.db');
         });
     });

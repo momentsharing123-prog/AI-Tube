@@ -9,7 +9,7 @@ import { createVideoUploadStorage } from "../../utils/videoUpload";
 const tempDirectories: string[] = [];
 
 async function createTempDirectory(): Promise<string> {
-  const directory = await fs.mkdtemp(path.join(os.tmpdir(), "mytube-upload-"));
+  const directory = await fs.mkdtemp(path.join(os.tmpdir(), "aitube-upload-"));
   tempDirectories.push(directory);
   return directory;
 }

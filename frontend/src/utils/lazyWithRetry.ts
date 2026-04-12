@@ -1,6 +1,6 @@
 import { lazy, type ComponentType, type LazyExoticComponent } from 'react';
 
-const RETRY_STORAGE_PREFIX = 'mytube:lazy-retry';
+const RETRY_STORAGE_PREFIX = 'aitube:lazy-retry';
 const VITE_PRELOAD_RETRY_KEY = 'vite-preload';
 const DYNAMIC_IMPORT_ERROR_PATTERNS = [
     // Safari and some Chromium variants when an ESM chunk URL no longer exists.

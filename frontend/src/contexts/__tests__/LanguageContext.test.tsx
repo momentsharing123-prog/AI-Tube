@@ -120,7 +120,7 @@ describe('LanguageContext', () => {
     });
 
     it('initializes with stored language', async () => {
-        setLocalStorageMock({ initial: { mytube_language: 'es' } });
+        setLocalStorageMock({ initial: { aitube_language: 'es' } });
 
         const { result } = renderHook(() => useLanguage(), { wrapper: createWrapper() });
 
@@ -142,11 +142,11 @@ describe('LanguageContext', () => {
         const { result } = renderHook(() => useLanguage(), { wrapper: createWrapper() });
 
         await waitFor(() => expect(result.current.language).toBe('fr'));
-        expect(localStorageMock.setItem).toHaveBeenCalledWith('mytube_language', 'fr');
+        expect(localStorageMock.setItem).toHaveBeenCalledWith('aitube_language', 'fr');
     });
 
     it('falls back to en when backend returns an invalid language value', async () => {
-        const localStorageMock = setLocalStorageMock({ initial: { mytube_language: 'fr' } });
+        const localStorageMock = setLocalStorageMock({ initial: { aitube_language: 'fr' } });
         mockApiGet(async (url: string) => {
             if (url === '/settings/password-enabled') {
                 return { data: { loginRequired: false, authenticatedRole: 'admin' } };
@@ -160,7 +160,7 @@ describe('LanguageContext', () => {
         const { result } = renderHook(() => useLanguage(), { wrapper: createWrapper() });
 
         await waitFor(() => expect(result.current.language).toBe('en'));
-        expect(localStorageMock.setItem).toHaveBeenCalledWith('mytube_language', 'en');
+        expect(localStorageMock.setItem).toHaveBeenCalledWith('aitube_language', 'en');
     });
 
     it('logs when reading localStorage fails', () => {

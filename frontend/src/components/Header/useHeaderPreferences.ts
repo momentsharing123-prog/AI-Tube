@@ -18,7 +18,7 @@ export const useHeaderPreferences = (
     isAuthenticated: boolean,
     settingsData?: HeaderSettings
 ): HeaderPreferences => {
-    const [websiteNameState, setWebsiteNameState] = useState('MyTube');
+    const [websiteNameState, setWebsiteNameState] = useState('AI Tube');
     const [infiniteScrollState, setInfiniteScrollState] = useState(false);
     const [showThemeButtonState, setShowThemeButtonState] = useState(true);
 
@@ -54,14 +54,14 @@ export const useHeaderPreferences = (
     return useMemo(() => {
         if (isAuthenticated && settingsData) {
             return {
-                websiteName: settingsData.websiteName?.trim() || 'MyTube',
+                websiteName: settingsData.websiteName?.trim() || 'AI Tube',
                 infiniteScroll: settingsData.infiniteScroll ?? false,
                 showThemeButton: settingsData.showThemeButton !== false
             };
         }
 
         return {
-            websiteName: websiteNameState?.trim() || 'MyTube',
+            websiteName: websiteNameState?.trim() || 'AI Tube',
             infiniteScroll: infiniteScrollState,
             showThemeButton: showThemeButtonState
         };

@@ -49,7 +49,7 @@ jobs:
           (
             cd backend
             npm run start
-          ) > /tmp/mytube-lighthouse-backend.log 2>&1 &
+          ) > /tmp/aitube-lighthouse-backend.log 2>&1 &
           BACKEND_PID=$!
 
           cleanup() {

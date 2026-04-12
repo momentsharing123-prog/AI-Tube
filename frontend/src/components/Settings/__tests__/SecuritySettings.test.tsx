@@ -281,7 +281,7 @@ describe('SecuritySettings', () => {
     it('creates a passkey successfully and refetches passkeys', async () => {
         const user = userEvent.setup();
         vi.mocked(api.post)
-            .mockResolvedValueOnce({ data: { options: { rp: { name: 'MyTube' } }, challenge: 'challenge-1' } } as any)
+            .mockResolvedValueOnce({ data: { options: { rp: { name: 'AI Tube' } }, challenge: 'challenge-1' } } as any)
             .mockResolvedValueOnce({ data: { success: true } } as any);
         vi.mocked(startRegistration).mockResolvedValue({ id: 'cred-1' } as any);
 
@@ -296,10 +296,10 @@ describe('SecuritySettings', () => {
 
         await waitFor(() => {
             expect(api.post).toHaveBeenNthCalledWith(1, '/settings/passkeys/register', {
-                userName: 'MyTube User',
+                userName: 'AI Tube User',
             });
             expect(startRegistration).toHaveBeenCalledWith({
-                optionsJSON: { rp: { name: 'MyTube' } },
+                optionsJSON: { rp: { name: 'AI Tube' } },
             });
             expect(api.post).toHaveBeenNthCalledWith(2, '/settings/passkeys/register/verify', {
                 body: { id: 'cred-1' },
@@ -315,7 +315,7 @@ describe('SecuritySettings', () => {
         const user = userEvent.setup();
         const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
         vi.mocked(api.post).mockResolvedValueOnce({
-            data: { options: { rp: { name: 'MyTube' } }, challenge: 'challenge-1' },
+            data: { options: { rp: { name: 'AI Tube' } }, challenge: 'challenge-1' },
         } as any);
         vi.mocked(startRegistration).mockRejectedValue(new Error('Not allowed by user'));
 

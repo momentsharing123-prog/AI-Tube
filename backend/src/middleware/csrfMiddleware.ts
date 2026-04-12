@@ -6,7 +6,7 @@ import { getAuthCookieName } from "../services/authService";
 const CSRF_SECRET =
   process.env.CSRF_SECRET || crypto.randomBytes(32).toString("hex");
 
-const CSRF_COOKIE_NAME = "mytube_csrf";
+const CSRF_COOKIE_NAME = "aitube_csrf";
 
 const { doubleCsrfProtection, generateCsrfToken } = doubleCsrf({
   getSecret: () => CSRF_SECRET,

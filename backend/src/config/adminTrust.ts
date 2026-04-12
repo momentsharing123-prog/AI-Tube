@@ -41,7 +41,7 @@ export function parseAdminTrustLevel(rawValue?: string): AdminTrustLevel {
 
   if (normalized && normalized.length > 0) {
     logger.warn(
-      `[DeploymentSecurity] Invalid MYTUBE_ADMIN_TRUST_LEVEL="${rawValue}". Falling back to "${DEFAULT_ADMIN_TRUST_LEVEL}".`
+      `[DeploymentSecurity] Invalid AITUBE_ADMIN_TRUST_LEVEL="${rawValue}". Falling back to "${DEFAULT_ADMIN_TRUST_LEVEL}".`
     );
   }
 
@@ -49,7 +49,7 @@ export function parseAdminTrustLevel(rawValue?: string): AdminTrustLevel {
 }
 
 export function getAdminTrustLevel(): AdminTrustLevel {
-  return parseAdminTrustLevel(process.env.MYTUBE_ADMIN_TRUST_LEVEL);
+  return parseAdminTrustLevel(process.env.AITUBE_ADMIN_TRUST_LEVEL);
 }
 
 export function getDeploymentSecurityModel(): DeploymentSecurityModel {

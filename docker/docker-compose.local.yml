@@ -3,8 +3,8 @@ services:
     build:
       context: ..
       dockerfile: backend/Dockerfile
-    image: mytube-backend:local
-    container_name: mytube-api
+    image: aitube-backend:local
+    container_name: aitube-api
     volumes:
       - "E:/Youtube Download/uploads:/app/uploads"
       - "E:/Youtube Download/data:/app/data"
@@ -14,22 +14,22 @@ services:
       - PGID=${PGID:-1000}
       - JWT_SECRET=${JWT_SECRET}
       - CSRF_SECRET=${CSRF_SECRET}
-      - MYTUBE_AUTO_FIX_PERMISSIONS=1
-      - MYTUBE_ADMIN_TRUST_LEVEL=container
-      # API token config — set MYTUBE_API_ENABLED=true to activate
-      # Leave MYTUBE_API_TOKEN blank to auto-generate a token on first start
-      - MYTUBE_API_ENABLED=${MYTUBE_API_ENABLED:-false}
-      - MYTUBE_API_TOKEN=${MYTUBE_API_TOKEN:-}
+      - AITUBE_AUTO_FIX_PERMISSIONS=1
+      - AITUBE_ADMIN_TRUST_LEVEL=container
+      # API token config — set AITUBE_API_ENABLED=true to activate
+      # Leave AITUBE_API_TOKEN blank to auto-generate a token on first start
+      - AITUBE_API_ENABLED=${AITUBE_API_ENABLED:-false}
+      - AITUBE_API_TOKEN=${AITUBE_API_TOKEN:-}
     restart: unless-stopped
     networks:
-      - mytube-network
+      - aitube-network
 
   frontend:
     build:
       context: ../frontend
       dockerfile: Dockerfile
-    image: mytube-frontend:local
-    container_name: mytube-web
+    image: aitube-frontend:local
+    container_name: aitube-web
     ports:
       - "6001:5556"
     environment:
@@ -39,10 +39,10 @@ services:
       - backend
     restart: unless-stopped
     networks:
-      - mytube-network
+      - aitube-network
 
 networks:
-  mytube-network:
+  aitube-network:
     driver: bridge
     driver_opts:
       com.docker.network.bridge.enable_ip_masquerade: "true"

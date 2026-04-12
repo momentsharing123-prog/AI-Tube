@@ -12,7 +12,7 @@ interface ConsoleMethods {
 class ConsoleManager {
     private static originalConsole: ConsoleMethods | null = null;
     private static isDebugMode: boolean = false;
-    private static readonly STORAGE_KEY = 'mytube_debug_mode';
+    private static readonly STORAGE_KEY = 'aitube_debug_mode';
 
     static init() {
         // Save original methods

@@ -76,7 +76,7 @@ vi.mock('../../utils/security', async (importOriginal) => {
 vi.mock('child_process');
 
 describe('ScanController', () => {
-  const originalTrustLevel = process.env.MYTUBE_ADMIN_TRUST_LEVEL;
+  const originalTrustLevel = process.env.AITUBE_ADMIN_TRUST_LEVEL;
   let req: Partial<Request>;
   let res: Partial<Response>;
   let json: any;
@@ -84,15 +84,15 @@ describe('ScanController', () => {
 
   afterEach(() => {
     if (originalTrustLevel === undefined) {
-      delete process.env.MYTUBE_ADMIN_TRUST_LEVEL;
+      delete process.env.AITUBE_ADMIN_TRUST_LEVEL;
     } else {
-      process.env.MYTUBE_ADMIN_TRUST_LEVEL = originalTrustLevel;
+      process.env.AITUBE_ADMIN_TRUST_LEVEL = originalTrustLevel;
     }
   });
 
   beforeEach(() => {
     vi.clearAllMocks();
-    process.env.MYTUBE_ADMIN_TRUST_LEVEL = 'host';
+    process.env.AITUBE_ADMIN_TRUST_LEVEL = 'host';
     json = vi.fn();
     status = vi.fn().mockReturnValue({ json });
     req = {};
@@ -185,7 +185,7 @@ describe('ScanController', () => {
 
   describe('scanMountDirectories', () => {
     it('should reject scanning when deployment trust is not host', async () => {
-      process.env.MYTUBE_ADMIN_TRUST_LEVEL = 'container';
+      process.env.AITUBE_ADMIN_TRUST_LEVEL = 'container';
       req = {
         body: {
           directories: ['/mnt/videos'],
@@ -198,7 +198,7 @@ describe('ScanController', () => {
     });
 
     it('should reject relative mount directories', async () => {
-      process.env.MYTUBE_ADMIN_TRUST_LEVEL = 'host';
+      process.env.AITUBE_ADMIN_TRUST_LEVEL = 'host';
       req = {
         body: {
           directories: ['../unsafe/path'],

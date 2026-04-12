@@ -17,7 +17,7 @@ import { generateToken } from "./authService";
 import * as storageService from "./storageService";
 
 // RP (Relying Party) configuration
-const rpName = "MyTube";
+const rpName = "AI Tube";
 const rpID = process.env.RP_ID || "localhost"; // Default to localhost for development
 export const defaultOrigin = process.env.ORIGIN || `http://${rpID}:5550`; // Frontend origin
 const origin = defaultOrigin;
@@ -168,7 +168,7 @@ function savePasskeys(passkeys: StoredPasskey[]): void {
  * Generate registration options for creating a new passkey
  */
 export async function generatePasskeyRegistrationOptions(
-  userName: string = "MyTube User",
+  userName: string = "AI Tube User",
   originOverride?: string,
   rpIDOverride?: string
 ): Promise<{

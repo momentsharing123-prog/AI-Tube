@@ -31,7 +31,7 @@ export const exportDatabase = async (
   const dbPath = databaseBackupService.exportDatabase();
 
   // Generate filename with date and time
-  const filename = `mytube-backup-${generateTimestamp()}.db`;
+  const filename = `aitube-backup-${generateTimestamp()}.db`;
 
   // Set headers for file download
   res.setHeader("Content-Type", "application/octet-stream");

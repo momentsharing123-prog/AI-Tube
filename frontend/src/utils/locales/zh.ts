@@ -1,6 +1,6 @@
 export const zh = {
   // Header
-  myTube: "MyTube",
+  myTube: "AI Tube",
   manage: "管理",
   settings: "设置",
   logout: "退出",
@@ -159,23 +159,23 @@ export const zh = {
   twitchClientId: "Twitch 客户端 ID",
   twitchClientSecret: "Twitch 客户端密钥",
   twitchSubscriptionCredentialsHelper:
-    "Twitch 客户端凭据是可选的。不填写时，MyTube 会回退到 yt-dlp 轮询的尽力模式；填写后频道识别会更稳定。",
+    "Twitch 客户端凭据是可选的。不填写时，AI Tube 会回退到 yt-dlp 轮询的尽力模式；填写后频道识别会更稳定。",
   twitchSubscriptionDescription:
-    "MyTube 会检查这个 Twitch 频道是否有新的 VOD，并在 Twitch 发布后自动下载。",
+    "AI Tube 会检查这个 Twitch 频道是否有新的 VOD，并在 Twitch 发布后自动下载。",
   twitchSubscriptionCredentialsMissing:
     "Twitch 订阅失败。客户端凭据不是必需的，但建议填写以获得更稳定的频道订阅。",
   twitchSubscriptionVodsOnly:
-    "MyTube 只会在 Twitch VOD 发布后下载，本版本不包含直播录制功能。",
+    "AI Tube 只会在 Twitch VOD 发布后下载，本版本不包含直播录制功能。",
   twitchClientHelpLink: "如何获取 Twitch Client ID 和 Secret",
   twitchClientHelpTitle: "获取 Twitch Client ID 和 Secret",
   twitchClientHelpIntro: "你需要先在 Twitch 开发者控制台创建一个应用。",
   twitchClientHelpStep1: "打开 Twitch 开发者控制台，并使用你的 Twitch 账号登录。",
-  twitchClientHelpStep2: "为 MyTube 创建一个新的应用。",
+  twitchClientHelpStep2: "为 AI Tube 创建一个新的应用。",
   twitchClientHelpStep3:
     "填写 OAuth Redirect URL。如果你只使用服务端订阅，像 http://localhost 这样的占位地址也可以。",
   twitchClientHelpStep4: "应用创建完成后，在应用详情页复制 Client ID。",
   twitchClientHelpStep5:
-    "生成或显示 Client Secret，然后把这两个值粘贴到 MyTube 设置中。",
+    "生成或显示 Client Secret，然后把这两个值粘贴到 AI Tube 设置中。",
   twitchClientHelpSecurity:
     "请妥善保管 Client Secret，不要在截图或公开页面中泄露。",
   twitchDeveloperConsole: "Twitch 开发者控制台",
@@ -256,7 +256,7 @@ export const zh = {
   // Task Hooks
   taskHooks: "任务钩子",
   taskHooksDescription:
-    "在任务生命周期的特定时间点执行自定义 Shell 命令。可用环境变量: MYTUBE_TASK_ID, MYTUBE_TASK_TITLE, MYTUBE_SOURCE_URL, MYTUBE_VIDEO_PATH。",
+    "在任务生命周期的特定时间点执行自定义 Shell 命令。可用环境变量: AITUBE_TASK_ID, AITUBE_TASK_TITLE, AITUBE_SOURCE_URL, AITUBE_VIDEO_PATH。",
   taskHooksWarning: "警告：命令将以服务器权限运行。请谨慎使用。",
   deploymentSecurityTitle: "部署安全模型",
   deploymentSecurityLoading:
@@ -291,15 +291,15 @@ export const zh = {
     "未来宿主机路径维护类功能",
   deploymentSecurityConfigurationTitle: "如何配置",
   deploymentSecurityConfigurationValuesNote:
-    "使用 MYTUBE_ADMIN_TRUST_LEVEL 设置安全模型，可选值为 application、container、host。缺失或非法值会回退到 container。",
+    "使用 AITUBE_ADMIN_TRUST_LEVEL 设置安全模型，可选值为 application、container、host。缺失或非法值会回退到 container。",
   deploymentSecurityDockerConfigTitle: "Docker / Docker Compose",
   deploymentSecurityDockerConfigDescription:
-    "在服务的 environment 中设置 MYTUBE_ADMIN_TRUST_LEVEL。按需将 application 替换为 container 或 host。",
+    "在服务的 environment 中设置 AITUBE_ADMIN_TRUST_LEVEL。按需将 application 替换为 container 或 host。",
   deploymentSecurityDockerPermissionsNote:
     "如果你升级的是 v1.9.0 之前创建的 bind mount 部署，请确保宿主机上的 uploads 和 data 目录对 uid/gid 1000（`node`）可写。这也会一并修复由 root 创建的 uploads/images-small 目录，否则缩略图生成或扫描可能因 EACCES 失败。",
   deploymentSecurityLocalConfigTitle: "本地运行源码",
   deploymentSecurityLocalConfigDescription:
-    "启动 MyTube 前先导出 MYTUBE_ADMIN_TRUST_LEVEL，或在运行 npm run dev 时内联指定。",
+    "启动 AI Tube 前先导出 AITUBE_ADMIN_TRUST_LEVEL，或在运行 npm run dev 时内联指定。",
   deploymentSecurityLocalEnvFileNote:
     "也可以把同样一行写入 backend/.env。",
   taskHooksPolicyNotice:
@@ -375,7 +375,7 @@ export const zh = {
   publicUrlHelper:
     "用于访问文件的公开域名（例如：https://your-cloudflare-tunnel-domain.com）。如果设置，将使用此域名而不是 API 地址来访问文件。",
   uploadPath: "上传路径",
-  cloudDrivePathHelper: "云端存储中的目录路径，例如：/mytube-uploads",
+  cloudDrivePathHelper: "云端存储中的目录路径，例如：/aitube-uploads",
   scanPaths: "扫描路径",
   scanPathsHelper:
     "每行一个路径。系统将扫描这些路径下的视频。留空则使用默认上传路径。示例：\n/a/电影\n/b/纪录片",
@@ -535,11 +535,11 @@ export const zh = {
   resetPasswordRecoveryMessage:
     "密码恢复必须在后端环境中执行。请显式设置新密码，而不要依赖日志中生成的凭据。",
   resetPasswordRecoveryGuide:
-    "请选择适合您环境的命令：\n\n后端 Shell\n  node dist/scripts/reset-password.js <new-password>\n\nDocker 宿主机\n  docker exec -it mytube-backend node /app/dist/scripts/reset-password.js <new-password>\n\n请使用能够访问应用持久化数据的后端目录或容器。",
+    "请选择适合您环境的命令：\n\n后端 Shell\n  node dist/scripts/reset-password.js <new-password>\n\nDocker 宿主机\n  docker exec -it aitube-backend node /app/dist/scripts/reset-password.js <new-password>\n\n请使用能够访问应用持久化数据的后端目录或容器。",
   resetPasswordDisabledInfo:
-    "Web 界面中已禁用密码重置。要重置密码，请在后端环境中运行以下任一命令：\n\n后端 Shell\n  node dist/scripts/reset-password.js <new-password>\n\nDocker 宿主机\n  docker exec -it mytube-backend node /app/dist/scripts/reset-password.js <new-password>\n\n请使用能够访问应用持久化数据的后端目录或容器。",
+    "Web 界面中已禁用密码重置。要重置密码，请在后端环境中运行以下任一命令：\n\n后端 Shell\n  node dist/scripts/reset-password.js <new-password>\n\nDocker 宿主机\n  docker exec -it aitube-backend node /app/dist/scripts/reset-password.js <new-password>\n\n请使用能够访问应用持久化数据的后端目录或容器。",
   resetPasswordScriptGuide:
-    "要手动重置密码，请运行以下任一命令，并显式提供新密码：\n\n后端 Shell\n  node dist/scripts/reset-password.js <new-password>\n\nDocker 宿主机\n  docker exec -it mytube-backend node /app/dist/scripts/reset-password.js <new-password>\n\n该脚本不会生成或显示随机密码。",
+    "要手动重置密码，请运行以下任一命令，并显式提供新密码：\n\n后端 Shell\n  node dist/scripts/reset-password.js <new-password>\n\nDocker 宿主机\n  docker exec -it aitube-backend node /app/dist/scripts/reset-password.js <new-password>\n\n该脚本不会生成或显示随机密码。",
   waitTimeMessage: "请等待 {time} 后再试。",
   tooManyAttempts: "失败尝试次数过多。",
 
@@ -907,7 +907,7 @@ export const zh = {
   videoSkippedExists: "视频已存在，跳过下载",
   videoSkippedDeleted: "视频曾被删除，跳过下载",
   downloading: "下载中...",
-  poweredBy: "由 MyTube 提供支持",
+  poweredBy: "由 AI Tube 提供支持",
   changeSettings: "更改设置",
 
 
@@ -986,7 +986,7 @@ export const zh = {
   importDatabaseWarning:
     "警告：导入数据库将覆盖所有现有数据。请确保首先导出当前数据库作为备份。",
   mergeDatabaseWarning:
-    "将另一个 MyTube 备份合并到当前实例。现有记录会保留，仅添加上传备份中缺失的记录。",
+    "将另一个 AI Tube 备份合并到当前实例。现有记录会保留，仅添加上传备份中缺失的记录。",
   mergeDatabaseContentsVideos:
     "视频按来源 URL 匹配合并，已存在的视频会保留。",
   mergeDatabaseContentsCollections:
@@ -1023,7 +1023,7 @@ export const zh = {
   databaseMergeFailed: "数据库合并失败",
   cleanupBackupDatabases: "清理备份数据库",
   cleanupBackupDatabasesWarning:
-    "警告：此操作将永久删除所有在之前导入时创建的备份数据库文件（mytube-backup-*.db.backup）。此操作无法撤销。您确定要继续吗？",
+    "警告：此操作将永久删除所有在之前导入时创建的备份数据库文件（aitube-backup-*.db.backup）。此操作无法撤销。您确定要继续吗？",
   backupDatabasesCleanedUp: "备份数据库清理成功",
 
   // History Filter

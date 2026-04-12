@@ -98,7 +98,7 @@ const DEFAULT_CONFIG = `# yt-dlp Configuration File
 # Broken in: Safari, iOS, QuickTime, macOS Preview
 # --merge-output-format mp4
 
-# Force WebM container (default for 4K+ in MyTube)
+# Force WebM container (default for 4K+ in AI Tube)
 # Best compatibility for VP9/AV1 codecs, works in all modern browsers
 # --merge-output-format webm
 
@@ -191,7 +191,7 @@ const DEFAULT_CONFIG = `# yt-dlp Configuration File
 # BILIBILI SPECIFIC
 # ═══════════════════════════════════════════════════════════════════════════════
 
-# Note: By default, MyTube prefers H.264 codec for Safari compatibility
+# Note: By default, AI Tube prefers H.264 codec for Safari compatibility
 # Bilibili may serve HEVC (H.265) which doesn't play in Safari
 
 # Force H.264 codec (best compatibility with Safari/iOS)

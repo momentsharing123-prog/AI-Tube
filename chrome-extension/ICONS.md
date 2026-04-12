@@ -1,4 +1,4 @@
-# Creating Icons for MyTube Downloader Extension
+# Creating Icons for AI Tube Downloader Extension
 
 The extension requires icons in PNG format. You can create simple icons using any image editor or online tool.
 
@@ -37,9 +37,9 @@ For testing purposes, you can create simple colored squares with text:
 - Fill with the gradient color (#667eea to #764ba2)
 - Add a simple "M" or download arrow symbol
 
-### Option 4: Copy from MyTube Frontend
+### Option 4: Copy from AI Tube Frontend
 
-You can use the MyTube favicon as a base:
+You can use the AI Tube favicon as a base:
 - Copy `frontend/public/favicon.png` or `frontend/public/favicon.svg`
 - Convert/Resize to the required PNG sizes
 - Save in the `icons/` directory

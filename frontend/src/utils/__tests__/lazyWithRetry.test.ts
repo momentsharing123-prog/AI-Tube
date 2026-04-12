@@ -64,7 +64,7 @@ describe('lazyWithRetry', () => {
 
         expect(reload).toHaveBeenCalledTimes(1);
         expect(storage.setItem).toHaveBeenCalledWith(
-            'mytube:lazy-retry:video-player',
+            'aitube:lazy-retry:video-player',
             'true',
         );
         expect(settled).not.toHaveBeenCalled();
@@ -74,7 +74,7 @@ describe('lazyWithRetry', () => {
         const storage = createStorageMock();
         const reload = vi.fn();
 
-        storage.setItem('mytube:lazy-retry:video-player', 'true');
+        storage.setItem('aitube:lazy-retry:video-player', 'true');
 
         await expect(
             retryDynamicImport(
@@ -89,14 +89,14 @@ describe('lazyWithRetry', () => {
 
         expect(reload).not.toHaveBeenCalled();
         expect(storage.removeItem).toHaveBeenCalledWith(
-            'mytube:lazy-retry:video-player',
+            'aitube:lazy-retry:video-player',
         );
     });
 
     it('clears stale retry markers after a successful import', async () => {
         const storage = createStorageMock();
 
-        storage.setItem('mytube:lazy-retry:video-player', 'true');
+        storage.setItem('aitube:lazy-retry:video-player', 'true');
 
         await expect(
             retryDynamicImport(
@@ -107,7 +107,7 @@ describe('lazyWithRetry', () => {
         ).resolves.toEqual({ default: 'VideoPlayer' });
 
         expect(storage.removeItem).toHaveBeenCalledWith(
-            'mytube:lazy-retry:video-player',
+            'aitube:lazy-retry:video-player',
         );
     });
 
@@ -155,7 +155,7 @@ describe('lazyWithRetry', () => {
         expect(window.dispatchEvent(event)).toBe(false);
         expect(reload).toHaveBeenCalledTimes(1);
         expect(storage.setItem).toHaveBeenCalledWith(
-            'mytube:lazy-retry:vite-preload',
+            'aitube:lazy-retry:vite-preload',
             'true',
         );
     });
@@ -164,7 +164,7 @@ describe('lazyWithRetry', () => {
         const storage = createStorageMock();
         const reload = vi.fn();
 
-        storage.setItem('mytube:lazy-retry:vite-preload', 'true');
+        storage.setItem('aitube:lazy-retry:vite-preload', 'true');
         cleanup = registerVitePreloadErrorRecovery({ storage, reload });
 
         const event = new Event('vite:preloadError', { cancelable: true }) as Event & {
@@ -175,7 +175,7 @@ describe('lazyWithRetry', () => {
         expect(window.dispatchEvent(event)).toBe(true);
         expect(reload).not.toHaveBeenCalled();
         expect(storage.removeItem).toHaveBeenCalledWith(
-            'mytube:lazy-retry:vite-preload',
+            'aitube:lazy-retry:vite-preload',
         );
     });
 });

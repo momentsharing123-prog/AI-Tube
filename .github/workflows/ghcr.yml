@@ -51,8 +51,8 @@ jobs:
             type=sha,format=short
           labels: |
             org.opencontainers.image.source=${{ github.server_url }}/${{ github.repository }}
-            org.opencontainers.image.title=MyTube
-            org.opencontainers.image.description=MyTube single image with backend API and frontend UI
+            org.opencontainers.image.title=AI Tube
+            org.opencontainers.image.description=AI Tube single image with backend API and frontend UI
 
       - name: Build and push image
         id: build

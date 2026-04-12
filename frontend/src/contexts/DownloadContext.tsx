@@ -14,7 +14,7 @@ import {
     isTwitchChannelUrl,
     normalizeTwitchChannelUrlOrNull,
 } from '../utils/twitch';
-const DOWNLOAD_STATUS_KEY = 'mytube_download_status';
+const DOWNLOAD_STATUS_KEY = 'aitube_download_status';
 const DOWNLOAD_TIMEOUT = 5 * 60 * 1000; // 5 minutes in milliseconds
 const ACTIVE_POLL_INTERVAL_MS = 2000;
 const IDLE_POLL_INTERVAL_MS = 10000;

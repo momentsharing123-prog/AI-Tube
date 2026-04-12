@@ -13,7 +13,7 @@ import {
 } from "../utils/security";
 import { configureDatabase, db, sqlite } from "./index";
 
-const DB_FILENAME = "mytube.db";
+const DB_FILENAME = "aitube.db";
 
 function normalizeError(error: unknown): Error {
   return error instanceof Error ? error : new Error(String(error));
@@ -40,10 +40,10 @@ function buildPermissionFixHint(): string {
   const { uid, gid } = getCurrentIdentity();
 
   if (typeof uid === "number" && typeof gid === "number") {
-    return `If this is a Docker bind mount, fix the host-side permissions, for example: chown -R ${uid}:${gid} /path/to/mytube/data /path/to/mytube/uploads.`;
+    return `If this is a Docker bind mount, fix the host-side permissions, for example: chown -R ${uid}:${gid} /path/to/aitube/data /path/to/aitube/uploads.`;
   }
 
-  return "Ensure the data directory and database file are writable by the user running MyTube.";
+  return "Ensure the data directory and database file are writable by the user running AI Tube.";
 }
 
 function getCauseMessage(error: unknown): string | undefined {
@@ -78,11 +78,11 @@ function buildReadonlyDatabaseMessage(
       ? ` Underlying error: ${errorMessages.join(" | ")}.`
       : "";
 
-  return `${description} is not writable: ${targetPath}. MyTube is running as ${identity} and cannot update the SQLite database.${ownershipText} ${buildPermissionFixHint()}${errorText}`.trim();
+  return `${description} is not writable: ${targetPath}. AI Tube is running as ${identity} and cannot update the SQLite database.${ownershipText} ${buildPermissionFixHint()}${errorText}`.trim();
 }
 
 function ensureDatabaseWritable(dbPath: string): void {
-  const probePath = path.join(DATA_DIR, `.mytube-write-probe-${process.pid}`);
+  const probePath = path.join(DATA_DIR, `.aitube-write-probe-${process.pid}`);
 
   try {
     writeFileSafeSync(probePath, DATA_DIR, "");

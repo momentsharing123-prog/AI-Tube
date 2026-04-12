@@ -10,22 +10,22 @@ services:
   backend:
     image: franklioxygen/mytube:backend-latest
     pull_policy: always
-    container_name: mytube-backend
+    container_name: aitube-backend
     network_mode: host
     volumes:
-      - /share/CACHEDEV2_DATA/Medias/MyTube/uploads:/app/uploads
-      - /share/CACHEDEV2_DATA/Medias/MyTube/data:/app/data
+      - /share/CACHEDEV2_DATA/Medias/AI Tube/uploads:/app/uploads
+      - /share/CACHEDEV2_DATA/Medias/AI Tube/data:/app/data
     environment:
       - PORT=5551
       # Optional: match the backend process uid/gid to the host-side file ownership.
       - PUID=${PUID:-1000}
       - PGID=${PGID:-1000}
       # Set to 0 to disable the startup chown pass for bind-mounted data/uploads.
-      - MYTUBE_AUTO_FIX_PERMISSIONS=${MYTUBE_AUTO_FIX_PERMISSIONS:-1}
+      - AITUBE_AUTO_FIX_PERMISSIONS=${AITUBE_AUTO_FIX_PERMISSIONS:-1}
       # Optional: declare the admin trust boundary for this deployment.
       # Valid values: application | container | host
       # Docs: documents/en/deployment-security-model.md
-      - MYTUBE_ADMIN_TRUST_LEVEL=container
+      - AITUBE_ADMIN_TRUST_LEVEL=container
     restart: unless-stopped
     # Note: In host mode, the container uses the host's network stack directly
     # The backend will be accessible at localhost:5551 on the host
@@ -33,7 +33,7 @@ services:
   frontend:
     image: franklioxygen/mytube:frontend-latest
     pull_policy: always
-    container_name: mytube-frontend
+    container_name: aitube-frontend
     ports:
       - "5556:5556"
     environment:
@@ -49,12 +49,12 @@ services:
       - backend
     restart: unless-stopped
     networks:
-      - mytube-network
+      - aitube-network
 
 volumes:
   backend-data:
     driver: local
 
 networks:
-  mytube-network:
+  aitube-network:
     driver: bridge

@@ -43,7 +43,7 @@ vi.mock('../../../hooks/useSettings', () => ({
 
 vi.mock('../useHeaderPreferences', () => ({
     useHeaderPreferences: () => ({
-        websiteName: 'MyTube',
+        websiteName: 'AI Tube',
         infiniteScroll: true,
         showThemeButton: true,
     }),

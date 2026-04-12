@@ -76,7 +76,7 @@ export const defaultSettings: Settings = {
   cloudDriveScanPaths: "",
   homeSidebarOpen: true,
   subtitlesEnabled: true,
-  websiteName: "MyTube",
+  websiteName: "AI Tube",
   itemsPerPage: 12,
   showYoutubeSearch: true,
   infiniteScroll: false,

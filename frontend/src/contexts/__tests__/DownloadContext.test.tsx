@@ -200,7 +200,7 @@ describe('DownloadContext', () => {
     renderHook(() => useDownload(), { wrapper });
 
     await waitFor(() => {
-      expect(window.localStorage.removeItem).toHaveBeenCalledWith('mytube_download_status');
+      expect(window.localStorage.removeItem).toHaveBeenCalledWith('aitube_download_status');
     });
   });
 
@@ -211,7 +211,7 @@ describe('DownloadContext', () => {
     renderHook(() => useDownload(), { wrapper });
 
     await waitFor(() => {
-      expect(window.localStorage.removeItem).toHaveBeenCalledWith('mytube_download_status');
+      expect(window.localStorage.removeItem).toHaveBeenCalledWith('aitube_download_status');
     });
   });
 

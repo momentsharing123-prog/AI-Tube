@@ -102,7 +102,7 @@ export const generateRegistrationOptions = async (
     return;
   }
 
-  const userName = req.body.userName || "MyTube User";
+  const userName = req.body.userName || "AI Tube User";
   const { origin, rpID } = getOriginAndRPID(req);
   const result = await passkeyService.generatePasskeyRegistrationOptions(
     userName,

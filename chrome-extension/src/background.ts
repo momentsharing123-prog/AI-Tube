@@ -1,4 +1,4 @@
-// Background service worker for MyTube Downloader extension
+// Background service worker for AI Tube Downloader extension
 
 interface DownloadVideoMessage {
   action: 'downloadVideo';
@@ -111,7 +111,7 @@ chrome.runtime.onMessage.addListener((
 });
 
 /**
- * Test connection to MyTube server.
+ * Test connection to AI Tube server.
  * API key mode is validated through POST /api/download because API keys
  * are intentionally restricted to download task creation only.
  */
@@ -179,7 +179,7 @@ async function testConnection(
 }
 
 /**
- * Send download request to MyTube server
+ * Send download request to AI Tube server
  */
 async function handleDownload(
   videoUrl: string,

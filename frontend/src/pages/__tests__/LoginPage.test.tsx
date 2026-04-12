@@ -130,7 +130,7 @@ const setNormalState = (overrides: Record<string, unknown> = {}) => {
                 passwordLoginAllowed: true,
                 visitorUserEnabled: false,
                 isVisitorPasswordSet: false,
-                websiteName: 'MyTube',
+                websiteName: 'AI Tube',
                 ...overrides,
             },
             isLoading: false,
@@ -452,18 +452,18 @@ describe('LoginPage', () => {
             expect(screen.getByText('MyCustomSite')).toBeInTheDocument();
         });
 
-        it('shows "Powered by MyTube" when website name is not MyTube', () => {
+        it('shows "Powered by AI Tube" when website name is not AI Tube', () => {
             setNormalState({ websiteName: 'MyCustomSite' });
             render(<LoginPage />);
 
-            expect(screen.getByText('Powered by MyTube')).toBeInTheDocument();
+            expect(screen.getByText('Powered by AI Tube')).toBeInTheDocument();
         });
 
-        it('does not show "Powered by MyTube" when website name is MyTube', () => {
-            setNormalState({ websiteName: 'MyTube' });
+        it('does not show "Powered by AI Tube" when website name is AI Tube', () => {
+            setNormalState({ websiteName: 'AI Tube' });
             render(<LoginPage />);
 
-            expect(screen.queryByText('Powered by MyTube')).not.toBeInTheDocument();
+            expect(screen.queryByText('Powered by AI Tube')).not.toBeInTheDocument();
         });
     });
 
@@ -492,7 +492,7 @@ describe('LoginPage', () => {
             expect(within(dialog).getByText('resetPassword')).toBeInTheDocument();
             expect(within(dialog).getByText(/backend environment/)).toBeInTheDocument();
             expect(within(dialog).getByText(/node dist\/scripts\/reset-password\.js <new-password>/)).toBeInTheDocument();
-            expect(within(dialog).getByText(/docker exec -it mytube-backend node \/app\/dist\/scripts\/reset-password\.js <new-password>/)).toBeInTheDocument();
+            expect(within(dialog).getByText(/docker exec -it aitube-backend node \/app\/dist\/scripts\/reset-password\.js <new-password>/)).toBeInTheDocument();
         });
 
         it('closes reset guidance modal when confirm is clicked', async () => {

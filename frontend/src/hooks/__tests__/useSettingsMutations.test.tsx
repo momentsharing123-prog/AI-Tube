@@ -532,7 +532,7 @@ describe('useSettingsMutations', () => {
         const appendedAnchor = appendSpy.mock.calls.at(-1)?.[0] as HTMLAnchorElement;
         expect(appendedAnchor).toBeInstanceOf(HTMLAnchorElement);
         expect(appendedAnchor.getAttribute('download')).toBe(
-            'mytube-backup-2026-04-04_10-00-00.db'
+            'aitube-backup-2026-04-04_10-00-00.db'
         );
         expect(getLastMessage(setMessage)).toEqual({
             text: 'databaseExportedSuccess',

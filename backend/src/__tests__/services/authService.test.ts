@@ -47,7 +47,7 @@ describe("authService", () => {
       }),
     );
     expect(res.clearCookie).toHaveBeenCalledWith(
-      "mytube_role",
+      "aitube_role",
       expect.objectContaining({
         path: "/",
       }),

@@ -73,7 +73,7 @@ function AppContent() {
         if (settings?.websiteName) {
             document.title = settings.websiteName;
         } else {
-            document.title = "MyTube - My Videos, My Rules.";
+            document.title = "AI Tube - My Videos, My Rules.";
         }
     }, [settings?.websiteName]);
 

@@ -85,7 +85,7 @@ describe("runMigrations", () => {
     expect(thrown).toBeInstanceOf(MigrationError);
     expect((thrown as MigrationError).step).toBe("database_write_preflight");
     expect((thrown as MigrationError).message).toContain(
-      "Database file is not writable: /test/data/mytube.db"
+      "Database file is not writable: /test/data/aitube.db"
     );
     expect((thrown as MigrationError).message).toContain(
       "cannot update the SQLite database"
@@ -113,7 +113,7 @@ describe("runMigrations", () => {
     expect(thrown).toBeInstanceOf(MigrationError);
     expect((thrown as MigrationError).step).toBe("drizzle_migrate");
     expect((thrown as MigrationError).message).toContain(
-      "SQLite database is not writable: /test/data/mytube.db"
+      "SQLite database is not writable: /test/data/aitube.db"
     );
     expect((thrown as MigrationError).message).toContain(
       "attempt to write a readonly database"

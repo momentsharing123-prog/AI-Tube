@@ -23,23 +23,23 @@ echo "✅ Docker is running!"
 
 # Ensure buildx builder is available
 echo "🔍 Setting up Docker Buildx builder..."
-$DOCKER_PATH buildx inspect mytubebuilder > /dev/null 2>&1 || \
-  $DOCKER_PATH buildx create --name mytubebuilder --use
-$DOCKER_PATH buildx use mytubebuilder
+$DOCKER_PATH buildx inspect aitubebuilder > /dev/null 2>&1 || \
+  $DOCKER_PATH buildx create --name aitubebuilder --use
+$DOCKER_PATH buildx use aitubebuilder
 $DOCKER_PATH buildx inspect --bootstrap
 echo "✅ Buildx builder ready!"
 
 # Build tag arguments for backend
-BACKEND_TAGS="-t $USERNAME/mytube:backend-latest"
+BACKEND_TAGS="-t $USERNAME/aitube:backend-latest"
 if [ -n "$VERSION" ]; then
   echo "🔖 Version specified: $VERSION"
-  BACKEND_TAGS="$BACKEND_TAGS -t $USERNAME/mytube:backend-$VERSION"
+  BACKEND_TAGS="$BACKEND_TAGS -t $USERNAME/aitube:backend-$VERSION"
 fi
 
 # Build tag arguments for frontend
-FRONTEND_TAGS="-t $USERNAME/mytube:frontend-latest"
+FRONTEND_TAGS="-t $USERNAME/aitube:frontend-latest"
 if [ -n "$VERSION" ]; then
-  FRONTEND_TAGS="$FRONTEND_TAGS -t $USERNAME/mytube:frontend-$VERSION"
+  FRONTEND_TAGS="$FRONTEND_TAGS -t $USERNAME/aitube:frontend-$VERSION"
 fi
 
 echo ""
@@ -79,11 +79,11 @@ echo ""
 echo "✅ Successfully built and pushed images to Docker Hub!"
 echo ""
 echo "Multi-architecture images (auto-selects platform):"
-echo "  - $USERNAME/mytube:backend-latest"
-echo "  - $USERNAME/mytube:frontend-latest"
+echo "  - $USERNAME/aitube:backend-latest"
+echo "  - $USERNAME/aitube:frontend-latest"
 if [ -n "$VERSION" ]; then
-  echo "  - $USERNAME/mytube:backend-$VERSION"
-  echo "  - $USERNAME/mytube:frontend-$VERSION"
+  echo "  - $USERNAME/aitube:backend-$VERSION"
+  echo "  - $USERNAME/aitube:frontend-$VERSION"
 fi
 echo ""
 echo "To deploy to your server or QNAP Container Station:"

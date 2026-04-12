@@ -50,7 +50,7 @@ const TwitchSettings: React.FC<TwitchSettingsProps> = ({
     return (
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, maxWidth: 640 }}>
             <Typography variant="body2" color="text.primary">
-                {t('twitchSubscriptionDescription') || 'MyTube will check this Twitch channel for new VODs and download them after Twitch publishes them.'}
+                {t('twitchSubscriptionDescription') || 'AI Tube will check this Twitch channel for new VODs and download them after Twitch publishes them.'}
             </Typography>
             <Link
                 component="button"
@@ -62,7 +62,7 @@ const TwitchSettings: React.FC<TwitchSettingsProps> = ({
                 {t('twitchClientHelpLink') || 'How to get Twitch Client ID and Secret'}
             </Link>
             <Typography variant="body2" color="text.secondary">
-                {t('twitchSubscriptionCredentialsHelper') || 'Twitch client credentials are optional. Without them, MyTube falls back to yt-dlp polling in best-effort mode. Adding credentials makes channel detection more reliable.'}
+                {t('twitchSubscriptionCredentialsHelper') || 'Twitch client credentials are optional. Without them, AI Tube falls back to yt-dlp polling in best-effort mode. Adding credentials makes channel detection more reliable.'}
             </Typography>
             <TextField
                 label={t('twitchClientId')}
@@ -132,7 +132,7 @@ const TwitchSettings: React.FC<TwitchSettingsProps> = ({
                             {t('twitchClientHelpStep1') || 'Open the Twitch Developer Console and sign in with your Twitch account.'}
                         </Typography>
                         <Typography component="li" sx={{ mb: 1 }}>
-                            {t('twitchClientHelpStep2') || 'Create a new application for MyTube.'}
+                            {t('twitchClientHelpStep2') || 'Create a new application for AI Tube.'}
                         </Typography>
                         <Typography component="li" sx={{ mb: 1 }}>
                             {t('twitchClientHelpStep3') || 'Set an OAuth Redirect URL. If you only use server-side subscriptions, a placeholder such as http://localhost is sufficient.'}
@@ -141,7 +141,7 @@ const TwitchSettings: React.FC<TwitchSettingsProps> = ({
                             {t('twitchClientHelpStep4') || 'After the app is created, copy the Client ID from the application details page.'}
                         </Typography>
                         <Typography component="li" sx={{ mb: 1 }}>
-                            {t('twitchClientHelpStep5') || 'Generate or reveal a Client Secret, then paste both values into MyTube settings.'}
+                            {t('twitchClientHelpStep5') || 'Generate or reveal a Client Secret, then paste both values into AI Tube settings.'}
                         </Typography>
                     </Typography>
                     <Typography variant="body2" color="warning.main" sx={{ mb: 2 }}>

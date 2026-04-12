@@ -1,6 +1,6 @@
 export const ja = {
   // Header
-  myTube: "MyTube",
+  myTube: "AI Tube",
   manage: "管理",
   settings: "設定",
   logout: "ログアウト",
@@ -169,26 +169,26 @@ export const ja = {
   twitchClientId: "Twitch クライアント ID",
   twitchClientSecret: "Twitch クライアントシークレット",
   twitchSubscriptionCredentialsHelper:
-    "Twitch クライアント認証情報は任意です。未設定でも MyTube は yt-dlp のベストエフォート監視にフォールバックしますが、設定した方がチャンネル判定はより安定します。",
+    "Twitch クライアント認証情報は任意です。未設定でも AI Tube は yt-dlp のベストエフォート監視にフォールバックしますが、設定した方がチャンネル判定はより安定します。",
   twitchSubscriptionDescription:
-    "MyTube はこの Twitch チャンネルに新しい VOD が公開されたかを確認し、Twitch で公開された後にダウンロードします。",
+    "AI Tube はこの Twitch チャンネルに新しい VOD が公開されたかを確認し、Twitch で公開された後にダウンロードします。",
   twitchSubscriptionCredentialsMissing:
     "Twitch の購読に失敗しました。クライアント認証情報は必須ではありませんが、より安定したチャンネル購読のため設定を推奨します。",
   twitchSubscriptionVodsOnly:
-    "MyTube は Twitch の VOD が公開された後にダウンロードします。このバージョンにはライブ配信の録画機能は含まれていません。",
+    "AI Tube は Twitch の VOD が公開された後にダウンロードします。このバージョンにはライブ配信の録画機能は含まれていません。",
   twitchClientHelpLink: "Twitch Client ID と Secret の取得方法",
   twitchClientHelpTitle: "Twitch Client ID と Secret を取得する",
   twitchClientHelpIntro:
     "まず Twitch Developer Console で Twitch アプリケーションを作成する必要があります。",
   twitchClientHelpStep1:
     "Twitch Developer Console を開き、Twitch アカウントでサインインします。",
-  twitchClientHelpStep2: "MyTube 用の新しいアプリケーションを作成します。",
+  twitchClientHelpStep2: "AI Tube 用の新しいアプリケーションを作成します。",
   twitchClientHelpStep3:
     "OAuth Redirect URL を設定します。サーバー側の購読だけに使う場合は、http://localhost のような値でも問題ありません。",
   twitchClientHelpStep4:
     "アプリ作成後、アプリ詳細ページから Client ID をコピーします。",
   twitchClientHelpStep5:
-    "Client Secret を生成または表示し、その 2 つの値を MyTube の設定に貼り付けます。",
+    "Client Secret を生成または表示し、その 2 つの値を AI Tube の設定に貼り付けます。",
   twitchClientHelpSecurity:
     "Client Secret は公開せず、スクリーンショットや公開ページで共有しないでください。",
   twitchDeveloperConsole: "Twitch Developer Console",
@@ -275,7 +275,7 @@ export const ja = {
   // Task Hooks
   taskHooks: "タスクフック",
   taskHooksDescription:
-    "タスクライフサイクルの特定のポイントでカスタムシェルコマンドを実行します。利用可能な環境変数: MYTUBE_TASK_ID, MYTUBE_TASK_TITLE, MYTUBE_SOURCE_URL, MYTUBE_VIDEO_PATH。",
+    "タスクライフサイクルの特定のポイントでカスタムシェルコマンドを実行します。利用可能な環境変数: AITUBE_TASK_ID, AITUBE_TASK_TITLE, AITUBE_SOURCE_URL, AITUBE_VIDEO_PATH。",
   taskHooksWarning:
     "警告: コマンドはサーバーの権限で実行されます。注意して使用してください。",
   deploymentSecurityTitle: "デプロイのセキュリティモデル",
@@ -311,15 +311,15 @@ export const ja = {
     "将来のホストパスメンテナンス機能",
   deploymentSecurityConfigurationTitle: "設定方法",
   deploymentSecurityConfigurationValuesNote:
-    "MYTUBE_ADMIN_TRUST_LEVEL に application、container、host のいずれかを設定します。未設定または無効な値の場合は container にフォールバックします。",
+    "AITUBE_ADMIN_TRUST_LEVEL に application、container、host のいずれかを設定します。未設定または無効な値の場合は container にフォールバックします。",
   deploymentSecurityDockerConfigTitle: "Docker / Docker Compose",
   deploymentSecurityDockerConfigDescription:
-    "サービスの environment で MYTUBE_ADMIN_TRUST_LEVEL を設定します。必要に応じて application を container または host に置き換えてください。",
+    "サービスの environment で AITUBE_ADMIN_TRUST_LEVEL を設定します。必要に応じて application を container または host に置き換えてください。",
   deploymentSecurityDockerPermissionsNote:
     "v1.9.0 より前に作成した bind mount 構成をアップグレードする場合は、ホスト側の uploads と data ディレクトリを uid/gid 1000（`node`）で書き込み可能にしてください。これにより、root 所有の uploads/images-small ディレクトリが原因でサムネイル生成やスキャンが EACCES で失敗する問題も解消できます。",
   deploymentSecurityLocalConfigTitle: "ローカルでソースコードを実行",
   deploymentSecurityLocalConfigDescription:
-    "MyTube を起動する前に MYTUBE_ADMIN_TRUST_LEVEL を export するか、npm run dev 実行時にインライン指定してください。",
+    "AI Tube を起動する前に AITUBE_ADMIN_TRUST_LEVEL を export するか、npm run dev 実行時にインライン指定してください。",
   deploymentSecurityLocalEnvFileNote:
     "同じ行を backend/.env に書くこともできます。",
   taskHooksPolicyNotice:
@@ -400,7 +400,7 @@ export const ja = {
     "ファイルにアクセスするための公開ドメイン（例: https://your-cloudflare-tunnel-domain.com）。設定されている場合、ファイルアクセスにはAPI URLの代わりにこれが使用されます。",
   uploadPath: "アップロードパス",
   cloudDrivePathHelper:
-    "クラウドドライブ内のディレクトリパス、例: /mytube-uploads",
+    "クラウドドライブ内のディレクトリパス、例: /aitube-uploads",
   scanPaths: "スキャンパス",
   scanPathsHelper:
     "1行に1つのパスを入力してください。これらのパスから動画がスキャンされます。空の場合はアップロードパスが使用されます。例：\n/a/映画\n/b/ドキュメンタリー",
@@ -568,11 +568,11 @@ export const ja = {
   resetPasswordRecoveryMessage:
     "パスワードの復旧はバックエンド環境から実行する必要があります。ログに出力される生成済み認証情報に頼らず、新しいパスワードを明示的に設定してください。",
   resetPasswordRecoveryGuide:
-    "ご利用の環境に合ったコマンドを選択してください：\n\nバックエンドシェル\n  node dist/scripts/reset-password.js <new-password>\n\nDocker ホスト\n  docker exec -it mytube-backend node /app/dist/scripts/reset-password.js <new-password>\n\n永続化されたアプリデータにアクセスできるバックエンドのディレクトリまたはコンテナを使用してください。",
+    "ご利用の環境に合ったコマンドを選択してください：\n\nバックエンドシェル\n  node dist/scripts/reset-password.js <new-password>\n\nDocker ホスト\n  docker exec -it aitube-backend node /app/dist/scripts/reset-password.js <new-password>\n\n永続化されたアプリデータにアクセスできるバックエンドのディレクトリまたはコンテナを使用してください。",
   resetPasswordDisabledInfo:
-    "Web UI ではパスワードリセットが無効になっています。パスワードをリセットするには、バックエンド環境で次のいずれかのコマンドを実行してください：\n\nバックエンドシェル\n  node dist/scripts/reset-password.js <new-password>\n\nDocker ホスト\n  docker exec -it mytube-backend node /app/dist/scripts/reset-password.js <new-password>\n\n永続化されたアプリデータにアクセスできるバックエンドのディレクトリまたはコンテナを使用してください。",
+    "Web UI ではパスワードリセットが無効になっています。パスワードをリセットするには、バックエンド環境で次のいずれかのコマンドを実行してください：\n\nバックエンドシェル\n  node dist/scripts/reset-password.js <new-password>\n\nDocker ホスト\n  docker exec -it aitube-backend node /app/dist/scripts/reset-password.js <new-password>\n\n永続化されたアプリデータにアクセスできるバックエンドのディレクトリまたはコンテナを使用してください。",
   resetPasswordScriptGuide:
-    "手動でパスワードをリセットするには、次のいずれかのコマンドを実行し、新しいパスワードを明示的に指定してください：\n\nバックエンドシェル\n  node dist/scripts/reset-password.js <new-password>\n\nDocker ホスト\n  docker exec -it mytube-backend node /app/dist/scripts/reset-password.js <new-password>\n\nこのスクリプトはランダムなパスワードを生成または表示しません。",
+    "手動でパスワードをリセットするには、次のいずれかのコマンドを実行し、新しいパスワードを明示的に指定してください：\n\nバックエンドシェル\n  node dist/scripts/reset-password.js <new-password>\n\nDocker ホスト\n  docker exec -it aitube-backend node /app/dist/scripts/reset-password.js <new-password>\n\nこのスクリプトはランダムなパスワードを生成または表示しません。",
   waitTimeMessage: "再試行する前に {time} お待ちください。",
   tooManyAttempts: "失敗した試行が多すぎます。",
 
@@ -963,7 +963,7 @@ export const ja = {
   videoSkippedDeleted:
     "動画は以前削除されたため、ダウンロードをスキップしました",
   downloading: "ダウンロード中...",
-  poweredBy: "MyTubeによって提供",
+  poweredBy: "AI Tubeによって提供",
   changeSettings: "設定を変更",
 
 
@@ -1048,7 +1048,7 @@ export const ja = {
   importDatabaseWarning:
     "警告：データベースをインポートすると、既存のすべてのデータが上書きされます。まず現在のデータベースをバックアップとしてエクスポートしてください。",
   mergeDatabaseWarning:
-    "別の MyTube バックアップをこのインスタンスにマージします。既存のレコードは保持され、アップロードしたバックアップにしかないレコードだけが追加されます。",
+    "別の AI Tube バックアップをこのインスタンスにマージします。既存のレコードは保持され、アップロードしたバックアップにしかないレコードだけが追加されます。",
   mergeDatabaseContentsVideos: "動画はソース URL で照合され、既存の動画は保持されます。",
   mergeDatabaseContentsCollections:
     "コレクションとその所属動画は同名コレクションにマージされます。",
@@ -1085,7 +1085,7 @@ export const ja = {
   databaseMergeFailed: "データベースのマージに失敗しました",
   cleanupBackupDatabases: "バックアップデータベースをクリーンアップ",
   cleanupBackupDatabasesWarning:
-    "警告：これにより、以前のインポート時に作成されたすべてのバックアップデータベースファイル（mytube-backup-*.db.backup）が永続的に削除されます。この操作は元に戻せません。続行してもよろしいですか？",
+    "警告：これにより、以前のインポート時に作成されたすべてのバックアップデータベースファイル（aitube-backup-*.db.backup）が永続的に削除されます。この操作は元に戻せません。続行してもよろしいですか？",
   backupDatabasesCleanedUp:
     "バックアップデータベースのクリーンアップが成功しました",
 

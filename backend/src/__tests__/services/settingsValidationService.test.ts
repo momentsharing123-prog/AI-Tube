@@ -105,14 +105,14 @@ describe("settingsValidationService", () => {
     it("should merge defaults, existing, and new", () => {
       const defaults = { maxConcurrentDownloads: 3 }; // partial assumption of defaults
       const existing = { maxConcurrentDownloads: 5 };
-      const newSettings = { websiteName: "MyTube" };
+      const newSettings = { websiteName: "AI Tube" };
 
       const merged = settingsValidationService.mergeSettings(
         existing as any,
         newSettings as any
       );
 
-      expect(merged.websiteName).toBe("MyTube");
+      expect(merged.websiteName).toBe("AI Tube");
       expect(merged.maxConcurrentDownloads).toBe(5);
     });
   });

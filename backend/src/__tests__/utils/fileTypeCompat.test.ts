@@ -72,7 +72,7 @@ describe("file-type compatibility package", () => {
   });
 
   it("detects file types from bytes read from disk", async () => {
-    const tempDirectory = await fs.mkdtemp(path.join(os.tmpdir(), "mytube-file-type-"));
+    const tempDirectory = await fs.mkdtemp(path.join(os.tmpdir(), "aitube-file-type-"));
     tempDirectories.push(tempDirectory);
     const pngPath = path.join(tempDirectory, "avatar.png");
     await fs.writeFile(pngPath, png1x1);
@@ -92,7 +92,7 @@ describe("file-type compatibility package", () => {
   });
 
   it("keeps the vendored file-type/core.js entrypoint working", async () => {
-    const tempDirectory = await fs.mkdtemp(path.join(os.tmpdir(), "mytube-file-type-core-"));
+    const tempDirectory = await fs.mkdtemp(path.join(os.tmpdir(), "aitube-file-type-core-"));
     tempDirectories.push(tempDirectory);
 
     const coreFileType = require("file-type/core.js");

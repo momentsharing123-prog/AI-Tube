@@ -405,7 +405,7 @@ export function useSettingsMutations({
 
       // Generate filename with timestamp using helper (same format as backend)
       const timestamp = generateTimestamp();
-      const filename = `mytube-backup-${timestamp}.db`;
+      const filename = `aitube-backup-${timestamp}.db`;
 
       link.setAttribute("download", filename);
       document.body.appendChild(link);

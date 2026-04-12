@@ -1,4 +1,4 @@
-// Popup script for MyTube Downloader extension
+// Popup script for AI Tube Downloader extension
 
 import type { Translations } from './types';
 
@@ -20,7 +20,7 @@ function init() {
       if (window.currentTranslations) {
         const t = window.currentTranslations;
         const h1 = document.querySelector('h1');
-        if (h1) h1.textContent = t.mytube || 'MyTube';
+        if (h1) h1.textContent = t.aitube || 'AI Tube';
         
         const downloadBtn = document.getElementById('downloadCurrentPage');
         if (downloadBtn) {

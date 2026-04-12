@@ -43,7 +43,7 @@ describe("useHeaderPreferences", () => {
       expect(mockApiGet).toHaveBeenCalledWith("/settings");
     });
 
-    expect(result.current.websiteName).toBe("MyTube");
+    expect(result.current.websiteName).toBe("AI Tube");
     expect(result.current.infiniteScroll).toBe(false);
     expect(result.current.showThemeButton).toBe(true);
   });
@@ -57,7 +57,7 @@ describe("useHeaderPreferences", () => {
       expect(mockApiGet).toHaveBeenCalledWith("/settings");
     });
 
-    expect(result.current.websiteName).toBe("MyTube");
+    expect(result.current.websiteName).toBe("AI Tube");
     expect(result.current.infiniteScroll).toBe(false);
     expect(result.current.showThemeButton).toBe(true);
   });
@@ -80,7 +80,7 @@ describe("useHeaderPreferences", () => {
   it("falls back to authenticated defaults when settingsData is missing", () => {
     const { result } = renderHook(() => useHeaderPreferences(true));
 
-    expect(result.current.websiteName).toBe("MyTube");
+    expect(result.current.websiteName).toBe("AI Tube");
     expect(result.current.infiniteScroll).toBe(false);
     expect(result.current.showThemeButton).toBe(true);
     expect(mockApiGet).not.toHaveBeenCalled();

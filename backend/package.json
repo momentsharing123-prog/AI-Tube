@@ -16,7 +16,7 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "description": "Backend for MyTube video streaming website",
+  "description": "Backend for AI Tube video streaming website",
   "dependencies": {
     "@simplewebauthn/server": "^13.2.2",
     "@types/cookie-parser": "^1.4.10",

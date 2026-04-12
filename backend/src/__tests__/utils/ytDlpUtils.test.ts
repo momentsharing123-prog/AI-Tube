@@ -199,13 +199,13 @@ describe("ytDlpUtils", () => {
   });
 
   describe("getUserYtDlpConfig", () => {
-    const originalTrustLevel = process.env.MYTUBE_ADMIN_TRUST_LEVEL;
+    const originalTrustLevel = process.env.AITUBE_ADMIN_TRUST_LEVEL;
 
     afterEach(() => {
       if (originalTrustLevel === undefined) {
-        delete process.env.MYTUBE_ADMIN_TRUST_LEVEL;
+        delete process.env.AITUBE_ADMIN_TRUST_LEVEL;
       } else {
-        process.env.MYTUBE_ADMIN_TRUST_LEVEL = originalTrustLevel;
+        process.env.AITUBE_ADMIN_TRUST_LEVEL = originalTrustLevel;
       }
     });
 
@@ -251,7 +251,7 @@ describe("ytDlpUtils", () => {
     });
 
     it("should ignore raw config when deployment trust is application", () => {
-      process.env.MYTUBE_ADMIN_TRUST_LEVEL = "application";
+      process.env.AITUBE_ADMIN_TRUST_LEVEL = "application";
       vi.mocked(storageService.getSettings).mockReturnValue({
         ytDlpConfig: "--exec echo hi",
       } as any);

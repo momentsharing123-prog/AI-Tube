@@ -24,7 +24,7 @@ const sanitizeHookEnvValue = (value: string): string =>
   value.replace(/\0/g, "").replace(/[\r\n]+/g, " ").trim();
 
 const getHookTimeoutMs = (): number | undefined => {
-  const rawTimeout = process.env.MYTUBE_HOOK_TIMEOUT_MS?.trim();
+  const rawTimeout = process.env.AITUBE_HOOK_TIMEOUT_MS?.trim();
   if (!rawTimeout) {
     return undefined;
   }
@@ -32,7 +32,7 @@ const getHookTimeoutMs = (): number | undefined => {
   const parsedTimeout = Number.parseInt(rawTimeout, 10);
   if (!Number.isFinite(parsedTimeout) || parsedTimeout <= 0) {
     logger.warn(
-      `[HookService] Ignoring invalid MYTUBE_HOOK_TIMEOUT_MS="${rawTimeout}".`
+      `[HookService] Ignoring invalid AITUBE_HOOK_TIMEOUT_MS="${rawTimeout}".`
     );
     return undefined;
   }
@@ -89,24 +89,24 @@ export class HookService {
 
       const env: Record<string, string> = { ...process.env } as Record<string, string>;
       
-      if (context.taskId) env.MYTUBE_TASK_ID = sanitizeHookEnvValue(context.taskId);
+      if (context.taskId) env.AITUBE_TASK_ID = sanitizeHookEnvValue(context.taskId);
       if (context.taskTitle) {
-        env.MYTUBE_TASK_TITLE = sanitizeHookEnvValue(context.taskTitle);
+        env.AITUBE_TASK_TITLE = sanitizeHookEnvValue(context.taskTitle);
       }
       if (context.sourceUrl) {
-        env.MYTUBE_SOURCE_URL = sanitizeHookEnvValue(context.sourceUrl);
+        env.AITUBE_SOURCE_URL = sanitizeHookEnvValue(context.sourceUrl);
       }
       if (context.status) {
-        env.MYTUBE_TASK_STATUS = sanitizeHookEnvValue(context.status);
+        env.AITUBE_TASK_STATUS = sanitizeHookEnvValue(context.status);
       }
       if (context.videoPath) {
-        env.MYTUBE_VIDEO_PATH = sanitizeHookEnvValue(context.videoPath);
+        env.AITUBE_VIDEO_PATH = sanitizeHookEnvValue(context.videoPath);
       }
       if (context.thumbnailPath) {
-        env.MYTUBE_THUMBNAIL_PATH = sanitizeHookEnvValue(context.thumbnailPath);
+        env.AITUBE_THUMBNAIL_PATH = sanitizeHookEnvValue(context.thumbnailPath);
       }
       if (context.error) {
-        env.MYTUBE_ERROR = sanitizeHookEnvValue(context.error);
+        env.AITUBE_ERROR = sanitizeHookEnvValue(context.error);
       }
 
       const timeout = getHookTimeoutMs();

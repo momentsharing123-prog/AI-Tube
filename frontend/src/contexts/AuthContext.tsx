@@ -46,7 +46,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             authenticatedRole: role ?? current?.authenticatedRole ?? 'admin'
         }));
         // Notify LanguageContext to refetch settings (e.g. so language persists in new browser)
-        window.dispatchEvent(new CustomEvent('mytube-login'));
+        window.dispatchEvent(new CustomEvent('aitube-login'));
         // Token is now stored in HTTP-only cookie by backend, no need to store it here
     };
 

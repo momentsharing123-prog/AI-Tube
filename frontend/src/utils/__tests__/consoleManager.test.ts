@@ -51,12 +51,12 @@ describe("ConsoleManager", () => {
     ConsoleManager.init();
 
     expect(ConsoleManager.getDebugMode()).toBe(true);
-    expect(localStorage.getItem("mytube_debug_mode")).toBe("true");
+    expect(localStorage.getItem("aitube_debug_mode")).toBe("true");
     expect(logSpy).toHaveBeenCalledWith("Debug mode enabled");
   });
 
   it("loads disabled mode from localStorage and suppresses console output", () => {
-    localStorage.setItem("mytube_debug_mode", "false");
+    localStorage.setItem("aitube_debug_mode", "false");
     const logSpy = vi.spyOn(console, "log").mockImplementation(() => {});
     const infoSpy = vi.spyOn(console, "info").mockImplementation(() => {});
 
@@ -88,7 +88,7 @@ describe("ConsoleManager", () => {
 
     ConsoleManager.setDebugMode(false);
     expect(ConsoleManager.getDebugMode()).toBe(false);
-    expect(localStorage.getItem("mytube_debug_mode")).toBe("false");
+    expect(localStorage.getItem("aitube_debug_mode")).toBe("false");
     expect(logSpy).toHaveBeenCalledWith("Debug mode disabled");
   });
 });

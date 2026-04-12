@@ -1,4 +1,4 @@
-# MyTube API Documentation
+# AI Tube API Documentation
 
 ## Base URL
 
@@ -10,7 +10,7 @@ http://localhost:6001/api
 
 ## Authentication
 
-MyTube supports two authentication methods:
+AI Tube supports two authentication methods:
 
 ### 1. API Key (Recommended for agents & automation)
 
@@ -43,19 +43,19 @@ Set these in your `.env` file before starting the container:
 
 ```env
 # Enable API auth on startup
-MYTUBE_API_ENABLED=true
+AITUBE_API_ENABLED=true
 
 # Option A: Fixed token (use your own value)
-MYTUBE_API_TOKEN=my-secret-token-here
+AITUBE_API_TOKEN=my-secret-token-here
 
 # Option B: Leave blank — a secure token is auto-generated and printed to logs
-MYTUBE_API_TOKEN=
+AITUBE_API_TOKEN=
 ```
 
 On startup, the active token is always printed to container logs:
 
 ```bash
-docker logs mytube-api | grep "API Token"
+docker logs ai-tube-prod | grep "API Token"
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 # API Token: a3f9bc2e...
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -63,7 +63,7 @@ docker logs mytube-api | grep "API Token"
 
 **Behaviour:**
 
-| `MYTUBE_API_ENABLED` | `MYTUBE_API_TOKEN` | Result |
+| `AITUBE_API_ENABLED` | `AITUBE_API_TOKEN` | Result |
 |---|---|---|
 | `true` | set to value | Use that exact token |
 | `true` | blank | Auto-generate token (only on first start; reuses on restart) |
@@ -75,7 +75,7 @@ docker logs mytube-api | grep "API Token"
 
 > Requires **Login** to be enabled first.
 
-1. Open MyTube at `http://localhost:6001`
+1. Open AI Tube at `http://localhost:6001`
 2. Go to **Settings** → **Security** tab
 3. Enable the **"Login"** toggle
 4. Enable **"Enable API Key Authentication"** toggle
@@ -88,7 +88,7 @@ To rotate the token: click **Refresh** next to the API key field.
 
 ### Both methods work simultaneously
 
-The env-var token and the UI token are stored in the same field. Whichever was applied last wins. If you set `MYTUBE_API_TOKEN` in env, the UI will reflect that value.
+The env-var token and the UI token are stored in the same field. Whichever was applied last wins. If you set `AITUBE_API_TOKEN` in env, the UI will reflect that value.
 
 ---
 

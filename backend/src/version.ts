@@ -1,11 +1,11 @@
 /**
- * MyTube Backend Version Information
+ * AI Tube Backend Version Information
  */
 
 export const VERSION = {
   number: "1.7.16",
   buildDate: new Date().toISOString().split("T")[0],
-  name: "MyTube Backend Server",
+  name: "AI Tube Backend Server",
   displayVersion: function () {
     console.log(`
 ╔═══════════════════════════════════════════════╗

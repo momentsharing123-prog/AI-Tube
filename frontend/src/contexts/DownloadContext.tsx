@@ -48,12 +48,16 @@ interface DownloadContextType {
     handleDownloadCurrentBilibiliPart: () => Promise<any>;
     downloadFormat: 'mp4' | 'mp3';
     setDownloadFormat: (format: 'mp4' | 'mp3') => void;
-    // Playlist song/video-picker modal (MP3 + MP4)
+    // Step 1 — instant choice modal (single vs browse)
+    showPlaylistChoiceModal: boolean;
+    setShowPlaylistChoiceModal: (show: boolean) => void;
+    // Step 2 — track/video picker modal
     showPlaylistSelectorModal: boolean;
     setShowPlaylistSelectorModal: (show: boolean) => void;
     playlistSelectorUrl: string;
     playlistSelectorTitle: string;
     playlistSelectorFormat: 'mp3' | 'mp4';
+    handleBrowsePlaylist: () => void;
     handleDownloadSelectedTracks: (entries: Array<{ url: string; title: string }>, collectionName: string) => Promise<void>;
     handleDownloadCurrentFromPlaylist: () => Promise<any>;
 }
@@ -166,7 +170,9 @@ export const DownloadProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     });
     const [isCheckingParts, setIsCheckingParts] = useState<boolean>(false);
 
-    // Playlist song/video-picker modal state (MP3 + MP4)
+    // Step 1 — instant choice modal
+    const [showPlaylistChoiceModal, setShowPlaylistChoiceModal] = useState<boolean>(false);
+    // Step 2 — track/video picker modal
     const [showPlaylistSelectorModal, setShowPlaylistSelectorModal] = useState<boolean>(false);
     const [playlistSelectorUrl, setPlaylistSelectorUrl] = useState<string>('');
     const [playlistSelectorTitle, setPlaylistSelectorTitle] = useState<string>('');
@@ -228,34 +234,11 @@ export const DownloadProvider: React.FC<{ children: React.ReactNode }> = ({ chil
             const playlistRegex = /[?&]list=([a-zA-Z0-9_-]+)/;
 
             if (playlistRegex.test(videoUrl) && !skipCollectionCheck) {
-                setIsCheckingParts(true);
-
-                // Try to fetch playlist metadata for display (title / count).
-                // Whether or not this succeeds we ALWAYS show the modal so the
-                // user can choose between "just this video" and "browse playlist".
-                let playlistTitle: string = '';
-                let playlistCount: number = 0;
-
-                try {
-                    const playlistResponse = await api.get('/check-playlist', {
-                        params: { url: videoUrl }
-                    });
-                    if (playlistResponse.data.success) {
-                        playlistTitle = playlistResponse.data.title || '';
-                        playlistCount = playlistResponse.data.videoCount || 0;
-                    }
-                } catch (err) {
-                    console.error('Error checking playlist (non-fatal):', err);
-                    // Ignore — we still show the modal below
-                } finally {
-                    setIsCheckingParts(false);
-                }
-
-                // Both MP3 and MP4 → video/track picker modal
+                // Step 1: show the instant choice modal (no network call)
                 setPlaylistSelectorUrl(videoUrl);
-                setPlaylistSelectorTitle(playlistTitle || videoUrl);
+                setPlaylistSelectorTitle('');          // filled lazily in picker
                 setPlaylistSelectorFormat(downloadFormat === 'mp3' ? 'mp3' : 'mp4');
-                setShowPlaylistSelectorModal(true);
+                setShowPlaylistChoiceModal(true);
                 return { success: true };
             }
 
@@ -500,6 +483,12 @@ export const DownloadProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         return await handleVideoSubmit(bilibiliPartsInfo.url, true, true);
     };
 
+    // "Browse playlist" chosen in step-1 modal → close choice, open picker
+    const handleBrowsePlaylist = () => {
+        setShowPlaylistChoiceModal(false);
+        setShowPlaylistSelectorModal(true);
+    };
+
     // Download selected tracks/videos from the picker modal
     const handleDownloadSelectedTracks = async (entries: Array<{ url: string; title: string }>, collectionName: string) => {
         setShowPlaylistSelectorModal(false);
@@ -528,8 +517,9 @@ export const DownloadProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         }
     };
 
-    // "Just this song" from the song-picker modal — download single video, no playlist
+    // "Just this one" from either modal — download single video, no playlist
     const handleDownloadCurrentFromPlaylist = async () => {
+        setShowPlaylistChoiceModal(false);
         setShowPlaylistSelectorModal(false);
         return await handleVideoSubmit(playlistSelectorUrl, true, true);
     };
@@ -701,11 +691,14 @@ export const DownloadProvider: React.FC<{ children: React.ReactNode }> = ({ chil
             handleDownloadCurrentBilibiliPart,
             downloadFormat,
             setDownloadFormat,
+            showPlaylistChoiceModal,
+            setShowPlaylistChoiceModal,
             showPlaylistSelectorModal,
             setShowPlaylistSelectorModal,
             playlistSelectorUrl,
             playlistSelectorTitle,
             playlistSelectorFormat,
+            handleBrowsePlaylist,
             handleDownloadSelectedTracks,
             handleDownloadCurrentFromPlaylist,
         }}>

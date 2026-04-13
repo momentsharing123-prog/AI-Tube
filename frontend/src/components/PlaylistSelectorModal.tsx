@@ -66,7 +66,7 @@ const PlaylistSelectorModal: React.FC<PlaylistSelectorModalProps> = ({
         setSelected(new Set());
         setCollectionName('');
 
-        api.get('/playlist-entries', { params: { url: playlistUrl } })
+        api.get('/playlist-entries', { params: { url: playlistUrl }, timeout: 60000 })
             .then((res) => {
                 const fetched: PlaylistEntry[] = res.data?.entries ?? [];
                 setEntries(fetched);

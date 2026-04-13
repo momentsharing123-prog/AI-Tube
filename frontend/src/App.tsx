@@ -21,6 +21,10 @@ const BilibiliPartsModal = lazyWithRetry(
     () => import('./components/BilibiliPartsModal'),
     'bilibili-parts-modal',
 );
+const PlaylistChoiceModal = lazyWithRetry(
+    () => import('./components/PlaylistChoiceModal'),
+    'playlist-choice-modal',
+);
 const PlaylistSelectorModal = lazyWithRetry(
     () => import('./components/PlaylistSelectorModal'),
     'playlist-selector-modal',
@@ -68,11 +72,14 @@ function AppContent() {
         isCheckingParts,
         handleDownloadAllBilibiliParts,
         handleDownloadCurrentBilibiliPart,
+        showPlaylistChoiceModal,
+        setShowPlaylistChoiceModal,
         showPlaylistSelectorModal,
         setShowPlaylistSelectorModal,
         playlistSelectorUrl,
         playlistSelectorTitle,
         playlistSelectorFormat,
+        handleBrowsePlaylist,
         handleDownloadSelectedTracks,
         handleDownloadCurrentFromPlaylist,
     } = useDownload();
@@ -155,7 +162,20 @@ function AppContent() {
                             )}
                         </Suspense>
 
-                        {/* Playlist Video/Track Picker Modal (MP3 + MP4) */}
+                        {/* Step 1 — Instant playlist choice (single vs browse) */}
+                        <Suspense fallback={null}>
+                            {showPlaylistChoiceModal && (
+                                <PlaylistChoiceModal
+                                    isOpen={showPlaylistChoiceModal}
+                                    onClose={() => setShowPlaylistChoiceModal(false)}
+                                    format={playlistSelectorFormat}
+                                    onDownloadCurrent={handleDownloadCurrentFromPlaylist}
+                                    onBrowsePlaylist={handleBrowsePlaylist}
+                                />
+                            )}
+                        </Suspense>
+
+                        {/* Step 2 — Video/Track picker with 60s fetch */}
                         <Suspense fallback={null}>
                             {showPlaylistSelectorModal && (
                                 <PlaylistSelectorModal

@@ -253,7 +253,7 @@ describe("roleBasedAuthMiddleware", () => {
     expect(json).toHaveBeenCalledWith(
       expect.objectContaining({
         success: false,
-        error: expect.stringContaining("only allows POST /api/download"),
+        error: expect.stringContaining("API key authentication is restricted"),
       })
     );
   });

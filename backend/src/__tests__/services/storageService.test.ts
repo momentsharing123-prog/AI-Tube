@@ -75,7 +75,7 @@ describe('StorageService', () => {
     it('should ensure directories exist', () => {
       setupInitMocks();
       storageService.initializeStorage();
-      expect(fs.ensureDirSync).toHaveBeenCalledTimes(6);
+      expect(fs.ensureDirSync).toHaveBeenCalledTimes(7);
     });
 
     it('should create status.json if not exists', () => {

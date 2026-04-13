@@ -122,6 +122,8 @@ describe("downloadService", () => {
       expect(YtDlpDownloader.downloadVideo).toHaveBeenCalledWith(
         "https://youtube.com/v",
         "d5",
+        undefined,
+        undefined,
         undefined
       );
       expect(MissAVDownloader.downloadVideo).toHaveBeenCalledWith(

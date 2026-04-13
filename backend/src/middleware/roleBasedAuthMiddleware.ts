@@ -43,7 +43,7 @@ const isPublicEndpoint = (req: Request): boolean => {
 const isApiKeyAllowedEndpoint = (req: Request): boolean => {
   const path = getNormalizedRequestPath(req);
   // POST: submit downloads
-  if (req.method === "POST" && (path === "/download" || path === "/agent/download")) {
+  if (req.method === "POST" && (path === "/download" || path === "/agent/download" || path === "/download/playlist-mp3" || path === "/download/playlist-mp4")) {
     return true;
   }
   // GET: poll download status and history (useful for agents)

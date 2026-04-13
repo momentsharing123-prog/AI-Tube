@@ -1,0 +1,12 @@
+{
+	"name": "aitube-download-oc",
+	"description": "OpenClaw skill to request audio/video downloads from the owner's AI Tube server (API call only)",
+	"entry": "index.js",
+	"version": "0.1.0",
+	"author": "momentchan",
+	"permissions": ["http"],
+	"config": {
+		"required": ["tokens/aitube-url", "tokens/aitube-token"],
+		"saveFolder": "(set by server)"
+	}
+}

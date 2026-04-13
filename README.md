@@ -18,38 +18,14 @@ Self-hosted downloader and player for YouTube, Bilibili, Twitch, MissAV, and [yt
 
 [中文](README-zh.md) | [Changelog](CHANGELOG.md)
 
-## AI Agent Skill (Claude Code)
+## AI Agent Skills
 
-AI-Tube ships a [Claude Code](https://claude.ai/code) skill so you can trigger downloads by chatting with your AI agent — no browser required.
+AI-Tube ships two agent skills so you can trigger downloads by chatting — no browser required.
 
-### Install
-
-Copy the entire skill folder into your Claude Code global skills directory:
-
-```bash
-# macOS / Linux
-cp -r .claude/skills/aitube-download ~/.claude/skills/aitube-download
-```
-
-```powershell
-# Windows (PowerShell)
-Copy-Item -Recurse ".claude\skills\aitube-download" "$env:USERPROFILE\.claude\skills\aitube-download"
-```
-
-Then fill in your server details in the token files:
-
-```
-~/.claude/skills/aitube-download/token/aitube-url    ← e.g. http://localhost:6001
-~/.claude/skills/aitube-download/token/aitube-token  ← your API key
-```
-
-Get your API key from the container log:
-
-```bash
-docker logs ai-tube-prod | grep "API access key"
-```
-
-> The `token/` folder ships with empty placeholder files. Your personal values are excluded from git via a `.gitignore` inside that folder.
+| Skill | Platform | Folder |
+|-------|----------|--------|
+| `aitube-download` | [Claude Code](https://claude.ai/code) | [`skills/aitube-download/`](skills/aitube-download/) |
+| `aitube-download-oc` | [OpenClaw](https://openclaw.ai) | [`skills/aitube-download-oc/`](skills/aitube-download-oc/) |
 
 ### Enable the API
 
@@ -60,11 +36,38 @@ AITUBE_API_ENABLED=true
 AITUBE_API_TOKEN=        # leave blank to auto-generate on first start
 ```
 
-### Sample Conversations
+Get the generated token from the container log:
 
-Once the skill is installed, invoke it from Claude Code chat:
+```bash
+docker logs ai-tube-prod | grep "API access key"
+```
 
 ---
+
+### Claude Code Skill (`aitube-download`)
+
+#### Install
+
+```bash
+# macOS / Linux
+cp -r skills/aitube-download ~/.claude/skills/aitube-download
+```
+
+```powershell
+# Windows (PowerShell)
+Copy-Item -Recurse "skills\aitube-download" "$env:USERPROFILE\.claude\skills\aitube-download"
+```
+
+Fill in your server details after copying:
+
+```
+~/.claude/skills/aitube-download/token/aitube-url    ← e.g. http://localhost:6001
+~/.claude/skills/aitube-download/token/aitube-token  ← your API key
+```
+
+> The `token/` folder ships with empty placeholder files. Real values are excluded from git via the `.gitignore` inside that folder.
+
+#### Sample conversations
 
 **Download a single video as MP4**
 
@@ -96,6 +99,18 @@ Once the skill is installed, invoke it from Claude Code chat:
 
 ---
 
+**Download a playlist as MP4 (video)**
+
+> 👤 `/aitube-download https://www.youtube.com/playlist?list=PLxxxxxxxx download all as mp4`
+>
+> 🤖 Detected a YouTube playlist (18 videos). Download the whole playlist as MP4?
+>
+> 👤 yes
+>
+> 🤖 ✅ Queued **18 videos** as MP4. Check http://localhost:6001 for progress.
+
+---
+
 **Check download progress**
 
 > 👤 `is it done yet?`
@@ -108,7 +123,7 @@ Once the skill is installed, invoke it from Claude Code chat:
 
 > 👤 `/aitube-download download https://youtu.be/abc123 as mp3`
 >
-> 🤖 I need your AI Tube API token to continue. You can find it by running:
+> 🤖 I need your AI Tube API token. Find it with:
 > ```
 > docker logs ai-tube-prod | grep "API access key"
 > ```
@@ -120,6 +135,67 @@ Once the skill is installed, invoke it from Claude Code chat:
 
 ---
 
+### OpenClaw Skill (`aitube-download-oc`)
+
+#### Install
+
+Copy the skill folder into your OpenClaw skills directory and fill in the token files:
+
+```bash
+# macOS / Linux
+cp -r skills/aitube-download-oc ~/.openclaw/skills/aitube-download-oc
+```
+
+```powershell
+# Windows (PowerShell)
+Copy-Item -Recurse "skills\aitube-download-oc" "$env:USERPROFILE\.openclaw\skills\aitube-download-oc"
+```
+
+Fill in your server details after copying:
+
+```
+~/.openclaw/skills/aitube-download-oc/tokens/aitube-url    ← e.g. http://localhost:6001
+~/.openclaw/skills/aitube-download-oc/tokens/aitube-token  ← your API key
+```
+
+#### Sample conversations
+
+**Download a single song as MP3**
+
+> 👤 `download https://www.youtube.com/watch?v=dQw4w9WgXcQ as mp3`
+>
+> 🤖 ✅ Queued as **MP3** (ID: `1718000000010`). Check your AI Tube server for progress.
+
+---
+
+**Download a full playlist as MP3 with collection name**
+
+> 👤 `download the whole playlist https://www.youtube.com/playlist?list=PLxxxxxxxx as mp3, name the collection "Chill Mix"`
+>
+> 🤖 ✅ Queued **12 tracks** as MP3 in collection **"Chill Mix"**. Downloading now.
+
+---
+
+**Download a playlist as MP4**
+
+> 👤 `download https://www.youtube.com/playlist?list=PLxxxxxxxx as mp4`
+>
+> 🤖 Detected a YouTube playlist. Download the whole playlist as MP4?
+>
+> 👤 yes
+>
+> 🤖 ✅ Queued **18 videos** as MP4. Downloading now.
+
+---
+
+**Check download progress**
+
+> 👤 `how's the download going?`
+>
+> 🤖 **Track 4/12** — "Song Title" at 45% (2.1 MiB/s). 8 tracks still in queue.
+
+---
+
 ### Supported Formats
 
 | Format | Description |
@@ -127,7 +203,7 @@ Once the skill is installed, invoke it from Claude Code chat:
 | `mp4`  | Best quality video + audio |
 | `mp3`  | Audio only, highest quality |
 
-For the full REST API reference see [`.claude/skills/aitube-download/reference/api-reference.md`](.claude/skills/aitube-download/reference/api-reference.md).
+For the full REST API reference see [`skills/aitube-download/reference/api-reference.md`](skills/aitube-download/reference/api-reference.md).
 
 ---
 

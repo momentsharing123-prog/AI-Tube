@@ -1,0 +1,5 @@
+# Ignore actual token values — these files are personal and must never be committed.
+# The empty placeholder files (aitube-url, aitube-token) are tracked so the folder
+# structure is preserved for new installs.  Fill them in after cloning.
+aitube-url
+aitube-token

@@ -18,6 +18,119 @@ Self-hosted downloader and player for YouTube, Bilibili, Twitch, MissAV, and [yt
 
 [中文](README-zh.md) | [Changelog](CHANGELOG.md)
 
+## AI Agent Skill (Claude Code)
+
+AI-Tube ships a [Claude Code](https://claude.ai/code) skill so you can trigger downloads by chatting with your AI agent — no browser required.
+
+### Install
+
+Copy the entire skill folder into your Claude Code global skills directory:
+
+```bash
+# macOS / Linux
+cp -r .claude/skills/aitube-download ~/.claude/skills/aitube-download
+```
+
+```powershell
+# Windows (PowerShell)
+Copy-Item -Recurse ".claude\skills\aitube-download" "$env:USERPROFILE\.claude\skills\aitube-download"
+```
+
+Then fill in your server details in the token files:
+
+```
+~/.claude/skills/aitube-download/token/aitube-url    ← e.g. http://localhost:6001
+~/.claude/skills/aitube-download/token/aitube-token  ← your API key
+```
+
+Get your API key from the container log:
+
+```bash
+docker logs ai-tube-prod | grep "API access key"
+```
+
+> The `token/` folder ships with empty placeholder files. Your personal values are excluded from git via a `.gitignore` inside that folder.
+
+### Enable the API
+
+Set these in your Docker Compose env before starting (see [docker/docker-compose.local.yml](docker/docker-compose.local.yml)):
+
+```env
+AITUBE_API_ENABLED=true
+AITUBE_API_TOKEN=        # leave blank to auto-generate on first start
+```
+
+### Sample Conversations
+
+Once the skill is installed, invoke it from Claude Code chat:
+
+---
+
+**Download a single video as MP4**
+
+> 👤 `/aitube-download download https://www.youtube.com/watch?v=dQw4w9WgXcQ as mp4`
+>
+> 🤖 ✅ Queued as **MP4** (ID: `1718000000001`). Downloading now — check http://localhost:6001 for progress.
+
+---
+
+**Download audio only as MP3**
+
+> 👤 `/aitube-download https://www.youtube.com/watch?v=dQw4w9WgXcQ mp3 please`
+>
+> 🤖 ✅ Queued as **MP3** (ID: `1718000000002`). Downloading now — check http://localhost:6001 for progress.
+
+---
+
+**Download an entire playlist as MP3**
+
+> 👤 `/aitube-download download this playlist as mp3: https://www.youtube.com/playlist?list=PLxxxxxxxx`
+>
+> 🤖 The URL looks like a YouTube playlist. Do you want to download **just this one song** or the **entire playlist as MP3**?
+> - A) Just this song
+> - B) Entire playlist as MP3
+>
+> 👤 B
+>
+> 🤖 ✅ Queued **24 tracks** as MP3. Downloading now — check http://localhost:6001 for progress.
+
+---
+
+**Check download progress**
+
+> 👤 `is it done yet?`
+>
+> 🤖 Still going — **Never Gonna Give You Up** is at 67% (1.4 MiB/s). 3 tracks still queued.
+
+---
+
+**First-time setup (token not yet saved)**
+
+> 👤 `/aitube-download download https://youtu.be/abc123 as mp3`
+>
+> 🤖 I need your AI Tube API token to continue. You can find it by running:
+> ```
+> docker logs ai-tube-prod | grep "API access key"
+> ```
+> Paste your token here:
+>
+> 👤 `abc123token...`
+>
+> 🤖 Token saved. ✅ Queued as **MP3** (ID: `1718000000003`).
+
+---
+
+### Supported Formats
+
+| Format | Description |
+|--------|-------------|
+| `mp4`  | Best quality video + audio |
+| `mp3`  | Audio only, highest quality |
+
+For the full REST API reference see [`.claude/skills/aitube-download/reference/api-reference.md`](.claude/skills/aitube-download/reference/api-reference.md).
+
+---
+
 ## Demo
 
 🌐 **Try the live demo (read only): [https://mytube-demo.vercel.app](https://mytube-demo.vercel.app)**
@@ -63,62 +176,6 @@ For installation and setup instructions, please refer to [Getting Started](docum
 ## Deployment Security Model
 
 For the three-tier admin trust and deployment security model, please refer to [Deployment Security Model](documents/en/deployment-security-model.md).
-
-## AI Agent Skill (Claude Code)
-
-AI-Tube ships a [Claude Code](https://claude.ai/code) skill that lets you trigger downloads by chatting with your AI agent — no browser required.
-
-### Install the skill
-
-Copy the skill into your Claude Code global skills folder:
-
-```bash
-# macOS / Linux
-mkdir -p ~/.claude/skills/aitube-download
-cp .claude/skills/aitube-download/SKILL.md ~/.claude/skills/aitube-download/SKILL.md
-
-# Windows (PowerShell)
-New-Item -ItemType Directory -Force "$env:USERPROFILE\.claude\skills\aitube-download"
-Copy-Item ".claude\skills\aitube-download\SKILL.md" "$env:USERPROFILE\.claude\skills\aitube-download\SKILL.md"
-```
-
-### Enable the API
-
-Set these environment variables before starting the container (see [docker/docker-compose.local.yml](docker/docker-compose.local.yml)):
-
-```env
-AITUBE_API_ENABLED=true
-AITUBE_API_TOKEN=        # leave blank to auto-generate a token on first start
-```
-
-On first start, the generated token is printed to the container log:
-
-```bash
-docker logs ai-tube-prod | grep "API access key"
-```
-
-### Use the skill
-
-In Claude Code, type:
-
-```
-/aitube-download  download https://www.youtube.com/watch?v=xxxx as mp3
-```
-
-The skill will:
-1. Load (or prompt for) your API token and save it to `~/.aitube-token`
-2. Verify the token against the running container
-3. Submit the download job via the REST API
-4. Report back the download ID and let you poll progress on demand
-
-### Supported formats
-
-| Format | Description |
-|--------|-------------|
-| `mp4`  | Best quality video + audio |
-| `mp3`  | Audio only, highest quality |
-
-For full REST API documentation see [API Reference](documents/en/api.md).
 
 ## API Endpoints
 

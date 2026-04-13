@@ -6,16 +6,26 @@ Help the user download YouTube / web videos or audio via their AI Tube server.
 
 ## Step 1 — Load stored config
 
-Check if API URL and token are already saved:
+Token and URL are stored inside this skill folder:
 
-```bash
-cat ~/.aitube-url 2>/dev/null || echo "NO_URL"
-cat ~/.aitube-token 2>/dev/null || echo "NO_TOKEN"
+- `token/aitube-url` — server base URL (e.g. `http://localhost:6001`)
+- `token/aitube-token` — API access key
+
+Resolve the skill folder path and read both files:
+
+```powershell
+powershell -Command "
+\$skillDir = (Resolve-Path '\$env:USERPROFILE\.claude\skills\aitube-download').Path
+\$urlFile   = Join-Path \$skillDir 'token\aitube-url'
+\$tokenFile = Join-Path \$skillDir 'token\aitube-token'
+if (Test-Path \$urlFile)   { (Get-Content \$urlFile   -Raw).Trim().TrimEnd('/') } else { 'NO_URL' }
+if (Test-Path \$tokenFile) { (Get-Content \$tokenFile -Raw).Trim() }             else { 'NO_TOKEN' }
+"
 ```
 
-- If both exist, store them as `AITUBE_URL` and `AITUBE_TOKEN` and skip to Step 2.
-- If `NO_URL`, go to Step 1a.
-- If `NO_TOKEN`, go to Step 1b.
+- If both values are present, store them as `AITUBE_URL` and `AITUBE_TOKEN` and skip to Step 2.
+- If `NO_URL` → go to Step 1a.
+- If `NO_TOKEN` → go to Step 1b.
 
 ### Step 1a — Ask for API URL
 
@@ -27,10 +37,13 @@ Use AskUserQuestion:
 
 Save the answer (strip any trailing slash):
 
-```bash
-echo "PASTE_URL_HERE" > ~/.aitube-url
-chmod 600 ~/.aitube-url
-echo "URL saved."
+```powershell
+powershell -Command "
+\$skillDir = (Resolve-Path '\$env:USERPROFILE\.claude\skills\aitube-download').Path
+\$urlFile  = Join-Path \$skillDir 'token\aitube-url'
+Set-Content -Path \$urlFile -Value 'PASTE_URL_HERE' -NoNewline
+Write-Output 'URL saved.'
+"
 ```
 
 ### Step 1b — Ask for token
@@ -48,18 +61,22 @@ Use AskUserQuestion:
 
 Save the token:
 
-```bash
-echo "PASTE_TOKEN_HERE" > ~/.aitube-token
-chmod 600 ~/.aitube-token
-echo "Token saved."
+```powershell
+powershell -Command "
+\$skillDir   = (Resolve-Path '\$env:USERPROFILE\.claude\skills\aitube-download').Path
+\$tokenFile  = Join-Path \$skillDir 'token\aitube-token'
+Set-Content -Path \$tokenFile -Value 'PASTE_TOKEN_HERE' -NoNewline
+Write-Output 'Token saved.'
+"
 ```
 
 ### Step 1c — Verify connection
 
 ```powershell
 powershell -Command "
-\$url   = (Get-Content '\$env:USERPROFILE\.aitube-url'   -Raw).Trim().TrimEnd('/')
-\$token = (Get-Content '\$env:USERPROFILE\.aitube-token' -Raw).Trim()
+\$skillDir = (Resolve-Path '\$env:USERPROFILE\.claude\skills\aitube-download').Path
+\$url   = (Get-Content (Join-Path \$skillDir 'token\aitube-url')   -Raw).Trim().TrimEnd('/')
+\$token = (Get-Content (Join-Path \$skillDir 'token\aitube-token') -Raw).Trim()
 try {
   \$r = Invoke-RestMethod -Uri \"\$url/api/download-status\" -Headers @{'X-API-Key'=\$token}
   Write-Output 'AUTH_OK'
@@ -110,8 +127,9 @@ Read the saved config and submit:
 
 ```powershell
 powershell -Command "
-\$url   = (Get-Content '\$env:USERPROFILE\.aitube-url'   -Raw).Trim().TrimEnd('/')
-\$token = (Get-Content '\$env:USERPROFILE\.aitube-token' -Raw).Trim()
+\$skillDir = (Resolve-Path '\$env:USERPROFILE\.claude\skills\aitube-download').Path
+\$url   = (Get-Content (Join-Path \$skillDir 'token\aitube-url')   -Raw).Trim().TrimEnd('/')
+\$token = (Get-Content (Join-Path \$skillDir 'token\aitube-token') -Raw).Trim()
 \$body = ConvertTo-Json @{
   url    = 'VIDEO_URL'
   format = 'FORMAT'
@@ -143,8 +161,9 @@ Replace:
 
 ```powershell
 powershell -Command "
-\$url   = (Get-Content '\$env:USERPROFILE\.aitube-url'   -Raw).Trim().TrimEnd('/')
-\$token = (Get-Content '\$env:USERPROFILE\.aitube-token' -Raw).Trim()
+\$skillDir = (Resolve-Path '\$env:USERPROFILE\.claude\skills\aitube-download').Path
+\$url   = (Get-Content (Join-Path \$skillDir 'token\aitube-url')   -Raw).Trim().TrimEnd('/')
+\$token = (Get-Content (Join-Path \$skillDir 'token\aitube-token') -Raw).Trim()
 \$body = ConvertTo-Json @{
   url                = 'PLAYLIST_URL'
   format             = 'mp3'
@@ -175,8 +194,9 @@ If the user asks "is it done?" or "how's the download?", check status:
 
 ```powershell
 powershell -Command "
-\$url   = (Get-Content '\$env:USERPROFILE\.aitube-url'   -Raw).Trim().TrimEnd('/')
-\$token = (Get-Content '\$env:USERPROFILE\.aitube-token' -Raw).Trim()
+\$skillDir = (Resolve-Path '\$env:USERPROFILE\.claude\skills\aitube-download').Path
+\$url   = (Get-Content (Join-Path \$skillDir 'token\aitube-url')   -Raw).Trim().TrimEnd('/')
+\$token = (Get-Content (Join-Path \$skillDir 'token\aitube-token') -Raw).Trim()
 \$r = Invoke-RestMethod -Uri \"\$url/api/download-status\" \`
   -Headers @{'X-API-Key'=\$token}
 \$r | ConvertTo-Json -Depth 5
@@ -192,18 +212,23 @@ Parse and summarise:
 
 ## Reference
 
-**Config files:**
-- `~/.aitube-url` — server URL with port (e.g. `http://localhost:6001`)
-- `~/.aitube-token` — API access key
+**Config files (inside this skill folder):**
+- `token/aitube-url` — server URL with port (e.g. `http://localhost:6001`)
+- `token/aitube-token` — API access key
+
+See `reference/api-reference.md` for the full API documentation.
 
 | Endpoint | Method | Purpose |
 |----------|--------|---------|
-| `/api/agent/download` | POST | Queue a download |
+| `/api/agent/download` | POST | Queue a download (API key only) |
 | `/api/download-status` | GET | Check active/queued downloads |
 | `/api/downloads/history` | GET | View completed downloads |
+| `/api/playlist-entries` | GET | List tracks in a playlist |
+| `/api/download/playlist-mp3` | POST | Queue selected playlist tracks as MP3 |
+| `/api/download/playlist-mp4` | POST | Queue selected playlist videos as MP4 |
 
 **Supported formats:**
 - `mp4` — best quality video + audio
 - `mp3` — audio only, best quality
 
-**Supported sources:** YouTube, Bilibili, Twitch, Twitter/X, and anything yt-dlp supports.
+**Supported sources:** YouTube, Bilibili, Twitch, Twitter/X, MissAV, and anything yt-dlp supports.

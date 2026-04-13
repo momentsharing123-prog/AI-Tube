@@ -113,6 +113,82 @@ export async function checkPlaylist(playlistUrl: string): Promise<{
   }
 }
 
+/**
+ * Detect whether any URL is a playlist or a single video.
+ * Uses yt-dlp --flat-playlist so no media is downloaded.
+ * Works for YouTube (with or without ?list=), YouTube Music, Bilibili, etc.
+ */
+export async function detectUrl(url: string): Promise<{
+  isPlaylist: boolean;
+  title: string;
+  videoCount?: number;
+  suggestedApi: string;
+  suggestedBody: Record<string, unknown>;
+}> {
+  const {
+    executeYtDlpJson,
+    getNetworkConfigFromUserConfig,
+    getUserYtDlpConfig,
+  } = await import("../utils/ytDlpUtils");
+  const { getProviderScript } = await import(
+    "./downloaders/ytdlp/ytdlpHelpers"
+  );
+
+  const userConfig = getUserYtDlpConfig(url);
+  const networkConfig = getNetworkConfigFromUserConfig(userConfig);
+  const PROVIDER_SCRIPT = getProviderScript();
+
+  let info: Record<string, unknown>;
+  try {
+    info = await executeYtDlpJson(url, {
+      ...networkConfig,
+      noWarnings: true,
+      flatPlaylist: true,
+      ...(PROVIDER_SCRIPT
+        ? { extractorArgs: `youtubepot-bgutilscript:script_path=${PROVIDER_SCRIPT}` }
+        : {}),
+    });
+  } catch (error) {
+    const { logger } = await import("../utils/logger");
+    logger.warn("detectUrl: yt-dlp failed, treating as single video:", error);
+    return {
+      isPlaylist: false,
+      title: url,
+      suggestedApi: "POST /api/agent/download",
+      suggestedBody: { url, format: "mp3" },
+    };
+  }
+
+  const isPlaylist =
+    info._type === "playlist" ||
+    (Array.isArray(info.entries) && (info.entries as unknown[]).length > 0);
+
+  if (isPlaylist) {
+    const entries = info.entries as unknown[] | undefined;
+    const videoCount =
+      (info.playlist_count as number | undefined) ?? entries?.length ?? 0;
+    const title =
+      (info.title as string | undefined) ??
+      (info.playlist as string | undefined) ??
+      "Playlist";
+    return {
+      isPlaylist: true,
+      title,
+      videoCount,
+      suggestedApi: "POST /api/download/playlist-mp3  or  POST /api/download/playlist-mp4",
+      suggestedBody: { playlistUrl: url, collectionName: title },
+    };
+  }
+
+  const title = (info.title as string | undefined) ?? url;
+  return {
+    isPlaylist: false,
+    title,
+    suggestedApi: "POST /api/agent/download",
+    suggestedBody: { url, format: "mp3" },
+  };
+}
+
 // Helper function to check if a Bilibili video belongs to a collection or series
 export async function checkBilibiliCollectionOrSeries(
   videoId: string,

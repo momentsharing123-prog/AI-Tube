@@ -657,6 +657,32 @@ export const checkBilibiliCollection = async (
  * Check if URL is a playlist (supports YouTube and Bilibili)
  * Errors are automatically handled by asyncHandler middleware
  */
+/**
+ * Detect whether any URL is a playlist or single video.
+ * GET /api/detect-url?url=<url>
+ * Returns: { isPlaylist, title, videoCount?, suggestedApi, suggestedBody }
+ */
+export const detectUrl = async (
+  req: Request,
+  res: Response,
+): Promise<void> => {
+  const url = getStringParam(req.query.url);
+  if (!url) throw new ValidationError("url query parameter is required", "url");
+
+  let validatedUrl: string;
+  try {
+    validatedUrl = validateUrl(url);
+  } catch (error) {
+    throw new ValidationError(
+      error instanceof Error ? error.message : "Invalid URL",
+      "url",
+    );
+  }
+
+  const result = await downloadService.detectUrl(validatedUrl);
+  sendData(res, result);
+};
+
 export const checkPlaylist = async (
   req: Request,
   res: Response,

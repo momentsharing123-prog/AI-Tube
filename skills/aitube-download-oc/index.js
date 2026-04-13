@@ -20,11 +20,11 @@ async function detectCollection(url) {
   const cfg = await loadConfig();
   if (!cfg.url || !cfg.token) throw new Error('Missing AI Tube API URL or token config');
 
-  // Fast local heuristic first
+  // Keep heuristic only as emergency fallback if detect endpoint is unavailable.
   const hasListParam = /[?&]list=/.test(url || '');
 
   try {
-    const res = await axios.get(cfg.url + '/api/check-playlist', {
+    const res = await axios.get(cfg.url + '/api/detect-url', {
       headers: { 'X-API-Key': cfg.token },
       params: { url },
     });
@@ -33,15 +33,21 @@ async function detectCollection(url) {
     return {
       isCollection: !!data.isPlaylist,
       title: data.title || null,
+      videoCount: typeof data.videoCount === 'number' ? data.videoCount : null,
+      suggestedApi: data.suggestedApi || null,
+      suggestedBody: data.suggestedBody || null,
       source: 'api',
       heuristic: hasListParam,
       raw: data,
     };
   } catch {
-    // Fallback to heuristic if API check fails
+    // Fallback to heuristic if detect API fails.
     return {
       isCollection: hasListParam,
       title: null,
+      videoCount: null,
+      suggestedApi: null,
+      suggestedBody: null,
       source: 'heuristic',
       heuristic: hasListParam,
     };

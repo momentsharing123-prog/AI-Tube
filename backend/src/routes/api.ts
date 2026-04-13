@@ -106,6 +106,10 @@ router.get(
   "/check-playlist",
   asyncHandler(videoDownloadController.checkPlaylist)
 );
+router.get(
+  "/detect-url",
+  asyncHandler(videoDownloadController.detectUrl)
+);
 
 router.post(
   "/downloads/channel-playlists",

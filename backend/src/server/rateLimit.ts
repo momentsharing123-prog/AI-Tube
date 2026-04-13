@@ -115,6 +115,7 @@ export const configureRateLimiting = (app: Express): AuthLimiters => {
       req.path.startsWith("/api/check-video-download") ||
       req.path.startsWith("/api/check-bilibili") ||
       req.path.startsWith("/api/check-playlist") ||
+      req.path.startsWith("/api/detect-url") ||
       req.path.startsWith("/api/collections") ||
       req.path.startsWith("/api/downloads/") ||
       req.path === "/api/settings/password-enabled" ||

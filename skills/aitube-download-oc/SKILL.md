@@ -17,6 +17,12 @@ Read config from this skill folder:
 If either value is missing, ask user to provide it and save to the corresponding file.
 Always trim whitespace and remove trailing slash from URL.
 
+To verify the API key is valid, POST a dummy URL to `/api/agent/download` and check the response status:
+- `400` (bad URL) → key is correct, server rejected the URL as expected → proceed
+- `403` (forbidden) → key is wrong → ask user to re-check
+
+Do NOT use `GET /api/download-status` for auth verification — it returns 200 even with a wrong key when login is not required on the server.
+
 ## Request handling flow
 
 1. Extract download URL from user message.
@@ -24,8 +30,8 @@ Always trim whitespace and remove trailing slash from URL.
    - `mp3` for "audio/music/mp3"
    - `mp4` for "video/mp4"
    - default to `mp3` when unspecified
-3. Detect playlist/collection by calling `GET /api/check-playlist?url=...` first.
-   - If API check fails, fallback to `list=` URL heuristic.
+3. Detect playlist/collection by calling `GET /api/detect-url?url=...` first.
+   - check "isPlaylist": false, true
 4. Routing rules:
    - If **not playlist** (`isPlaylist: false`): download directly via `POST /api/agent/download`.
    - If **playlist** (`isPlaylist: true`): ask single item vs full playlist.

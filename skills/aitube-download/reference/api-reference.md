@@ -1,29 +1,87 @@
-# AI Tube API Reference
+# AI Tube Unified API Reference (Agent-First)
 
 Base URL: `http://localhost:6001` (or your configured server URL)
 
-Authentication: all endpoints require either a session cookie (browser) or `X-API-Key: <token>` header. The agent-only endpoint **only** accepts `X-API-Key`.
+## Authentication
+
+Use one of these headers:
+
+- `X-API-Key: <token>` (recommended for agents)
+- `Authorization: ApiKey <token>` (also accepted by many endpoints)
+
+Notes:
+- `POST /api/agent/download` is agent-focused and should use `X-API-Key`.
+- Do **not** use `GET /api/download-status` to validate token correctness (may return 200 in some server modes).
+- Reliable auth check: call `POST /api/agent/download` with an intentionally bad URL:
+  - `400` => token is valid, URL is invalid (expected)
+  - `403` => token invalid
 
 ---
 
-## Agent Download
+## Recommended agent flow
+
+1. Detect URL type via `GET /api/detect-url?url=...`
+2. If `isPlaylist=false` → call `POST /api/agent/download`
+3. If `isPlaylist=true`:
+   - single item → `POST /api/agent/download`
+   - full playlist MP3 → `POST /api/download/playlist-mp3`
+   - full playlist MP4 → `POST /api/download/playlist-mp4`
+4. Monitor with `GET /api/download-status`
+
+---
+
+## 1) URL Detection
+
+### `GET /api/detect-url`
+Universal detector for single video vs playlist (YouTube, YouTube Music, Bilibili, Twitch, etc.).
+
+**Query parameters**
+
+| Parameter | Type | Required | Description |
+|---|---|---:|---|
+| `url` | string | ✅ | Any supported video/playlist URL |
+
+**Sample response (single video)**
+
+```json
+{
+  "isPlaylist": false,
+  "title": "Rick Astley - Never Gonna Give You Up",
+  "suggestedApi": "POST /api/agent/download",
+  "suggestedBody": { "url": "https://...", "format": "mp3" }
+}
+```
+
+**Sample response (playlist)**
+
+```json
+{
+  "isPlaylist": true,
+  "title": "My Playlist",
+  "videoCount": 24,
+  "suggestedApi": "POST /api/download/playlist-mp3  or  POST /api/download/playlist-mp4",
+  "suggestedBody": { "playlistUrl": "https://...", "collectionName": "My Playlist" }
+}
+```
+
+---
+
+## 2) Agent Download (single-item path)
 
 ### `POST /api/agent/download`
+Queue one item (video/audio). Can also accept playlist URL, but defaults to single-item behavior unless playlist mode is explicitly enabled.
 
-**Requires:** `X-API-Key` header (no session cookie accepted)
-
-Queue a single video or an entire MP3 playlist. Designed for AI agent use — clean schema, returns immediately.
-
-**Request body:**
+**Body parameters**
 
 | Field | Type | Required | Default | Description |
-|-------|------|----------|---------|-------------|
+|---|---|---:|---|---|
 | `url` | string | ✅ | — | Video or playlist URL |
-| `format` | `"mp4"` \| `"mp3"` | ❌ | `"mp4"` | Output format |
-| `title` | string | ❌ | `"Agent Download"` | Label shown in the download queue |
-| `downloadCollection` | boolean | ❌ | `false` | When `true` + `format="mp3"`: enumerate and queue every track in the playlist as MP3. Only supported for `mp3`. |
+| `format` | `"mp4" \| "mp3"` | ❌ | `"mp4"` | Output format |
+| `title` | string | ❌ | `"Agent Download"` | Queue display title |
+| `downloadCollection` | boolean | ❌ | `false` | Playlist batch mode on this endpoint (MP3 only) |
 
-**Single video response (default):**
+**Sample response (single item)**
+
 ```json
 {
   "success": true,
@@ -33,30 +91,77 @@ Queue a single video or an entire MP3 playlist. Designed for AI agent use — cl
 }
 ```
 
-**Playlist collection response (`downloadCollection: true`):**
+**Sample response (playlist collection on this endpoint)**
+
 ```json
 {
   "success": true,
   "status": "queued",
   "message": "Queued 12 tracks as MP3",
   "totalTracks": 12,
-  "downloadIds": ["1718000000001_abc12", "1718000000002_def34", "..."]
+  "downloadIds": ["1718000000001_abc12", "1718000000002_def34"]
 }
 ```
 
-**Notes:**
-- `downloadCollection: true` is only supported for `format="mp3"`. For MP4 playlists use the web UI (`POST /api/download/playlist-mp4`).
-- When `downloadCollection` is omitted or `false`, a playlist URL downloads only the single video/track in the URL (uses `--no-playlist` internally).
+**Important**
+- `downloadCollection: true` is supported only for MP3 here.
+- For MP4 playlists, use `POST /api/download/playlist-mp4`.
 
 ---
 
-## Download Status
+## 3) Playlist Batch Downloads
+
+### `POST /api/download/playlist-mp3`
+Queue selected/all playlist entries as MP3.
+
+### `POST /api/download/playlist-mp4`
+Queue selected/all playlist entries as MP4.
+
+**Body parameters** (both endpoints)
+
+| Field | Type | Required | Description |
+|---|---|---:|---|
+| `playlistUrl` | string | Conditional | Playlist URL for "download all" mode |
+| `entries` | array of `{url, title}` | Conditional | Explicit selected entries; if present, takes priority |
+| `collectionName` | string | ❌ | Optional grouping label |
+
+(`playlistUrl` or `entries` should be provided.)
+
+**Sample response (`playlist-mp3`)**
+
+```json
+{
+  "success": true,
+  "status": "queued",
+  "message": "Queued 8 tracks as MP3",
+  "totalTracks": 8,
+  "collectionId": "1718000000000",
+  "downloadIds": ["..."]
+}
+```
+
+**Sample response (`playlist-mp4`)**
+
+```json
+{
+  "success": true,
+  "status": "queued",
+  "message": "Queued 8 videos as MP4",
+  "totalVideos": 8,
+  "collectionId": "1718000000000",
+  "downloadIds": ["..."]
+}
+```
+
+---
+
+## 4) Download Status
 
 ### `GET /api/download-status`
+Returns currently active and queued tasks.
 
-Returns active and queued downloads.
+**Sample response**
 
-**Response:**
 ```json
 {
   "activeDownloads": [
@@ -82,13 +187,47 @@ Returns active and queued downloads.
 
 ---
 
-## Download History
+## 5) Playlist Utilities
+
+### `GET /api/playlist-entries`
+Enumerate playlist items without downloading.
+
+**Query parameters**
+
+| Parameter | Type | Required | Description |
+|---|---|---:|---|
+| `url` | string | ✅ | Playlist URL |
+
+**Sample response (success)**
+
+```json
+{
+  "success": true,
+  "entries": [
+    { "url": "https://youtu.be/abc", "title": "Track 1" },
+    { "url": "https://youtu.be/def", "title": "Track 2" }
+  ]
+}
+```
+
+**Sample response (cannot enumerate, e.g. Mix/Radio)**
+
+```json
+{
+  "success": false,
+  "error": "Failed to fetch playlist entries",
+  "entries": []
+}
+```
+
+
+## 6) History + Queue Management
 
 ### `GET /api/downloads/history`
+Return completed/failed history items.
 
-Returns all completed downloads (both success and failed).
+**Sample response**
 
-**Response:** array of history items:
 ```json
 [
   {
@@ -102,133 +241,59 @@ Returns all completed downloads (both success and failed).
 ```
 
 ### `DELETE /api/downloads/history/:id`
+Delete one history record.
 
-Remove a single entry from history.
+**Path parameters**
+
+| Parameter | Type | Required | Description |
+|---|---|---:|---|
+| `id` | string | ✅ | History item ID |
 
 ### `DELETE /api/downloads/history`
-
-Clear all history entries.
-
----
-
-## Download Management
+Clear all history records.
 
 ### `POST /api/downloads/cancel/:id`
+Cancel an active task.
 
-Cancel an active download.
+**Path parameters**
+
+| Parameter | Type | Required | Description |
+|---|---|---:|---|
+| `id` | string | ✅ | Active download ID |
 
 ### `DELETE /api/downloads/queue/:id`
+Remove one queued task.
 
-Remove a task from the queue (before it starts).
+**Path parameters**
+
+| Parameter | Type | Required | Description |
+|---|---|---:|---|
+| `id` | string | ✅ | Queued task ID |
 
 ### `DELETE /api/downloads/queue`
-
-Clear the entire queue.
-
----
-
-## Web UI Playlist Downloads
-
-These endpoints are used by the web UI playlist picker. They accept either a full playlist URL (download all) or a pre-selected list of entries.
-
-### `POST /api/download/playlist-mp3`
-
-Download selected YouTube playlist tracks as individual MP3 files.
-
-**Request body:**
-
-| Field | Type | Description |
-|-------|------|-------------|
-| `playlistUrl` | string | Playlist URL — download **all** tracks (mutually exclusive with `entries`) |
-| `entries` | `[{url, title}]` | Selected tracks to download (takes priority over `playlistUrl`) |
-| `collectionName` | string? | If set, all downloaded tracks are grouped into a collection with this name |
-
-**Response:**
-```json
-{
-  "success": true,
-  "status": "queued",
-  "message": "Queued 8 tracks as MP3",
-  "totalTracks": 8,
-  "collectionId": "1718000000000",
-  "downloadIds": ["..."]
-}
-```
-
-### `POST /api/download/playlist-mp4`
-
-Download selected YouTube playlist videos as individual MP4 files. Same body schema as `playlist-mp3`.
-
-**Response:**
-```json
-{
-  "success": true,
-  "status": "queued",
-  "message": "Queued 8 videos as MP4",
-  "totalVideos": 8,
-  "collectionId": "1718000000000",
-  "downloadIds": ["..."]
-}
-```
+Clear full queue.
 
 ---
 
-## Playlist Utilities
-
-### `GET /api/playlist-entries?url=<playlistUrl>`
-
-Enumerate all tracks/videos in a playlist without downloading. Used by the web UI picker. Timeout: up to 60 seconds for large playlists.
-
-**Response:**
-```json
-{
-  "success": true,
-  "entries": [
-    { "url": "https://youtu.be/abc", "title": "Track 1" },
-    { "url": "https://youtu.be/def", "title": "Track 2" }
-  ]
-}
-```
-
-**Error (Radio/Mix playlists that can't be enumerated):**
-```json
-{
-  "success": false,
-  "error": "Failed to fetch playlist entries",
-  "entries": []
-}
-```
-
-### `GET /api/check-playlist?url=<url>`
-
-Check if a URL points to a valid enumerable playlist.
-
-**Response:**
-```json
-{ "success": true, "isPlaylist": true, "title": "My Playlist" }
-```
-
----
-
-## Single Video Download (Web UI)
+## 7) Web UI Helpers (optional for agents)
 
 ### `POST /api/download`
+Web UI single download endpoint (supports extra flags such as Bilibili collection behaviors).
 
-Queue a single video or audio download (web UI endpoint, supports Bilibili collections too).
+**Body parameters**
 
-**Request body:**
+| Field | Type | Required | Description |
+|---|---|---:|---|
+| `youtubeUrl` | string | ✅ | Target URL |
+| `format` | `"mp4" \| "mp3"` | ❌ | Output format |
+| `collectionName` | string | ❌ | Group label |
+| `forceDownload` | boolean | ❌ | Force re-download |
+| `downloadAllParts` | boolean | ❌ | Bilibili multi-part full download |
+| `downloadCollection` | boolean | ❌ | Bilibili collection/series download |
+| `collectionInfo` | object | ❌ | Collection metadata |
 
-| Field | Type | Description |
-|-------|------|-------------|
-| `youtubeUrl` | string | Video URL (YouTube, Bilibili, Twitch, MissAV, etc.) |
-| `format` | `"mp4"` \| `"mp3"` | Output format, defaults to `"mp4"` |
-| `collectionName` | string? | Add to a named collection |
-| `forceDownload` | boolean? | Re-download even if previously downloaded |
-| `downloadAllParts` | boolean? | Bilibili multi-part: download all parts |
-| `downloadCollection` | boolean? | Bilibili collection/series download |
-| `collectionInfo` | object? | Bilibili collection metadata |
+**Sample response**
 
-**Response:**
 ```json
 {
   "success": true,
@@ -237,15 +302,17 @@ Queue a single video or audio download (web UI endpoint, supports Bilibili colle
 }
 ```
 
----
+### `GET /api/check-video-download`
+Check whether a URL was already downloaded.
 
-## Video Check
+**Query parameters**
 
-### `GET /api/check-video-download?url=<url>`
+| Parameter | Type | Required | Description |
+|---|---|---:|---|
+| `url` | string | ✅ | Video URL |
 
-Check if a URL has already been downloaded.
+**Sample response (found)**
 
-**Response (found + file exists):**
 ```json
 {
   "found": true,
@@ -259,20 +326,25 @@ Check if a URL has already been downloaded.
 }
 ```
 
-**Response (not found):**
+**Sample response (not found)**
+
 ```json
 { "found": false }
 ```
 
----
+### `GET /api/search`
+Search YouTube.
 
-## Search
+**Query parameters**
 
-### `GET /api/search?query=<term>&limit=8&offset=1`
+| Parameter | Type | Required | Default | Description |
+|---|---|---:|---|---|
+| `query` | string | ✅ | — | Search text |
+| `limit` | number | ❌ | `8` | Max results |
+| `offset` | number | ❌ | `1` | Pagination offset |
 
-Search YouTube for videos.
+**Sample response**
 
-**Response:**
 ```json
 {
   "results": [
@@ -290,31 +362,19 @@ Search YouTube for videos.
 
 ---
 
-## Authentication
+## Supported sources (summary)
 
-### Token location
-
-The API token is stored at:
-```
-~/.claude/skills/aitube-download/token/aitube-token
-~/.claude/skills/aitube-download/token/aitube-url
-```
-
-### Header formats accepted
-
-```
-X-API-Key: <token>
-Authorization: ApiKey <token>
-```
+| Platform | Single | Playlist MP3 | Playlist MP4 | Notes |
+|---|---|---|---|---|
+| YouTube | ✅ | ✅ | ✅ | Mix/Radio playlists may not enumerate; fallback behavior depends on endpoint |
+| Bilibili | ✅ | ⚠️ | ⚠️ | Collections/multi-part mainly via web UI endpoint |
+| Twitch | ✅ | ❌ | ❌ | VOD-focused |
+| MissAV / 123av | ✅ | ❌ | ❌ | |
+| Other yt-dlp sources | ✅ | depends | depends | |
 
 ---
 
-## Supported Sources
+## Skill-local token files (Claude skill)
 
-| Platform | Single | Playlist (MP3) | Playlist (MP4) | Notes |
-|----------|--------|----------------|----------------|-------|
-| YouTube | ✅ | ✅ | ✅ | Radio/Mix playlists (`RD` prefix) cannot be enumerated — download-all fallback |
-| Bilibili | ✅ | ❌ | ❌ | Multi-part & collections via web UI |
-| Twitch | ✅ | ❌ | ❌ | VODs |
-| MissAV / 123av | ✅ | ❌ | ❌ | |
-| Any yt-dlp source | ✅ | ❌ | ❌ | |
+- `../token/aitube-url`
+- `../token/aitube-token`

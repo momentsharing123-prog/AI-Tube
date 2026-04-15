@@ -32,6 +32,7 @@ vi.mock('../../config/paths', () => ({
   AVATARS_DIR: '/test/avatars',
   IMAGES_DIR: '/test/images',
   IMAGES_SMALL_DIR: '/test/images-small',
+  MUSIC_DIR: '/test/music',
   VIDEOS_DIR: '/test/videos',
   SUBTITLES_DIR: '/test/subtitles',
   DATA_DIR: '/test/data',

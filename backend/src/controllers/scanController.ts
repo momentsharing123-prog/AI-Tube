@@ -116,8 +116,8 @@ const collectFilesRecursively = async (
   mode: RecursiveCollectionMode,
   rootDir: string
 ): Promise<string[]> => {
-  const resolvedDir = resolveDirectoryForCollection(dir, mode);
-  const safeRoot = resolveDirectoryForCollection(rootDir, mode);
+  const resolvedDir = resolveDirectoryForCollection(dir, mode, rootDir);
+  const safeRoot = resolveDirectoryForCollection(rootDir, mode, rootDir);
 
   if (mode === "mount") {
     if (!isPathWithinDirectory(resolvedDir, safeRoot)) {

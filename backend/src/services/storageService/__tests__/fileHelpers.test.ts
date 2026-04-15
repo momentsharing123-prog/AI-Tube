@@ -5,6 +5,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 vi.mock("../../../config/paths", () => ({
   AVATARS_DIR: "/safe/avatars",
   VIDEOS_DIR: "/safe/videos",
+  MUSIC_DIR: "/safe/music",
   IMAGES_DIR: "/safe/images",
   IMAGES_SMALL_DIR: "/safe/images-small",
   SUBTITLES_DIR: "/safe/subtitles",
@@ -63,6 +64,7 @@ const loggerWarnMock = vi.mocked(logger.warn);
 const loggerErrorMock = vi.mocked(logger.error);
 const expectedAllowedStorageDirs = [
   "/safe/videos",
+  "/safe/music",
   "/safe/images",
   "/safe/images-small",
   "/safe/subtitles",

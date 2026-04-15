@@ -144,7 +144,7 @@ describe("scanController extra coverage", () => {
     expect(json).toHaveBeenCalledWith(
       expect.objectContaining({
         success: true,
-        message: "Videos directory does not exist",
+        message: "Media directories do not exist",
       })
     );
   });

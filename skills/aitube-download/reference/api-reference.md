@@ -119,11 +119,12 @@ Queue selected/all playlist entries as MP4.
 
 **Body parameters** (both endpoints)
 
-| Field | Type | Required | Description |
-|---|---|---:|---|
-| `playlistUrl` | string | Conditional | Playlist URL for "download all" mode |
-| `entries` | array of `{url, title}` | Conditional | Explicit selected entries; if present, takes priority |
-| `collectionName` | string | ❌ | Optional grouping label |
+| Field | Type | Required | Default | Description |
+|---|---|---:|---|---|
+| `playlistUrl` | string | Conditional | — | Playlist URL for "download all" mode |
+| `entries` | array of `{url, title}` | Conditional | — | Explicit selected entries; if present, takes priority |
+| `collectionName` | string | ❌ | — | Optional grouping label |
+| `limit` | number | ❌ | `100` | Max items to download (first N). Override the server default `PLAYLIST_DOWNLOAD_LIMIT`. |
 
 (`playlistUrl` or `entries` should be provided.)
 

@@ -20,6 +20,20 @@ import { getNumberParam, getStringParam } from "../utils/paramUtils";
 import { sendBadRequest, sendData, sendInternalError } from "../utils/response";
 import { validateUrl } from "../utils/security";
 
+const DEFAULT_PLAYLIST_DOWNLOAD_LIMIT = 100;
+const PLAYLIST_DOWNLOAD_LIMIT = (() => {
+  const configured = Number(
+    process.env.PLAYLIST_DOWNLOAD_LIMIT || DEFAULT_PLAYLIST_DOWNLOAD_LIMIT,
+  );
+  if (Number.isFinite(configured) && configured > 0) {
+    return Math.floor(configured);
+  }
+  logger.warn(
+    `Invalid PLAYLIST_DOWNLOAD_LIMIT="${process.env.PLAYLIST_DOWNLOAD_LIMIT}". Using default: ${DEFAULT_PLAYLIST_DOWNLOAD_LIMIT}`,
+  );
+  return DEFAULT_PLAYLIST_DOWNLOAD_LIMIT;
+})();
+
 /**
  * Search for videos
  * Errors are automatically handled by asyncHandler middleware
@@ -833,7 +847,9 @@ export const downloadPlaylistAsMP3 = async (
   req: Request,
   res: Response,
 ): Promise<any> => {
-  const { playlistUrl, entries: explicitEntries, collectionName } = req.body;
+  const { playlistUrl, entries: explicitEntries, collectionName, limit } = req.body;
+
+  const parsedLimit = Number.isInteger(limit) && limit > 0 ? limit : PLAYLIST_DOWNLOAD_LIMIT;
 
   const entriesOrError = await resolvePlaylistEntries(explicitEntries, playlistUrl).catch(
     (err) => err instanceof Error ? err.message : "Failed to fetch playlist entries",
@@ -841,7 +857,7 @@ export const downloadPlaylistAsMP3 = async (
   if (typeof entriesOrError === "string") {
     return sendBadRequest(res, entriesOrError);
   }
-  const entries = entriesOrError;
+  const entries = entriesOrError.slice(0, parsedLimit);
 
   const collectionId = resolveCollection(
     typeof collectionName === "string" ? collectionName : "",
@@ -899,7 +915,9 @@ export const downloadPlaylistAsMP4 = async (
   req: Request,
   res: Response,
 ): Promise<any> => {
-  const { playlistUrl, entries: explicitEntries, collectionName } = req.body;
+  const { playlistUrl, entries: explicitEntries, collectionName, limit } = req.body;
+
+  const parsedLimit = Number.isInteger(limit) && limit > 0 ? limit : PLAYLIST_DOWNLOAD_LIMIT;
 
   const entriesOrError = await resolvePlaylistEntries(explicitEntries, playlistUrl).catch(
     (err) => err instanceof Error ? err.message : "Failed to fetch playlist entries",
@@ -907,7 +925,7 @@ export const downloadPlaylistAsMP4 = async (
   if (typeof entriesOrError === "string") {
     return sendBadRequest(res, entriesOrError);
   }
-  const entries = entriesOrError;
+  const entries = entriesOrError.slice(0, parsedLimit);
 
   const collectionId = resolveCollection(
     typeof collectionName === "string" ? collectionName : "",

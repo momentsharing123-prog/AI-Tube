@@ -46,6 +46,7 @@ Do NOT use `GET /api/download-status` for auth verification — it returns 200 e
   - MP3 → `/api/download/playlist-mp3`
   - MP4 → `/api/download/playlist-mp4`
 - If playlist mode is not confirmed, default to single item (`downloadCollection: false`) via `/api/agent/download`.
+- Both playlist endpoints accept an optional `limit` body field (positive integer). Default is `100` (or the server's `PLAYLIST_DOWNLOAD_LIMIT` env var). Pass `limit` when the user asks to download more or fewer items (e.g. "download first 200").
 
 ## Status checks
 

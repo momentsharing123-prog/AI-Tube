@@ -20,8 +20,7 @@ import {
     Typography,
 } from '@mui/material';
 import { useEffect, useState } from 'react';
-import { api } from '../utils/apiClient';
-import SubscribeModal from './SubscribeModal';
+import PlaylistSubscribeModal from './PlaylistSubscribeModal';
 
 export interface PlaylistEntry {
     url: string;
@@ -59,7 +58,6 @@ const PlaylistSelectorModal: React.FC<PlaylistSelectorModalProps> = ({
     const [fetchError, setFetchError] = useState<string | null>(null);
     const [collectionName, setCollectionName] = useState<string>('');
     const [subscribeOpen, setSubscribeOpen] = useState(false);
-    const [subscribing, setSubscribing] = useState(false);
     const [subscribeSuccess, setSubscribeSuccess] = useState(false);
 
     // Fetch playlist entries when modal opens
@@ -123,22 +121,6 @@ const PlaylistSelectorModal: React.FC<PlaylistSelectorModalProps> = ({
 
     const showFallback = !fetching && (fetchError !== null || entries.length === 0);
 
-    const handleSubscribeConfirm = async (interval: number, downloadAllPrevious: boolean) => {
-        setSubscribing(true);
-        try {
-            await api.post('/subscriptions/playlist', {
-                playlistUrl,
-                interval,
-                collectionName: collectionName.trim() || playlistTitle,
-                downloadAll: downloadAllPrevious,
-            });
-            setSubscribeSuccess(true);
-        } catch (err) {
-            console.error('Failed to subscribe to playlist:', err);
-        } finally {
-            setSubscribing(false);
-        }
-    };
 
     return (
         <Dialog
@@ -281,10 +263,17 @@ const PlaylistSelectorModal: React.FC<PlaylistSelectorModalProps> = ({
                     <span>
                         <Button
                             onClick={() => setSubscribeOpen(true)}
-                            color={subscribeSuccess ? 'success' : 'secondary'}
                             variant="outlined"
-                            disabled={isLoading || fetching || subscribing}
-                            startIcon={<NotificationsActive />}
+                            disabled={isLoading || fetching}
+                            startIcon={subscribeSuccess ? <NotificationsActive color="success" /> : <NotificationsActive />}
+                            sx={{
+                                borderColor: subscribeSuccess ? 'success.main' : 'divider',
+                                color: subscribeSuccess ? 'success.main' : 'text.primary',
+                                '&:hover': {
+                                    borderColor: subscribeSuccess ? 'success.main' : 'text.primary',
+                                    bgcolor: 'action.hover',
+                                },
+                            }}
                         >
                             {subscribeSuccess ? 'Subscribed' : 'Subscribe'}
                         </Button>
@@ -323,18 +312,13 @@ const PlaylistSelectorModal: React.FC<PlaylistSelectorModalProps> = ({
             </DialogActions>
 
             {/* Playlist subscription modal */}
-            <SubscribeModal
+            <PlaylistSubscribeModal
                 open={subscribeOpen}
                 onClose={() => setSubscribeOpen(false)}
-                onConfirm={(interval, downloadAllPrevious) => {
-                    setSubscribeOpen(false);
-                    void handleSubscribeConfirm(interval, downloadAllPrevious);
-                }}
-                url={playlistUrl}
-                title="Subscribe to Playlist"
-                description={`Subscribe to "${collectionName.trim() || playlistTitle}" and auto-download new videos as they are added.`}
-                source="bilibili"
-                enableDownloadOrder={false}
+                onSuccess={() => setSubscribeSuccess(true)}
+                playlistUrl={playlistUrl}
+                playlistTitle={playlistTitle}
+                collectionName={collectionName.trim()}
             />
         </Dialog>
     );

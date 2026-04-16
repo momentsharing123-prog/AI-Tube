@@ -39,10 +39,12 @@ jobs:
         run: npm run install:all
 
       - name: Build Frontend
-        run: npm --prefix frontend run build
+        working-directory: frontend
+        run: npm run build
 
       - name: Build Backend
-        run: npm --prefix backend run build
+        working-directory: backend
+        run: npm run build
 
       - name: Run Lighthouse
         run: |

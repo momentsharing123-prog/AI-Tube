@@ -44,7 +44,10 @@ jobs:
 
       - name: Build Backend
         working-directory: backend
-        run: npm run build
+        run: |
+          npm run build 2>&1
+          echo "dist contents:"
+          ls dist/ 2>/dev/null || echo "(dist directory not found)"
 
       - name: Run Lighthouse
         run: |

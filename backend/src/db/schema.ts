@@ -151,6 +151,7 @@ export const subscriptions = sqliteTable("subscriptions", {
   twitchBroadcasterId: text("twitch_broadcaster_id"),
   twitchBroadcasterLogin: text("twitch_broadcaster_login"),
   lastTwitchVideoId: text("last_twitch_video_id"),
+  format: text('format').notNull().default('mp4'), // 'mp4' or 'mp3'
 });
 
 // Track downloaded video IDs to prevent re-downloading
@@ -197,5 +198,6 @@ export const continuousDownloadTasks = sqliteTable(
     error: text("error"), // Error message if task failed
     downloadOrder: text("download_order").notNull().default("dateDesc"), // User-selected backfill order
     frozenVideoListPath: text("frozen_video_list_path"), // Path to persisted ordered URL snapshot
+    format: text('format').notNull().default('mp4'), // 'mp4' or 'mp3'
   }
 );

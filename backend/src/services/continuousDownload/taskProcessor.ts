@@ -413,7 +413,8 @@ export class TaskProcessor {
           );
         }
       } else {
-        downloadResult = await downloadYouTubeVideo(videoUrl, downloadId);
+        const dlFormat: 'mp4' | 'mp3' = task.format === 'mp3' ? 'mp3' : 'mp4';
+        downloadResult = await downloadYouTubeVideo(videoUrl, downloadId, undefined, dlFormat);
       }
 
       // Extract video data from result (handles both DownloadResult and Video formats)

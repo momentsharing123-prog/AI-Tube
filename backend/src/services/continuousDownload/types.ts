@@ -24,4 +24,5 @@ export interface ContinuousDownloadTask {
   error?: string;
   downloadOrder?: DownloadOrder;
   frozenVideoListPath?: string;
+  format?: 'mp4' | 'mp3';
 }

@@ -20,83 +20,73 @@ import {
 import { useState } from 'react';
 import { api } from '../utils/apiClient';
 
-type SubscriptionMode = 'playlist' | 'channel' | 'channel-playlists';
+type SubscriptionMode = 'channel' | 'playlist' | 'channel-playlists';
 
-interface PlaylistSubscribeModalProps {
+interface ChannelSubscribeModalProps {
     open: boolean;
     onClose: () => void;
     onSuccess: () => void;
-    playlistUrl: string;
-    playlistTitle: string;
-    collectionName: string;
 }
 
 const MODES: { value: SubscriptionMode; label: string; description: string }[] = [
     {
-        value: 'playlist',
-        label: 'This playlist only',
-        description: 'Watch for new videos added to this specific playlist.',
+        value: 'channel',
+        label: 'Channel (all videos)',
+        description: 'Subscribe to all new uploads from a YouTube/Bilibili channel.',
     },
     {
-        value: 'channel',
-        label: 'This channel (all videos)',
-        description: 'Watch for any new upload from the channel.',
+        value: 'playlist',
+        label: 'Playlist',
+        description: 'Subscribe to new videos added to a specific playlist.',
     },
     {
         value: 'channel-playlists',
         label: 'All channel playlists',
-        description: 'Subscribe to every playlist on the channel.',
+        description: 'Subscribe to every playlist on a channel.',
     },
 ];
 
-const PlaylistSubscribeModal: React.FC<PlaylistSubscribeModalProps> = ({
-    open,
-    onClose,
-    onSuccess,
-    playlistUrl,
-    playlistTitle,
-    collectionName,
-}) => {
-    const [mode, setMode] = useState<SubscriptionMode>('playlist');
-    const [channelUrl, setChannelUrl] = useState('');
+const ChannelSubscribeModal: React.FC<ChannelSubscribeModalProps> = ({ open, onClose, onSuccess }) => {
+    const [mode, setMode] = useState<SubscriptionMode>('channel');
+    const [url, setUrl] = useState('');
+    const [collectionName, setCollectionName] = useState('');
     const [interval, setIntervalValue] = useState(60);
     const [format, setFormat] = useState<'mp4' | 'mp3'>('mp4');
     const [downloadAllPrevious, setDownloadAllPrevious] = useState(false);
     const [submitting, setSubmitting] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
-    const needsChannelUrl = mode === 'channel' || mode === 'channel-playlists';
-    const canSubmit = !submitting && interval > 0 && (!needsChannelUrl || channelUrl.trim().length > 0);
+    const canSubmit = !submitting && url.trim().length > 0 && interval > 0;
 
     const handleConfirm = async () => {
         setSubmitting(true);
         setError(null);
         try {
-            if (mode === 'playlist') {
-                await api.post('/subscriptions/playlist', {
-                    playlistUrl,
-                    interval,
-                    format,
-                    collectionName: collectionName || playlistTitle,
-                    downloadAll: downloadAllPrevious,
-                });
-            } else if (mode === 'channel') {
+            if (mode === 'channel') {
                 await api.post('/subscriptions', {
-                    url: channelUrl.trim(),
+                    url: url.trim(),
                     interval,
                     format,
                     downloadAllPrevious,
                 });
+            } else if (mode === 'playlist') {
+                await api.post('/subscriptions/playlist', {
+                    playlistUrl: url.trim(),
+                    interval,
+                    format,
+                    collectionName: collectionName.trim() || undefined,
+                    downloadAll: downloadAllPrevious,
+                });
             } else {
                 await api.post('/subscriptions/channel-playlists', {
-                    url: channelUrl.trim(),
+                    url: url.trim(),
                     interval,
                     format,
                     downloadAllPrevious,
                 });
             }
             onSuccess();
-            onClose();
+            handleClose();
         } catch (err: any) {
             setError(err?.response?.data?.error || err?.message || 'Subscription failed. Please check the URL and try again.');
         } finally {
@@ -105,10 +95,15 @@ const PlaylistSubscribeModal: React.FC<PlaylistSubscribeModalProps> = ({
     };
 
     const handleClose = () => {
-        if (!submitting) {
-            setError(null);
-            onClose();
-        }
+        if (submitting) return;
+        setUrl('');
+        setCollectionName('');
+        setMode('channel');
+        setIntervalValue(60);
+        setFormat('mp4');
+        setDownloadAllPrevious(false);
+        setError(null);
+        onClose();
     };
 
     return (
@@ -124,16 +119,24 @@ const PlaylistSubscribeModal: React.FC<PlaylistSubscribeModalProps> = ({
             </DialogTitle>
 
             <DialogContent sx={{ pt: 0 }}>
-                <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-                    Choose what to monitor for new videos:
-                </Typography>
+                <TextField
+                    fullWidth
+                    size="small"
+                    label="Channel or playlist URL"
+                    value={url}
+                    onChange={(e) => { setUrl(e.target.value); setError(null); }}
+                    placeholder="https://www.youtube.com/@ChannelName"
+                    helperText="Enter a YouTube channel, playlist, or Bilibili space URL."
+                    autoFocus
+                    sx={{ mt: 1, mb: 2 }}
+                />
 
+                <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+                    Subscription type:
+                </Typography>
                 <RadioGroup
                     value={mode}
-                    onChange={(e) => {
-                        setMode(e.target.value as SubscriptionMode);
-                        setError(null);
-                    }}
+                    onChange={(e) => { setMode(e.target.value as SubscriptionMode); setError(null); }}
                 >
                     {MODES.map((m) => (
                         <FormControlLabel
@@ -155,23 +158,23 @@ const PlaylistSubscribeModal: React.FC<PlaylistSubscribeModalProps> = ({
                     ))}
                 </RadioGroup>
 
-                {needsChannelUrl && (
+                {mode === 'playlist' && (
                     <>
                         <Divider sx={{ my: 2 }} />
                         <TextField
                             fullWidth
                             size="small"
-                            label="Channel URL"
-                            value={channelUrl}
-                            onChange={(e) => setChannelUrl(e.target.value)}
-                            placeholder="https://www.youtube.com/@ChannelName"
-                            helperText="Enter the YouTube channel URL for this playlist's channel."
-                            autoFocus
+                            label="Collection name (optional)"
+                            value={collectionName}
+                            onChange={(e) => setCollectionName(e.target.value)}
+                            placeholder="My Playlist"
+                            helperText="Leave blank to use the playlist title as the collection name."
                         />
                     </>
                 )}
 
                 <Divider sx={{ my: 2 }} />
+
                 <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
                     Download format:
                 </Typography>
@@ -190,8 +193,6 @@ const PlaylistSubscribeModal: React.FC<PlaylistSubscribeModalProps> = ({
                         <MusicNote fontSize="small" /> MP3 (Audio)
                     </ToggleButton>
                 </ToggleButtonGroup>
-
-                <Divider sx={{ my: 2 }} />
 
                 <TextField
                     fullWidth
@@ -251,4 +252,4 @@ const PlaylistSubscribeModal: React.FC<PlaylistSubscribeModalProps> = ({
     );
 };
 
-export default PlaylistSubscribeModal;
+export default ChannelSubscribeModal;

@@ -91,7 +91,8 @@ export class ContinuousDownloadService {
     author: string,
     platform: string,
     subscriptionId?: string,
-    downloadOrder: DownloadOrder = "dateDesc"
+    downloadOrder: DownloadOrder = "dateDesc",
+    format: 'mp4' | 'mp3' = 'mp4'
   ): Promise<ContinuousDownloadTask> {
     const task: ContinuousDownloadTask = {
       id: uuidv4(),
@@ -107,6 +108,7 @@ export class ContinuousDownloadService {
       currentVideoIndex: 0,
       createdAt: Date.now(),
       downloadOrder,
+      format,
     };
 
     await this.taskRepository.createTask(task);
@@ -126,7 +128,8 @@ export class ContinuousDownloadService {
     playlistUrl: string,
     author: string,
     platform: string,
-    collectionId: string | null | undefined
+    collectionId: string | null | undefined,
+    format: 'mp4' | 'mp3' = 'mp4'
   ): Promise<ContinuousDownloadTask> {
     const task: ContinuousDownloadTask = {
       id: uuidv4(),
@@ -142,6 +145,7 @@ export class ContinuousDownloadService {
       currentVideoIndex: 0,
       createdAt: Date.now(),
       downloadOrder: "dateDesc",
+      format,
     };
 
     await this.taskRepository.createTask(task);

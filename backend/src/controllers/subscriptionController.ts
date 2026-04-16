@@ -48,9 +48,10 @@ export const createSubscription = async (
   req: Request,
   res: Response
 ): Promise<void> => {
-  const { url, interval, authorName, downloadAllPrevious, downloadShorts: rawDownloadShorts, downloadOrder: rawDownloadOrder } =
+  const { url, interval, authorName, downloadAllPrevious, downloadShorts: rawDownloadShorts, downloadOrder: rawDownloadOrder, format } =
     req.body;
   const downloadShorts = Boolean(rawDownloadShorts);
+  const downloadFormat: 'mp4' | 'mp3' = format === 'mp3' ? 'mp3' : 'mp4';
 
   const validDownloadOrders: DownloadOrder[] = ["dateDesc", "dateAsc", "viewsDesc", "viewsAsc"];
   let downloadOrder: DownloadOrder = "dateDesc";
@@ -95,7 +96,8 @@ export const createSubscription = async (
         subscription.author,
         subscription.platform,
         subscription.id,
-        downloadOrder
+        downloadOrder,
+        downloadFormat
       );
       logger.info(
         `Created continuous download task for subscription ${subscription.id}`
@@ -120,7 +122,8 @@ export const createSubscription = async (
           `${subscription.author} (Shorts)`,
           subscription.platform,
           subscription.id,
-          downloadOrder
+          downloadOrder,
+          downloadFormat
         );
         logger.info(
           `Created continuous download task for Shorts for subscription ${subscription.id}`
@@ -294,8 +297,9 @@ export const createPlaylistSubscription = async (
   req: Request,
   res: Response
 ): Promise<void> => {
-  const { playlistUrl, interval, collectionName, downloadAll, collectionInfo } =
+  const { playlistUrl, interval, collectionName, downloadAll, collectionInfo, format } =
     req.body;
+  const downloadFormat: 'mp4' | 'mp3' = format === 'mp3' ? 'mp3' : 'mp4';
   logger.info("Creating playlist subscription:", {
     playlistUrl,
     interval,
@@ -490,7 +494,8 @@ export const createPlaylistSubscription = async (
         playlistUrl,
         author,
         platform,
-        collection.id
+        collection.id,
+        downloadFormat
       );
       logger.info(
         `Created continuous download task ${task.id} for playlist subscription ${subscription.id}`
@@ -519,7 +524,8 @@ export const subscribeChannelPlaylists = async (
   req: Request,
   res: Response
 ): Promise<void> => {
-  const { url, interval, downloadAllPrevious } = req.body;
+  const { url, interval, downloadAllPrevious, format } = req.body;
+  const downloadFormat: 'mp4' | 'mp3' = format === 'mp3' ? 'mp3' : 'mp4';
   logger.info("Subscribing to channel playlists:", {
     url,
     interval,
@@ -710,7 +716,8 @@ export const subscribeChannelPlaylists = async (
             playlistUrl,
             channelName,
             platform,
-            collectionId
+            collectionId,
+            downloadFormat
           );
           logger.info(
             `Created continuous download task for playlist: ${title}`

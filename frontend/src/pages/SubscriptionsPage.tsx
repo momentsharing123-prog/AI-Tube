@@ -1,4 +1,5 @@
-import { Cancel, Check, Close, Delete, DeleteOutline, Edit, Pause, PlayArrow } from '@mui/icons-material';
+import { Add, Cancel, Check, Close, Delete, DeleteOutline, Edit, Pause, PlayArrow } from '@mui/icons-material';
+import ChannelSubscribeModal from '../components/ChannelSubscribeModal';
 import {
     Box,
     Button,
@@ -101,6 +102,7 @@ const SubscriptionsPage: React.FC = () => {
     const [editingSubscriptionId, setEditingSubscriptionId] = useState<string | null>(null);
     const [editedInterval, setEditedInterval] = useState<string>('');
     const [isSavingInterval, setIsSavingInterval] = useState(false);
+    const [isSubscribeModalOpen, setIsSubscribeModalOpen] = useState(false);
 
     // Use React Query for better caching and memory management
     const { data: subscriptions = [], refetch: refetchSubscriptions } = useQuery({
@@ -354,9 +356,20 @@ const SubscriptionsPage: React.FC = () => {
 
     return (
         <Container maxWidth="lg" sx={{ py: 4 }}>
-            <Typography variant="h4" component="h1" gutterBottom fontWeight="bold">
-                {t('subscriptions')}
-            </Typography>
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
+                <Typography variant="h4" component="h1" fontWeight="bold">
+                    {t('subscriptions')}
+                </Typography>
+                {!isVisitor && (
+                    <Button
+                        variant="contained"
+                        startIcon={<Add />}
+                        onClick={() => setIsSubscribeModalOpen(true)}
+                    >
+                        Subscribe
+                    </Button>
+                )}
+            </Box>
 
             <TableContainer component={Paper} sx={{ mt: 3 }}>
                 <Table>
@@ -637,6 +650,14 @@ const SubscriptionsPage: React.FC = () => {
                 confirmText={t('clear')}
                 cancelText={t('cancel')}
                 isDanger
+            />
+            <ChannelSubscribeModal
+                open={isSubscribeModalOpen}
+                onClose={() => setIsSubscribeModalOpen(false)}
+                onSuccess={() => {
+                    setIsSubscribeModalOpen(false);
+                    refetchSubscriptions();
+                }}
             />
         </Container >
     );

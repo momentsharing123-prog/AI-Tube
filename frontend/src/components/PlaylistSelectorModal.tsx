@@ -1,4 +1,4 @@
-import { CheckBox, CheckBoxOutlineBlank, Close, MusicNote } from '@mui/icons-material';
+import { CheckBox, CheckBoxOutlineBlank, Close, MusicNote, NotificationsActive } from '@mui/icons-material';
 import {
     Box,
     Button,
@@ -16,10 +16,12 @@ import {
     ListItemIcon,
     ListItemText,
     TextField,
+    Tooltip,
     Typography,
 } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { api } from '../utils/apiClient';
+import SubscribeModal from './SubscribeModal';
 
 export interface PlaylistEntry {
     url: string;
@@ -56,6 +58,9 @@ const PlaylistSelectorModal: React.FC<PlaylistSelectorModalProps> = ({
     const [fetching, setFetching] = useState(false);
     const [fetchError, setFetchError] = useState<string | null>(null);
     const [collectionName, setCollectionName] = useState<string>('');
+    const [subscribeOpen, setSubscribeOpen] = useState(false);
+    const [subscribing, setSubscribing] = useState(false);
+    const [subscribeSuccess, setSubscribeSuccess] = useState(false);
 
     // Fetch playlist entries when modal opens
     useEffect(() => {
@@ -117,6 +122,23 @@ const PlaylistSelectorModal: React.FC<PlaylistSelectorModalProps> = ({
     };
 
     const showFallback = !fetching && (fetchError !== null || entries.length === 0);
+
+    const handleSubscribeConfirm = async (interval: number, downloadAllPrevious: boolean) => {
+        setSubscribing(true);
+        try {
+            await api.post('/subscriptions/playlist', {
+                playlistUrl,
+                interval,
+                collectionName: collectionName.trim() || playlistTitle,
+                downloadAll: downloadAllPrevious,
+            });
+            setSubscribeSuccess(true);
+        } catch (err) {
+            console.error('Failed to subscribe to playlist:', err);
+        } finally {
+            setSubscribing(false);
+        }
+    };
 
     return (
         <Dialog
@@ -248,11 +270,28 @@ const PlaylistSelectorModal: React.FC<PlaylistSelectorModalProps> = ({
                 )}
             </DialogContent>
 
-            <DialogActions sx={{ p: 2, gap: 1 }}>
+            <DialogActions sx={{ p: 2, gap: 1, flexWrap: 'wrap' }}>
                 {/* Always show "just this one" option */}
                 <Button onClick={onDownloadCurrent} color="inherit" disabled={isLoading || fetching}>
                     Just this {itemLabel}
                 </Button>
+
+                {/* Subscribe button */}
+                <Tooltip title={subscribeSuccess ? 'Subscribed! New videos will be auto-downloaded.' : 'Subscribe to auto-download new videos'}>
+                    <span>
+                        <Button
+                            onClick={() => setSubscribeOpen(true)}
+                            color={subscribeSuccess ? 'success' : 'secondary'}
+                            variant="outlined"
+                            disabled={isLoading || fetching || subscribing}
+                            startIcon={<NotificationsActive />}
+                        >
+                            {subscribeSuccess ? 'Subscribed' : 'Subscribe'}
+                        </Button>
+                    </span>
+                </Tooltip>
+
+                <Box sx={{ flexGrow: 1 }} />
 
                 {/* Fallback: can't enumerate → offer download-all */}
                 {showFallback && (
@@ -282,6 +321,21 @@ const PlaylistSelectorModal: React.FC<PlaylistSelectorModalProps> = ({
                     </Button>
                 )}
             </DialogActions>
+
+            {/* Playlist subscription modal */}
+            <SubscribeModal
+                open={subscribeOpen}
+                onClose={() => setSubscribeOpen(false)}
+                onConfirm={(interval, downloadAllPrevious) => {
+                    setSubscribeOpen(false);
+                    void handleSubscribeConfirm(interval, downloadAllPrevious);
+                }}
+                url={playlistUrl}
+                title="Subscribe to Playlist"
+                description={`Subscribe to "${collectionName.trim() || playlistTitle}" and auto-download new videos as they are added.`}
+                source="bilibili"
+                enableDownloadOrder={false}
+            />
         </Dialog>
     );
 };

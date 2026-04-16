@@ -53,6 +53,11 @@ jobs:
         run: |
           set -euo pipefail
 
+          # The compiled server resolves frontend/dist relative to dist/src/__dirname,
+          # which ends up at backend/frontend/dist. Symlink it to the actual build output.
+          mkdir -p backend/frontend
+          ln -sfn "$(pwd)/frontend/dist" backend/frontend/dist
+
           mkdir -p .lighthouseci badges
           (
             cd backend

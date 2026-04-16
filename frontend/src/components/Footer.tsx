@@ -23,7 +23,7 @@ const Footer = () => {
 
                     <Box sx={{ display: 'flex', alignItems: 'center', mt: { xs: 1, sm: 0 } }}>
                         <Link
-                            href="https://github.com/franklioxygen/MyTube"
+                            href="https://github.com/momentsharing123-prog/AI-Tube"
                             target="_blank"
                             rel="noopener noreferrer"
                             color="text.secondary"
@@ -36,9 +36,6 @@ const Footer = () => {
                         </Link>
                         <VersionInfo />
                     </Box>
-                    <Typography variant="caption" color="text.secondary" sx={{ mt: 0.5 }}>
-                        Created by franklioxygen
-                    </Typography>
                 </Box>
             </Container>
         </Box>

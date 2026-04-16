@@ -28,17 +28,6 @@ describe('Footer', () => {
         );
 
         const link = screen.getByRole('link', { name: /AI Tube/i });
-        expect(link).toHaveAttribute('href', 'https://github.com/franklioxygen/MyTube');
-    });
-
-    it('renders creation text', () => {
-        const theme = createTheme();
-        render(
-            <ThemeProvider theme={theme}>
-                <Footer />
-            </ThemeProvider>
-        );
-
-        expect(screen.getByText('Created by franklioxygen')).toBeInTheDocument();
+        expect(link).toHaveAttribute('href', 'https://github.com/momentsharing123-prog/AI-Tube');
     });
 });

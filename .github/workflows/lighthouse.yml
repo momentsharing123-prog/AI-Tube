@@ -56,7 +56,7 @@ jobs:
           mkdir -p .lighthouseci badges
           (
             cd backend
-            node dist/server.js
+            node dist/src/server.js
           ) > /tmp/aitube-lighthouse-backend.log 2>&1 &
           BACKEND_PID=$!
 

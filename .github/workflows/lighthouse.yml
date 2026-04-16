@@ -41,6 +41,9 @@ jobs:
       - name: Build Frontend
         run: npm --prefix frontend run build
 
+      - name: Build Backend
+        run: npm --prefix backend run build
+
       - name: Run Lighthouse
         run: |
           set -euo pipefail
@@ -48,17 +51,21 @@ jobs:
           mkdir -p .lighthouseci badges
           (
             cd backend
-            npm run start
+            node dist/server.js
           ) > /tmp/aitube-lighthouse-backend.log 2>&1 &
           BACKEND_PID=$!
 
           cleanup() {
             kill "$BACKEND_PID" >/dev/null 2>&1 || true
+            if [ -s /tmp/aitube-lighthouse-backend.log ]; then
+              echo "--- backend log ---"
+              cat /tmp/aitube-lighthouse-backend.log
+            fi
           }
 
           trap cleanup EXIT
 
-          for _ in $(seq 1 60); do
+          for _ in $(seq 1 120); do
             if curl --silent --fail http://127.0.0.1:5551/ >/dev/null; then
               break
             fi

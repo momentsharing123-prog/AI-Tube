@@ -155,7 +155,8 @@ describe("SubscriptionController", () => {
         "@testuser",
         "YouTube",
         "sub-123",
-        "dateDesc"
+        "dateDesc",
+        "mp4"
       );
       expect(continuousDownloadService.createTask).toHaveBeenNthCalledWith(
         2,
@@ -163,7 +164,8 @@ describe("SubscriptionController", () => {
         "@testuser (Shorts)",
         "YouTube",
         "sub-123",
-        "dateDesc"
+        "dateDesc",
+        "mp4"
       );
     });
 
@@ -188,7 +190,8 @@ describe("SubscriptionController", () => {
         "UP 主",
         "Bilibili",
         "sub-bili-1",
-        "dateDesc"
+        "dateDesc",
+        "mp4"
       );
     });
 
@@ -214,7 +217,8 @@ describe("SubscriptionController", () => {
         "@ordered",
         "YouTube",
         "sub-ordered-1",
-        "viewsAsc"
+        "viewsAsc",
+        "mp4"
       );
       expect(continuousDownloadService.createTask).toHaveBeenNthCalledWith(
         2,
@@ -222,7 +226,8 @@ describe("SubscriptionController", () => {
         "@ordered (Shorts)",
         "YouTube",
         "sub-ordered-1",
-        "viewsAsc"
+        "viewsAsc",
+        "mp4"
       );
     });
 
@@ -699,7 +704,8 @@ describe("SubscriptionController", () => {
         "https://www.youtube.com/playlist?list=abc",
         "Author A",
         "YouTube",
-        expect.any(String)
+        expect.any(String),
+        "mp4"
       );
       expect(status).toHaveBeenCalledWith(201);
       expect(json).toHaveBeenCalledWith(
@@ -728,7 +734,8 @@ describe("SubscriptionController", () => {
         "https://www.youtube.com/playlist?list=abc",
         "Playlist Author",
         "YouTube",
-        expect.any(String)
+        expect.any(String),
+        "mp4"
       );
     });
   });

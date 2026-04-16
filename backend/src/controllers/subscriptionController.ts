@@ -792,7 +792,8 @@ export const createPlaylistTask = async (
   req: Request,
   res: Response
 ): Promise<void> => {
-  const { playlistUrl, collectionName } = req.body;
+  const { playlistUrl, collectionName, format } = req.body;
+  const downloadFormat: 'mp4' | 'mp3' = format === 'mp3' ? 'mp3' : 'mp4';
   logger.info("Creating playlist task:", {
     playlistUrl,
     collectionName,
@@ -892,7 +893,8 @@ export const createPlaylistTask = async (
     playlistUrl,
     author,
     platform,
-    newCollection.id
+    newCollection.id,
+    downloadFormat
   );
 
   logger.info(

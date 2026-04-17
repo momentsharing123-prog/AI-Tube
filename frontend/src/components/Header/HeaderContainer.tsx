@@ -168,7 +168,6 @@ const HeaderContainer: React.FC<HeaderProps> = ({
                             onManageClose={handleManageClose}
                             hasActiveSubscriptions={hasActiveSubscriptions}
                             showThemeButton={showThemeButton}
-                            onSubscribeClick={isVisitor ? undefined : () => setSubscribeModalOpen(true)}
                             mobileMenuOpen={mobileMenuOpen}
                             onToggleMobileMenu={() => setMobileMenuOpen((open) => !open)}
                             onCloseMobileMenu={() => setMobileMenuOpen(false)}

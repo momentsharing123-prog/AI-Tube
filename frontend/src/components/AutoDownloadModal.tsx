@@ -124,10 +124,21 @@ const AutoDownloadModal: React.FC<AutoDownloadModalProps> = ({
         if (fixedPlaylistUrl) return;
         setResolvedChannelUrl(null);
         setResolvedChannelName(null);
+        setCollectionName('');
         if (!url) return;
         const detected = detectMode(url);
         if (detected) setMode(detected);
     }, [url, fixedPlaylistUrl]);
+
+    // Trigger channel resolution whenever the mode is a channel mode and name is not yet known
+    useEffect(() => {
+        if (!open) return;
+        const source = fixedPlaylistUrl || url;
+        if ((mode === 'channel' || mode === 'channel-playlists') && source && !resolvedChannelName && !resolvingChannelUrl) {
+            resolveChannel(source);
+        }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [mode, open]);
 
     /** Resolve channel URL + name; auto-fills url field when it changed. */
     const resolveChannel = useCallback(async (sourceUrl: string) => {

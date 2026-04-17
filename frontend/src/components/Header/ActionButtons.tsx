@@ -18,7 +18,6 @@ interface ActionButtonsProps {
     onManageClose: () => void;
     hasActiveSubscriptions?: boolean;
     showThemeButton?: boolean;
-    onSubscribeClick?: () => void;
 }
 
 const ActionButtons: React.FC<ActionButtonsProps> = ({
@@ -32,7 +31,6 @@ const ActionButtons: React.FC<ActionButtonsProps> = ({
     onManageClose,
     hasActiveSubscriptions = false,
     showThemeButton = true,
-    onSubscribeClick,
 }) => {
     const { mode: currentThemeMode, toggleTheme } = useThemeContext();
     const { t } = useLanguage();

@@ -93,9 +93,9 @@ const PlaylistSubscribeModal: React.FC<PlaylistSubscribeModalProps> = ({
             if (res.data?.channelUrl) {
                 setChannelUrl(res.data.channelUrl);
                 setResolvedChannelName(res.data.channelName ?? null);
-                // Pre-fill collection name with channel name if field is empty
+                // Always update collection name with the resolved channel name
                 if (res.data.channelName) {
-                    setCustomCollectionName((prev) => prev || res.data.channelName);
+                    setCustomCollectionName(res.data.channelName);
                 }
             }
         } catch {
@@ -175,6 +175,12 @@ const PlaylistSubscribeModal: React.FC<PlaylistSubscribeModalProps> = ({
                         const next = e.target.value as SubscriptionMode;
                         setMode(next);
                         setError(null);
+                        // Auto-update collection name to match the selected mode's default
+                        if (next === 'playlist') {
+                            setCustomCollectionName(playlistTitle || '');
+                        } else if (next === 'channel') {
+                            setCustomCollectionName(resolvedChannelName || '');
+                        }
                         // Auto-resolve channel URL when switching to a channel mode
                         if ((next === 'channel' || next === 'channel-playlists') && !channelUrl) {
                             resolveChannelUrlFromPlaylist();

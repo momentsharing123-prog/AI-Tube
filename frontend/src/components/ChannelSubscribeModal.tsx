@@ -52,26 +52,32 @@ const MODES: { value: SubscriptionMode; label: string; description: string }[] =
 const ChannelSubscribeModal: React.FC<ChannelSubscribeModalProps> = ({ open, onClose, onSuccess, initialUrl = '' }) => {
     const [mode, setMode] = useState<SubscriptionMode>('playlist');
     const [url, setUrl] = useState('');
+    const [resolvedChannelUrl, setResolvedChannelUrl] = useState<string | null>(null);
+    const [resolvedChannelName, setResolvedChannelName] = useState<string | null>(null);
     const [collectionName, setCollectionName] = useState('');
     const [interval, setIntervalValue] = useState(60);
     const [format, setFormat] = useState<'mp4' | 'mp3'>('mp4');
     const [downloadAllPrevious, setDownloadAllPrevious] = useState(false);
     const [submitting, setSubmitting] = useState(false);
     const [resolvingChannelUrl, setResolvingChannelUrl] = useState(false);
-    const [resolvedChannelUrl, setResolvedChannelUrl] = useState<string | null>(null);
-    const [resolvedChannelName, setResolvedChannelName] = useState<string | null>(null);
     const [error, setError] = useState<string | null>(null);
 
+    const needsChannelUrl = mode === 'channel' || mode === 'channel-playlists';
     const canSubmit = !submitting && !resolvingChannelUrl && url.trim().length > 0 && interval > 0;
 
-    // Pre-fill URL from prop when the modal opens
+    // Sync state when the modal opens
     useEffect(() => {
         if (open) {
             setUrl(initialUrl);
+            setResolvedChannelUrl(null);
+            setResolvedChannelName(null);
+            setCollectionName('');
+            setMode('playlist');
+            setError(null);
         }
     }, [open, initialUrl]);
 
-    /** Detect the best subscription mode for a given URL (returns null when no strong signal). */
+    /** Detect the best subscription mode for a given URL. */
     const detectMode = (u: string): SubscriptionMode | null => {
         try {
             const parsed = new URL(u);
@@ -84,16 +90,13 @@ const ChannelSubscribeModal: React.FC<ChannelSubscribeModalProps> = ({ open, onC
                 if (parsed.searchParams.get('list')) return 'playlist';
             }
             if (host === 'bilibili.com') {
-                // Bilibili space pages are channel-like
                 if (parsed.pathname.startsWith('/space/')) return 'channel';
             }
-        } catch {
-            // ignore invalid URLs
-        }
+        } catch { /* ignore */ }
         return null;
     };
 
-    // Auto-switch mode when the URL changes; also clear resolved channel hint
+    // Auto-switch mode when the URL changes; clear resolved state
     useEffect(() => {
         setResolvedChannelUrl(null);
         setResolvedChannelName(null);
@@ -102,28 +105,8 @@ const ChannelSubscribeModal: React.FC<ChannelSubscribeModalProps> = ({ open, onC
         if (detected) setMode(detected);
     }, [url]);
 
-    /** Returns true when the URL looks like a video or playlist rather than a channel page. */
-    const looksLikeVideoOrPlaylist = (u: string): boolean => {
-        try {
-            const parsed = new URL(u);
-            const host = parsed.hostname.replace('www.', '');
-            if (host === 'youtube.com' || host === 'youtu.be') {
-                const path = parsed.pathname;
-                // Already a channel URL — no need to resolve
-                if (path.startsWith('/@') || path.startsWith('/channel/') || path.startsWith('/user/') || path.startsWith('/c/')) return false;
-                return true; // /watch, /playlist, /shorts, etc.
-            }
-            if (host === 'bilibili.com') {
-                return parsed.pathname.startsWith('/video/');
-            }
-            return false;
-        } catch {
-            return false;
-        }
-    };
-
-    /** Resolve a channel URL from a video/playlist URL, auto-fill the url field, and store the channel name as a hint. */
-    const resolveChannelUrlFromUrl = useCallback(async (sourceUrl: string) => {
+    /** Resolve channel URL + name from any URL; auto-fills url field if it changed. */
+    const resolveChannelUrl = useCallback(async (sourceUrl: string) => {
         if (!sourceUrl || resolvingChannelUrl) return;
         setResolvingChannelUrl(true);
         setResolvedChannelUrl(null);
@@ -131,20 +114,16 @@ const ChannelSubscribeModal: React.FC<ChannelSubscribeModalProps> = ({ open, onC
         try {
             const res = await api.get('/channel-url', { params: { url: sourceUrl } });
             if (res.data?.channelUrl) {
-                // Only replace the URL in the textbox if it actually differs (e.g. was a video/playlist link)
                 if (res.data.channelUrl !== sourceUrl) {
                     setUrl(res.data.channelUrl);
                 }
                 setResolvedChannelUrl(res.data.channelUrl);
                 setResolvedChannelName(res.data.channelName ?? null);
-                // Always update collection name with the resolved channel name
                 if (res.data.channelName) {
                     setCollectionName(res.data.channelName);
                 }
             }
-        } catch {
-            // silently ignore — user can fill manually
-        } finally {
+        } catch { /* silently ignore */ } finally {
             setResolvingChannelUrl(false);
         }
     }, [resolvingChannelUrl]);
@@ -152,7 +131,6 @@ const ChannelSubscribeModal: React.FC<ChannelSubscribeModalProps> = ({ open, onC
     const handleConfirm = async () => {
         setSubmitting(true);
         setError(null);
-        // For channel modes use the resolved channel URL if available, else fall back to what the user typed
         const channelModeUrl = (resolvedChannelUrl || url).trim();
         try {
             if (mode === 'channel') {
@@ -216,38 +194,25 @@ const ChannelSubscribeModal: React.FC<ChannelSubscribeModalProps> = ({ open, onC
             </DialogTitle>
 
             <DialogContent sx={{ pt: 0 }}>
-                <TextField
-                    fullWidth
-                    size="small"
-                    label="Channel or playlist URL"
-                    value={url}
-                    onChange={(e) => { setUrl(e.target.value); setError(null); setResolvedChannelUrl(null); setResolvedChannelName(null); }}
-                    placeholder="https://www.youtube.com/@ChannelName"
-                    disabled={resolvingChannelUrl}
-                    helperText="Enter a YouTube channel, playlist, video, or Bilibili space URL."
-                    autoFocus
-                    sx={{ mt: 1, mb: 2 }}
-                />
-
-                <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
-                    Subscription type:
+                <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                    Choose what to monitor for new videos:
                 </Typography>
+
                 <RadioGroup
                     value={mode}
                     onChange={(e) => {
                         const next = e.target.value as SubscriptionMode;
                         setMode(next);
                         setError(null);
-                        // Auto-update collection name to match the selected mode's default
+                        // Auto-update collection name to match the selected mode
                         if (next === 'channel' || next === 'channel-playlists') {
                             setCollectionName(resolvedChannelName || '');
                         } else if (next === 'playlist') {
                             setCollectionName('');
                         }
-                        // Resolve channel URL/name when switching to a channel mode
-                        // Always run if we don't have the channel name yet
+                        // Resolve channel name whenever switching to a channel mode without it
                         if ((next === 'channel' || next === 'channel-playlists') && url && !resolvedChannelName) {
-                            resolveChannelUrlFromUrl(url);
+                            resolveChannelUrl(url);
                         }
                     }}
                 >
@@ -271,38 +236,60 @@ const ChannelSubscribeModal: React.FC<ChannelSubscribeModalProps> = ({ open, onC
                     ))}
                 </RadioGroup>
 
-                {/* Resolved channel hint */}
-                {(mode === 'channel' || mode === 'channel-playlists') && (resolvingChannelUrl || resolvedChannelUrl) && (
-                    <Box sx={{ mt: 1, mb: 0.5 }}>
-                        {resolvingChannelUrl ? (
-                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                                <CircularProgress size={14} />
-                                <Typography variant="caption" color="text.secondary">
-                                    Looking up channel…
-                                </Typography>
-                            </Box>
-                        ) : resolvedChannelUrl ? (
-                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                                <CheckCircleOutline sx={{ fontSize: 14, color: 'success.main' }} />
-                                <Typography variant="caption" color="success.main">
-                                    {resolvedChannelName ? <><strong>{resolvedChannelName}</strong> — </> : null}
-                                    Auto-filled — edit if needed.
-                                </Typography>
-                            </Box>
-                        ) : null}
-                    </Box>
-                )}
-
                 <Divider sx={{ my: 2 }} />
 
-                {/* Collection name — shown for all modes */}
+                {/* URL field — label and hint adapt to the selected mode */}
                 <TextField
                     fullWidth
                     size="small"
-                    label="Collection name (optional)"
+                    label={needsChannelUrl ? 'Channel URL' : 'Playlist URL'}
+                    value={url}
+                    onChange={(e) => {
+                        setUrl(e.target.value);
+                        setError(null);
+                        setResolvedChannelUrl(null);
+                        setResolvedChannelName(null);
+                    }}
+                    placeholder={needsChannelUrl ? 'https://www.youtube.com/@ChannelName' : 'https://www.youtube.com/playlist?list=…'}
+                    disabled={resolvingChannelUrl}
+                    autoFocus
+                    slotProps={{
+                        input: resolvingChannelUrl ? {
+                            endAdornment: <CircularProgress size={16} />,
+                        } : undefined,
+                    }}
+                />
+                {/* URL hint — mirrors PlaylistSubscribeModal's channel hint */}
+                <Box sx={{ mt: 0.5, mb: 1, minHeight: 20 }}>
+                    {needsChannelUrl && resolvingChannelUrl ? (
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                            <CircularProgress size={12} />
+                            <Typography variant="caption" color="text.secondary">Looking up channel…</Typography>
+                        </Box>
+                    ) : needsChannelUrl && resolvedChannelName ? (
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                            <CheckCircleOutline sx={{ fontSize: 14, color: 'success.main' }} />
+                            <Typography variant="caption" color="success.main">
+                                <strong>{resolvedChannelName}</strong> — Auto-filled — edit if needed.
+                            </Typography>
+                        </Box>
+                    ) : needsChannelUrl && url ? (
+                        <Typography variant="caption" color="text.secondary">Auto-filled — edit if needed.</Typography>
+                    ) : !needsChannelUrl ? (
+                        <Typography variant="caption" color="text.secondary">Enter a YouTube playlist or Bilibili URL.</Typography>
+                    ) : null}
+                </Box>
+
+                <Divider sx={{ my: 2 }} />
+
+                {/* Collection name */}
+                <TextField
+                    fullWidth
+                    size="small"
+                    label="Collection name"
                     value={collectionName}
                     onChange={(e) => setCollectionName(e.target.value)}
-                    placeholder={mode === 'playlist' ? 'My Playlist' : resolvedChannelName || 'My Channel'}
+                    placeholder={needsChannelUrl ? resolvedChannelName || 'My Channel' : 'My Playlist'}
                     helperText={
                         mode === 'channel-playlists'
                             ? 'Used as the channel folder name for all subscribed playlists. Leave blank to skip.'
@@ -310,8 +297,6 @@ const ChannelSubscribeModal: React.FC<ChannelSubscribeModalProps> = ({ open, onC
                     }
                     sx={{ mb: 2 }}
                 />
-
-                <Divider sx={{ my: 2 }} />
 
                 <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
                     Download format:

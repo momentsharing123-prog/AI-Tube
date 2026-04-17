@@ -515,7 +515,7 @@ export const createPlaylistSubscription = async (
 
   res.status(201).json({
     subscription,
-    collectionId: collection.id,
+    collectionId: collectionIdForSubscription,
     taskId: task?.id,
   });
 };

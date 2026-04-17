@@ -32,24 +32,24 @@ interface ChannelSubscribeModalProps {
 
 const MODES: { value: SubscriptionMode; label: string; description: string }[] = [
     {
-        value: 'channel',
-        label: 'Channel (all videos)',
-        description: 'Subscribe to all new uploads from a YouTube/Bilibili channel.',
+        value: 'playlist',
+        label: 'This playlist only',
+        description: 'Watch for new videos added to this specific playlist.',
     },
     {
-        value: 'playlist',
-        label: 'Playlist',
-        description: 'Subscribe to new videos added to a specific playlist.',
+        value: 'channel',
+        label: 'This channel (all videos)',
+        description: 'Watch for any new upload from the channel.',
     },
     {
         value: 'channel-playlists',
         label: 'All channel playlists',
-        description: 'Subscribe to every playlist on a channel.',
+        description: 'Subscribe to every playlist on the channel.',
     },
 ];
 
 const ChannelSubscribeModal: React.FC<ChannelSubscribeModalProps> = ({ open, onClose, onSuccess, initialUrl = '' }) => {
-    const [mode, setMode] = useState<SubscriptionMode>('channel');
+    const [mode, setMode] = useState<SubscriptionMode>('playlist');
     const [url, setUrl] = useState('');
     const [collectionName, setCollectionName] = useState('');
     const [interval, setIntervalValue] = useState(60);
@@ -173,7 +173,7 @@ const ChannelSubscribeModal: React.FC<ChannelSubscribeModalProps> = ({ open, onC
         if (submitting) return;
         setUrl('');
         setCollectionName('');
-        setMode('channel');
+        setMode('playlist');
         setIntervalValue(60);
         setFormat('mp4');
         setDownloadAllPrevious(false);

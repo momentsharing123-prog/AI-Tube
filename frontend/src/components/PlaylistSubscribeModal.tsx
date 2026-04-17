@@ -1,6 +1,7 @@
-import { MusicNote, NotificationsActive, VideoLibrary, Warning } from '@mui/icons-material';
+import { CheckCircleOutline, MusicNote, NotificationsActive, VideoLibrary, Warning } from '@mui/icons-material';
 import {
     Alert,
+    Box,
     Button,
     Checkbox,
     CircularProgress,
@@ -62,6 +63,8 @@ const PlaylistSubscribeModal: React.FC<PlaylistSubscribeModalProps> = ({
 }) => {
     const [mode, setMode] = useState<SubscriptionMode>('playlist');
     const [channelUrl, setChannelUrl] = useState(initialChannelUrl);
+    const [resolvedChannelName, setResolvedChannelName] = useState<string | null>(null);
+    const [customCollectionName, setCustomCollectionName] = useState('');
     const [interval, setIntervalValue] = useState(60);
     const [format, setFormat] = useState<'mp4' | 'mp3'>('mp4');
     const [downloadAllPrevious, setDownloadAllPrevious] = useState(false);
@@ -69,21 +72,31 @@ const PlaylistSubscribeModal: React.FC<PlaylistSubscribeModalProps> = ({
     const [resolvingChannelUrl, setResolvingChannelUrl] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
-    // Sync the channel URL whenever the modal opens or initialChannelUrl becomes available
+    // Sync state whenever the modal opens
     useEffect(() => {
         if (open) {
             setChannelUrl(initialChannelUrl);
+            setResolvedChannelName(null);
+            setCustomCollectionName(collectionName || playlistTitle || '');
+            setMode('playlist');
+            setError(null);
         }
-    }, [open, initialChannelUrl]);
+    }, [open, initialChannelUrl, collectionName, playlistTitle]);
 
     // When switching to a channel mode, auto-resolve channel URL from playlistUrl if not yet filled
     const resolveChannelUrlFromPlaylist = useCallback(async () => {
         if (!playlistUrl || resolvingChannelUrl) return;
         setResolvingChannelUrl(true);
+        setResolvedChannelName(null);
         try {
             const res = await api.get('/channel-url', { params: { url: playlistUrl } });
             if (res.data?.channelUrl) {
                 setChannelUrl(res.data.channelUrl);
+                setResolvedChannelName(res.data.channelName ?? null);
+                // Pre-fill collection name with channel name if field is empty
+                if (res.data.channelName) {
+                    setCustomCollectionName((prev) => prev || res.data.channelName);
+                }
             }
         } catch {
             // silently ignore — user can fill manually
@@ -93,7 +106,7 @@ const PlaylistSubscribeModal: React.FC<PlaylistSubscribeModalProps> = ({
     }, [playlistUrl, resolvingChannelUrl]);
 
     const needsChannelUrl = mode === 'channel' || mode === 'channel-playlists';
-    const canSubmit = !submitting && interval > 0 && (!needsChannelUrl || channelUrl.trim().length > 0);
+    const canSubmit = !submitting && !resolvingChannelUrl && interval > 0 && (!needsChannelUrl || channelUrl.trim().length > 0);
 
     const handleConfirm = async () => {
         setSubmitting(true);
@@ -104,7 +117,7 @@ const PlaylistSubscribeModal: React.FC<PlaylistSubscribeModalProps> = ({
                     playlistUrl,
                     interval,
                     format,
-                    collectionName: collectionName || playlistTitle,
+                    collectionName: customCollectionName.trim() || collectionName || playlistTitle,
                     downloadAll: downloadAllPrevious,
                 });
             } else if (mode === 'channel') {
@@ -112,6 +125,7 @@ const PlaylistSubscribeModal: React.FC<PlaylistSubscribeModalProps> = ({
                     url: channelUrl.trim(),
                     interval,
                     format,
+                    authorName: customCollectionName.trim() || undefined,
                     downloadAllPrevious,
                 });
             } else {
@@ -195,16 +209,9 @@ const PlaylistSubscribeModal: React.FC<PlaylistSubscribeModalProps> = ({
                             size="small"
                             label="Channel URL"
                             value={channelUrl}
-                            onChange={(e) => setChannelUrl(e.target.value)}
+                            onChange={(e) => { setChannelUrl(e.target.value); setResolvedChannelName(null); }}
                             placeholder="https://www.youtube.com/@ChannelName"
                             disabled={resolvingChannelUrl}
-                            helperText={
-                                resolvingChannelUrl
-                                    ? 'Looking up channel…'
-                                    : channelUrl
-                                        ? 'Auto-filled — edit if needed.'
-                                        : 'Enter the YouTube channel URL for this playlist\'s channel.'
-                            }
                             autoFocus={!channelUrl && !resolvingChannelUrl}
                             slotProps={{
                                 input: resolvingChannelUrl ? {
@@ -212,10 +219,53 @@ const PlaylistSubscribeModal: React.FC<PlaylistSubscribeModalProps> = ({
                                 } : undefined,
                             }}
                         />
+                        {/* Channel resolution hint */}
+                        <Box sx={{ mt: 0.5, mb: 1, minHeight: 20 }}>
+                            {resolvingChannelUrl ? (
+                                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                                    <CircularProgress size={12} />
+                                    <Typography variant="caption" color="text.secondary">Looking up channel…</Typography>
+                                </Box>
+                            ) : resolvedChannelName ? (
+                                <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                                    <CheckCircleOutline sx={{ fontSize: 14, color: 'success.main' }} />
+                                    <Typography variant="caption" color="success.main">
+                                        <strong>{resolvedChannelName}</strong> — Auto-filled — edit if needed.
+                                    </Typography>
+                                </Box>
+                            ) : channelUrl ? (
+                                <Typography variant="caption" color="text.secondary">Auto-filled — edit if needed.</Typography>
+                            ) : (
+                                <Typography variant="caption" color="text.secondary">Enter the channel URL for this playlist.</Typography>
+                            )}
+                        </Box>
                     </>
                 )}
 
                 <Divider sx={{ my: 2 }} />
+
+                {/* Collection name — for all modes except channel-playlists (each playlist auto-names itself) */}
+                {mode !== 'channel-playlists' ? (
+                    <TextField
+                        fullWidth
+                        size="small"
+                        label="Collection name"
+                        value={customCollectionName}
+                        onChange={(e) => setCustomCollectionName(e.target.value)}
+                        placeholder={mode === 'playlist' ? playlistTitle || 'My Playlist' : resolvedChannelName || 'My Channel'}
+                        helperText={
+                            mode === 'playlist'
+                                ? 'Leave blank to use the playlist title.'
+                                : 'Leave blank to use the channel name.'
+                        }
+                        sx={{ mb: 2 }}
+                    />
+                ) : (
+                    <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mb: 2 }}>
+                        Each playlist will be saved as its own collection, named from the playlist title.
+                    </Typography>
+                )}
+
                 <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
                     Download format:
                 </Typography>
@@ -234,8 +284,6 @@ const PlaylistSubscribeModal: React.FC<PlaylistSubscribeModalProps> = ({
                         <MusicNote fontSize="small" /> MP3 (Audio)
                     </ToggleButton>
                 </ToggleButtonGroup>
-
-                <Divider sx={{ my: 2 }} />
 
                 <TextField
                     fullWidth

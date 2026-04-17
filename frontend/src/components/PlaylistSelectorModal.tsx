@@ -1,4 +1,5 @@
 import { CheckBox, CheckBoxOutlineBlank, Close, MusicNote, NotificationsActive } from '@mui/icons-material';
+import { api } from '../utils/apiClient';
 import {
     Box,
     Button,
@@ -56,38 +57,48 @@ const PlaylistSelectorModal: React.FC<PlaylistSelectorModalProps> = ({
     const [selected, setSelected] = useState<Set<number>>(new Set());
     const [fetching, setFetching] = useState(false);
     const [fetchError, setFetchError] = useState<string | null>(null);
-    const [collectionName, setCollectionName] = useState<string>('');
+    // true  → use original playlist name (locked field)
+    // false → custom name (free-text field)
+    const [usePlaylistName, setUsePlaylistName] = useState(true);
+    const [customCollectionName, setCustomCollectionName] = useState('');
+    // Playlist title fetched from the backend (authoritative; prop starts as '')
+    const [fetchedTitle, setFetchedTitle] = useState<string>(playlistTitle);
+    const [channelUrl, setChannelUrl] = useState<string>('');
     const [subscribeOpen, setSubscribeOpen] = useState(false);
     const [subscribeSuccess, setSubscribeSuccess] = useState(false);
 
-    // Fetch playlist entries when modal opens
+    // The collection name that will actually be submitted
+    const effectiveCollectionName = usePlaylistName ? fetchedTitle : customCollectionName;
+
+    // Reset per-open state whenever the modal opens
     useEffect(() => {
-        if (!isOpen || !playlistUrl) return;
-        setFetching(true);
-        setFetchError(null);
+        if (!isOpen) return;
         setEntries([]);
         setSelected(new Set());
-        setCollectionName('');
+        setUsePlaylistName(true);
+        setCustomCollectionName('');
+        setFetchedTitle(playlistTitle); // show prop value immediately, overwrite when fetch returns
+        setChannelUrl('');
+        setFetchError(null);
+        setFetching(true);
 
         api.get('/playlist-entries', { params: { url: playlistUrl }, timeout: 60000 })
             .then((res) => {
                 const fetched: PlaylistEntry[] = res.data?.entries ?? [];
                 setEntries(fetched);
-                // Select all by default
                 setSelected(new Set(fetched.map((_, i) => i)));
+                if (res.data?.playlistTitle) {
+                    setFetchedTitle(res.data.playlistTitle);
+                }
+                if (res.data?.channelUrl) {
+                    setChannelUrl(res.data.channelUrl);
+                }
             })
             .catch((err) => {
                 setFetchError(err?.response?.data?.error || err?.message || 'Failed to load playlist');
             })
             .finally(() => setFetching(false));
     }, [isOpen, playlistUrl]);
-
-    // Pre-fill collection name once playlist title is known
-    useEffect(() => {
-        if (playlistTitle && playlistTitle !== playlistUrl) {
-            setCollectionName(playlistTitle);
-        }
-    }, [playlistTitle, playlistUrl]);
 
     const allSelected = entries.length > 0 && selected.size === entries.length;
     const noneSelected = selected.size === 0;
@@ -111,12 +122,12 @@ const PlaylistSelectorModal: React.FC<PlaylistSelectorModalProps> = ({
 
     const handleDownload = () => {
         const chosenEntries = entries.filter((_, i) => selected.has(i));
-        onDownloadSelected(chosenEntries, collectionName.trim());
+        onDownloadSelected(chosenEntries, effectiveCollectionName.trim());
     };
 
     // Fallback: download all without selecting (used when entry list couldn't be fetched)
     const handleDownloadAll = () => {
-        onDownloadSelected(entries.length > 0 ? entries : [], collectionName.trim());
+        onDownloadSelected(entries.length > 0 ? entries : [], effectiveCollectionName.trim());
     };
 
     const showFallback = !fetching && (fetchError !== null || entries.length === 0);
@@ -136,7 +147,7 @@ const PlaylistSelectorModal: React.FC<PlaylistSelectorModalProps> = ({
                         Playlist Detected
                     </Typography>
                     <Typography variant="body2" color="text.secondary" sx={{ mt: 0.25 }} noWrap>
-                        {playlistTitle}
+                        {fetchedTitle}
                     </Typography>
                 </Box>
                 <IconButton aria-label="close" onClick={onClose} sx={{ color: (theme) => theme.palette.grey[500] }}>
@@ -147,16 +158,41 @@ const PlaylistSelectorModal: React.FC<PlaylistSelectorModalProps> = ({
             <DialogContent dividers sx={{ p: 0 }}>
                 {/* Collection name field — always shown */}
                 <Box sx={{ px: 2, pt: 2, pb: 1 }}>
+                    <FormControlLabel
+                        control={
+                            <Checkbox
+                                size="small"
+                                checked={usePlaylistName}
+                                onChange={(e) => {
+                                    const checked = e.target.checked;
+                                    setUsePlaylistName(checked);
+                                    // When unchecking, seed the custom field with the current title
+                                    // so the user can edit from the existing value rather than starting blank
+                                    if (!checked && !customCollectionName) {
+                                        setCustomCollectionName(fetchedTitle);
+                                    }
+                                }}
+                                disabled={isLoading}
+                            />
+                        }
+                        label={<Typography variant="body2">Use original playlist name</Typography>}
+                        sx={{ mb: 1 }}
+                    />
                     <TextField
                         fullWidth
                         label="Collection name (optional)"
                         variant="outlined"
                         size="small"
-                        value={collectionName}
-                        onChange={(e) => setCollectionName(e.target.value)}
-                        placeholder={playlistTitle || 'My Playlist'}
-                        disabled={isLoading}
-                        helperText="Leave blank to add tracks without a collection, or enter a name to group them together."
+                        value={usePlaylistName ? fetchedTitle : customCollectionName}
+                        onChange={(e) => { if (!usePlaylistName) setCustomCollectionName(e.target.value); }}
+                        placeholder="My Playlist"
+                        disabled={isLoading || usePlaylistName}
+                        helperText={
+                            usePlaylistName
+                                ? 'Uncheck above to use a custom name.'
+                                : 'Leave blank to add tracks without a collection, or enter a name to group them together.'
+                        }
+                        autoFocus={!usePlaylistName}
                     />
                 </Box>
                 <Divider />
@@ -317,8 +353,9 @@ const PlaylistSelectorModal: React.FC<PlaylistSelectorModalProps> = ({
                 onClose={() => setSubscribeOpen(false)}
                 onSuccess={() => setSubscribeSuccess(true)}
                 playlistUrl={playlistUrl}
-                playlistTitle={playlistTitle}
-                collectionName={collectionName.trim()}
+                playlistTitle={fetchedTitle}
+                collectionName={effectiveCollectionName.trim()}
+                initialChannelUrl={channelUrl}
             />
         </Dialog>
     );

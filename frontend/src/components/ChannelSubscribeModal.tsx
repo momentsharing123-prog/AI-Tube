@@ -17,7 +17,7 @@ import {
     ToggleButtonGroup,
     Typography,
 } from '@mui/material';
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import { api } from '../utils/apiClient';
 
 type SubscriptionMode = 'channel' | 'playlist' | 'channel-playlists';
@@ -54,9 +54,46 @@ const ChannelSubscribeModal: React.FC<ChannelSubscribeModalProps> = ({ open, onC
     const [format, setFormat] = useState<'mp4' | 'mp3'>('mp4');
     const [downloadAllPrevious, setDownloadAllPrevious] = useState(false);
     const [submitting, setSubmitting] = useState(false);
+    const [resolvingChannelUrl, setResolvingChannelUrl] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
-    const canSubmit = !submitting && url.trim().length > 0 && interval > 0;
+    const canSubmit = !submitting && !resolvingChannelUrl && url.trim().length > 0 && interval > 0;
+
+    /** Returns true when the URL looks like a video or playlist rather than a channel page. */
+    const looksLikeVideoOrPlaylist = (u: string): boolean => {
+        try {
+            const parsed = new URL(u);
+            const host = parsed.hostname.replace('www.', '');
+            if (host === 'youtube.com' || host === 'youtu.be') {
+                const path = parsed.pathname;
+                // Already a channel URL — no need to resolve
+                if (path.startsWith('/@') || path.startsWith('/channel/') || path.startsWith('/user/') || path.startsWith('/c/')) return false;
+                return true; // /watch, /playlist, /shorts, etc.
+            }
+            if (host === 'bilibili.com') {
+                return parsed.pathname.startsWith('/video/');
+            }
+            return false;
+        } catch {
+            return false;
+        }
+    };
+
+    /** Resolve a channel URL from a video/playlist URL and update the url field. */
+    const resolveChannelUrlFromUrl = useCallback(async (sourceUrl: string) => {
+        if (!sourceUrl || resolvingChannelUrl) return;
+        setResolvingChannelUrl(true);
+        try {
+            const res = await api.get('/channel-url', { params: { url: sourceUrl } });
+            if (res.data?.channelUrl) {
+                setUrl(res.data.channelUrl);
+            }
+        } catch {
+            // silently ignore — user can fill manually
+        } finally {
+            setResolvingChannelUrl(false);
+        }
+    }, [resolvingChannelUrl]);
 
     const handleConfirm = async () => {
         setSubmitting(true);
@@ -126,9 +163,19 @@ const ChannelSubscribeModal: React.FC<ChannelSubscribeModalProps> = ({ open, onC
                     value={url}
                     onChange={(e) => { setUrl(e.target.value); setError(null); }}
                     placeholder="https://www.youtube.com/@ChannelName"
-                    helperText="Enter a YouTube channel, playlist, or Bilibili space URL."
+                    disabled={resolvingChannelUrl}
+                    helperText={
+                        resolvingChannelUrl
+                            ? 'Looking up channel from provided URL…'
+                            : 'Enter a YouTube channel, playlist, video, or Bilibili space URL.'
+                    }
                     autoFocus
                     sx={{ mt: 1, mb: 2 }}
+                    slotProps={{
+                        input: resolvingChannelUrl ? {
+                            endAdornment: <CircularProgress size={16} />,
+                        } : undefined,
+                    }}
                 />
 
                 <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
@@ -136,7 +183,15 @@ const ChannelSubscribeModal: React.FC<ChannelSubscribeModalProps> = ({ open, onC
                 </Typography>
                 <RadioGroup
                     value={mode}
-                    onChange={(e) => { setMode(e.target.value as SubscriptionMode); setError(null); }}
+                    onChange={(e) => {
+                        const next = e.target.value as SubscriptionMode;
+                        setMode(next);
+                        setError(null);
+                        // If switching to a channel mode and the user already entered a video/playlist URL, resolve it
+                        if ((next === 'channel' || next === 'channel-playlists') && looksLikeVideoOrPlaylist(url)) {
+                            resolveChannelUrlFromUrl(url);
+                        }
+                    }}
                 >
                     {MODES.map((m) => (
                         <FormControlLabel

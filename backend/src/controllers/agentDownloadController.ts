@@ -66,7 +66,7 @@ export const agentDownload = async (
 
     let entries: Array<{ url: string; title: string }>;
     try {
-      entries = await downloadService.getPlaylistEntries(validatedUrl);
+      ({ entries } = await downloadService.getPlaylistEntries(validatedUrl));
     } catch (error) {
       sendBadRequest(res, error instanceof Error ? error.message : "Failed to fetch playlist entries");
       return;

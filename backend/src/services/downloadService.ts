@@ -289,7 +289,38 @@ export async function downloadYouTubeVideo(
  * Get all video entries from a YouTube playlist without downloading.
  * Returns an array of { url, title } objects for each entry.
  */
-export async function getPlaylistEntries(playlistUrl: string): Promise<Array<{ url: string; title: string }>> {
+/**
+ * Resolve the channel URL for any video, playlist, or channel URL.
+ * Returns null when yt-dlp cannot determine the channel.
+ */
+export async function getChannelUrl(url: string): Promise<string | null> {
+  const { executeYtDlpJson, getNetworkConfigFromUserConfig, getUserYtDlpConfig } =
+    await import("../utils/ytDlpUtils");
+  const { getProviderScript } = await import("./downloaders/ytdlp/ytdlpHelpers");
+
+  const userConfig = getUserYtDlpConfig(url);
+  const networkConfig = getNetworkConfigFromUserConfig(userConfig);
+  const PROVIDER_SCRIPT = getProviderScript();
+
+  const info = await executeYtDlpJson(url, {
+    ...networkConfig,
+    noWarnings: true,
+    flatPlaylist: true,
+    ...(PROVIDER_SCRIPT
+      ? { extractorArgs: `youtubepot-bgutilscript:script_path=${PROVIDER_SCRIPT}` }
+      : {}),
+  });
+
+  return (
+    (info as any).channel_url ||
+    (info as any).uploader_url ||
+    null
+  );
+}
+
+export async function getPlaylistEntries(
+  playlistUrl: string,
+): Promise<{ entries: Array<{ url: string; title: string }>; channelUrl: string | null; playlistTitle: string | null }> {
   const { executeYtDlpJson, getNetworkConfigFromUserConfig, getUserYtDlpConfig } =
     await import("../utils/ytDlpUtils");
   const { getProviderScript } = await import("./downloaders/ytdlp/ytdlpHelpers");
@@ -308,15 +339,28 @@ export async function getPlaylistEntries(playlistUrl: string): Promise<Array<{ u
       : {}),
   });
 
+  // Extract playlist-level metadata from yt-dlp flat-playlist output
+  const channelUrl: string | null =
+    (info as any).channel_url ||
+    (info as any).uploader_url ||
+    null;
+
+  const playlistTitle: string | null =
+    (info as any).title ||
+    (info as any).playlist_title ||
+    null;
+
   if (!info.entries || info.entries.length === 0) {
     logger.warn("getPlaylistEntries: no entries found for", playlistUrl);
-    return [];
+    return { entries: [], channelUrl, playlistTitle };
   }
 
-  return (info.entries as any[]).map((entry: any) => ({
+  const entries = (info.entries as any[]).map((entry: any) => ({
     url: entry.url || entry.webpage_url || `https://www.youtube.com/watch?v=${entry.id}`,
     title: entry.title || entry.id || "Unknown",
   }));
+
+  return { entries, channelUrl, playlistTitle };
 }
 
 // Helper function to download MissAV video

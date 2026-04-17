@@ -759,15 +759,49 @@ export const getPlaylistEntries = async (
   }
 
   try {
-    const entries = await downloadService.getPlaylistEntries(validatedUrl);
-    sendData(res, { success: true, entries });
+    const { entries, channelUrl, playlistTitle } = await downloadService.getPlaylistEntries(validatedUrl);
+    sendData(res, { success: true, entries, channelUrl, playlistTitle });
   } catch (error) {
     logger.error("Error fetching playlist entries:", error);
     sendData(res, {
       success: false,
       error: error instanceof Error ? error.message : "Failed to fetch playlist entries",
       entries: [],
+      channelUrl: null,
+      playlistTitle: null,
     });
+  }
+};
+
+/**
+ * Resolve the channel URL for any video, playlist, or channel URL.
+ * GET /api/channel-url?url=<anyUrl>
+ *
+ * Returns { channelUrl: string | null }
+ */
+export const resolveChannelUrl = async (
+  req: Request,
+  res: Response,
+): Promise<any> => {
+  const url = req.query.url as string | undefined;
+
+  if (!url) {
+    return sendBadRequest(res, "url query parameter is required");
+  }
+
+  let validatedUrl: string;
+  try {
+    validatedUrl = validateUrl(url);
+  } catch (error) {
+    return sendBadRequest(res, error instanceof Error ? error.message : "Invalid URL format");
+  }
+
+  try {
+    const channelUrl = await downloadService.getChannelUrl(validatedUrl);
+    sendData(res, { success: true, channelUrl });
+  } catch (error) {
+    logger.error("Error resolving channel URL:", error);
+    sendData(res, { success: false, channelUrl: null });
   }
 };
 
@@ -802,7 +836,7 @@ async function resolvePlaylistEntries(
     return error instanceof Error ? error.message : "Invalid URL format";
   }
 
-  const entries = await downloadService.getPlaylistEntries(validatedUrl);
+  const { entries } = await downloadService.getPlaylistEntries(validatedUrl);
   if (entries.length === 0) {
     return "No videos found in playlist. Check that the URL contains a valid playlist parameter.";
   }

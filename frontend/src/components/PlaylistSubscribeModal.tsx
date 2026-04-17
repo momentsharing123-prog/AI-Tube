@@ -17,7 +17,7 @@ import {
     ToggleButtonGroup,
     Typography,
 } from '@mui/material';
-import { useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { api } from '../utils/apiClient';
 
 type SubscriptionMode = 'playlist' | 'channel' | 'channel-playlists';
@@ -29,6 +29,8 @@ interface PlaylistSubscribeModalProps {
     playlistUrl: string;
     playlistTitle: string;
     collectionName: string;
+    /** Pre-filled channel URL, derived from the playlist metadata */
+    initialChannelUrl?: string;
 }
 
 const MODES: { value: SubscriptionMode; label: string; description: string }[] = [
@@ -56,14 +58,39 @@ const PlaylistSubscribeModal: React.FC<PlaylistSubscribeModalProps> = ({
     playlistUrl,
     playlistTitle,
     collectionName,
+    initialChannelUrl = '',
 }) => {
     const [mode, setMode] = useState<SubscriptionMode>('playlist');
-    const [channelUrl, setChannelUrl] = useState('');
+    const [channelUrl, setChannelUrl] = useState(initialChannelUrl);
     const [interval, setIntervalValue] = useState(60);
     const [format, setFormat] = useState<'mp4' | 'mp3'>('mp4');
     const [downloadAllPrevious, setDownloadAllPrevious] = useState(false);
     const [submitting, setSubmitting] = useState(false);
+    const [resolvingChannelUrl, setResolvingChannelUrl] = useState(false);
     const [error, setError] = useState<string | null>(null);
+
+    // Sync the channel URL whenever the modal opens or initialChannelUrl becomes available
+    useEffect(() => {
+        if (open) {
+            setChannelUrl(initialChannelUrl);
+        }
+    }, [open, initialChannelUrl]);
+
+    // When switching to a channel mode, auto-resolve channel URL from playlistUrl if not yet filled
+    const resolveChannelUrlFromPlaylist = useCallback(async () => {
+        if (!playlistUrl || resolvingChannelUrl) return;
+        setResolvingChannelUrl(true);
+        try {
+            const res = await api.get('/channel-url', { params: { url: playlistUrl } });
+            if (res.data?.channelUrl) {
+                setChannelUrl(res.data.channelUrl);
+            }
+        } catch {
+            // silently ignore — user can fill manually
+        } finally {
+            setResolvingChannelUrl(false);
+        }
+    }, [playlistUrl, resolvingChannelUrl]);
 
     const needsChannelUrl = mode === 'channel' || mode === 'channel-playlists';
     const canSubmit = !submitting && interval > 0 && (!needsChannelUrl || channelUrl.trim().length > 0);
@@ -131,8 +158,13 @@ const PlaylistSubscribeModal: React.FC<PlaylistSubscribeModalProps> = ({
                 <RadioGroup
                     value={mode}
                     onChange={(e) => {
-                        setMode(e.target.value as SubscriptionMode);
+                        const next = e.target.value as SubscriptionMode;
+                        setMode(next);
                         setError(null);
+                        // Auto-resolve channel URL when switching to a channel mode
+                        if ((next === 'channel' || next === 'channel-playlists') && !channelUrl) {
+                            resolveChannelUrlFromPlaylist();
+                        }
                     }}
                 >
                     {MODES.map((m) => (
@@ -165,8 +197,20 @@ const PlaylistSubscribeModal: React.FC<PlaylistSubscribeModalProps> = ({
                             value={channelUrl}
                             onChange={(e) => setChannelUrl(e.target.value)}
                             placeholder="https://www.youtube.com/@ChannelName"
-                            helperText="Enter the YouTube channel URL for this playlist's channel."
-                            autoFocus
+                            disabled={resolvingChannelUrl}
+                            helperText={
+                                resolvingChannelUrl
+                                    ? 'Looking up channel…'
+                                    : channelUrl
+                                        ? 'Auto-filled — edit if needed.'
+                                        : 'Enter the YouTube channel URL for this playlist\'s channel.'
+                            }
+                            autoFocus={!channelUrl && !resolvingChannelUrl}
+                            slotProps={{
+                                input: resolvingChannelUrl ? {
+                                    endAdornment: <CircularProgress size={16} />,
+                                } : undefined,
+                            }}
                         />
                     </>
                 )}

@@ -19,6 +19,8 @@ router.get("/search", asyncHandler(videoDownloadController.searchVideos));
 router.post("/download", asyncHandler(videoDownloadController.downloadVideo));
 // Playlist entries list — used by the song-picker UI before download
 router.get("/playlist-entries", asyncHandler(videoDownloadController.getPlaylistEntries));
+// Resolve channel URL from any video / playlist / channel URL
+router.get("/channel-url", asyncHandler(videoDownloadController.resolveChannelUrl));
 // Playlist downloads: accept { playlistUrl } (all) or { entries: [{url,title}] } (selected)
 router.post("/download/playlist-mp3", asyncHandler(videoDownloadController.downloadPlaylistAsMP3));
 router.post("/download/playlist-mp4", asyncHandler(videoDownloadController.downloadPlaylistAsMP4));

@@ -300,11 +300,9 @@ const ChannelSubscribeModal: React.FC<ChannelSubscribeModalProps> = ({ open, onC
                     onChange={(e) => setCollectionName(e.target.value)}
                     placeholder={mode === 'playlist' ? 'My Playlist' : resolvedChannelName || 'My Channel'}
                     helperText={
-                        mode === 'playlist'
-                            ? 'Leave blank to use the playlist title.'
-                            : mode === 'channel-playlists'
-                                ? 'Used as the channel folder name for all subscribed playlists.'
-                                : 'Leave blank to use the channel name.'
+                        mode === 'channel-playlists'
+                            ? 'Used as the channel folder name for all subscribed playlists. Leave blank to skip.'
+                            : 'Leave blank to skip collection.'
                     }
                     sx={{ mb: 2 }}
                 />

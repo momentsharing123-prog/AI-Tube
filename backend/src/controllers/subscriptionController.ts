@@ -308,9 +308,9 @@ export const createPlaylistSubscription = async (
     collectionInfo,
   });
 
-  if (!playlistUrl || !interval || !collectionName) {
+  if (!playlistUrl || !interval) {
     throw new ValidationError(
-      "Playlist URL, interval, and collection name are required",
+      "Playlist URL and interval are required",
       "body"
     );
   }
@@ -321,7 +321,7 @@ export const createPlaylistSubscription = async (
 
   // Validate playlist URL format based on platform
   let playlistId: string | null = null;
-  let playlistTitle: string = collectionName;
+  let playlistTitle: string = collectionName || "Untitled Playlist";
   let videoCount: number = 0;
 
   // For Bilibili collection/series, use collectionInfo if provided
@@ -417,29 +417,33 @@ export const createPlaylistSubscription = async (
     }
   }
 
-  // Create or find collection
-  // First, try to find existing collection by name
-  let collection = storageService.getCollectionByName(collectionName);
-
-  if (!collection) {
-    // Create new collection
-    const uniqueCollectionName =
-      storageService.generateUniqueCollectionName(collectionName);
-    collection = {
-      id: Date.now().toString(),
-      name: uniqueCollectionName,
-      videos: [],
-      createdAt: new Date().toISOString(),
-      title: uniqueCollectionName,
-    };
-    storageService.saveCollection(collection);
-    logger.info(
-      `Created collection "${uniqueCollectionName}" with ID ${collection.id}`
-    );
+  // Create or find collection — skipped when collectionName is blank
+  let collectionIdForSubscription: string | null = null;
+  if (collectionName && collectionName.trim()) {
+    const trimmedName = collectionName.trim();
+    let collection = storageService.getCollectionByName(trimmedName);
+    if (!collection) {
+      const uniqueCollectionName =
+        storageService.generateUniqueCollectionName(trimmedName);
+      collection = {
+        id: Date.now().toString(),
+        name: uniqueCollectionName,
+        videos: [],
+        createdAt: new Date().toISOString(),
+        title: uniqueCollectionName,
+      };
+      storageService.saveCollection(collection);
+      logger.info(
+        `Created collection "${uniqueCollectionName}" with ID ${collection.id}`
+      );
+    } else {
+      logger.info(
+        `Using existing collection "${collection.name}" with ID ${collection.id}`
+      );
+    }
+    collectionIdForSubscription = collection.id;
   } else {
-    logger.info(
-      `Using existing collection "${collection.name}" with ID ${collection.id}`
-    );
+    logger.info("No collection name provided — playlist subscription will not be linked to a collection");
   }
 
   // Extract author from playlist
@@ -483,7 +487,7 @@ export const createPlaylistSubscription = async (
     playlistId || "",
     author,
     platform,
-    collection.id
+    collectionIdForSubscription
   );
 
   // If user wants to download all videos, create a continuous download task
@@ -494,7 +498,7 @@ export const createPlaylistSubscription = async (
         playlistUrl,
         author,
         platform,
-        collection.id,
+        collectionIdForSubscription,
         downloadFormat
       );
       logger.info(

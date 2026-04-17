@@ -389,9 +389,9 @@ describe("SubscriptionController", () => {
 
   describe("createPlaylistSubscription", () => {
     it("should throw when required fields are missing", async () => {
+      // collectionName is now optional; omit a genuinely required field (interval)
       req.body = {
         playlistUrl: "https://www.youtube.com/playlist?list=abc",
-        interval: 60,
       };
       await expect(
         createPlaylistSubscription(req as Request, res as Response)

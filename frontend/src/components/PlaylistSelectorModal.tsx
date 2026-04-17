@@ -98,7 +98,7 @@ const PlaylistSelectorModal: React.FC<PlaylistSelectorModalProps> = ({
                 setFetchError(err?.response?.data?.error || err?.message || 'Failed to load playlist');
             })
             .finally(() => setFetching(false));
-    }, [isOpen, playlistUrl]);
+    }, [isOpen, playlistUrl, playlistTitle]);
 
     const allSelected = entries.length > 0 && selected.size === entries.length;
     const noneSelected = selected.size === 0;

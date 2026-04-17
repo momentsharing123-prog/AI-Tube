@@ -27,14 +27,7 @@ export function useVideoRecommendations({ video }: UseVideoRecommendationsProps)
             title: video.title,
             videoFilename: video.videoFilename
         } as Video;
-    }, [
-        video?.id,
-        video?.author,
-        video?.seriesTitle,
-        video?.title,
-        video?.videoFilename,
-        video?.tags
-    ]);
+    }, [video]);
     const deferredRecommendationVideo = useDeferredValue(recommendationVideo);
 
     // Get related videos using recommendation algorithm

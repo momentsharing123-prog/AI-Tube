@@ -1,6 +1,6 @@
 # AI-Tube
 
-> **This project is a fork of [MyTube](https://github.com/franklioxygen/MyTube) by [franklioxygen](https://github.com/franklioxygen).** All original credit goes to the upstream author. This fork adds MP3/MP4 format selection, a token-based REST API for AI agent integration, and a local Docker Compose setup for personal self-hosting.
+> **This project is a fork of [MyTube](https://github.com/franklioxygen/MyTube) by [franklioxygen](https://github.com/franklioxygen).** All original credit goes to the upstream author. This fork adds MP3/MP4 format selection, playlist browsing & track picker, smart subscription workflows with channel URL auto-resolution, a token-based REST API for AI agent integration, and a local Docker Compose setup for personal self-hosting.
 
 Self-hosted downloader and player for YouTube, Bilibili, Twitch, MissAV, and [yt-dlp sites](https://github.com/yt-dlp/yt-dlp/blob/master/supportedsites.md). Features channel subscriptions, auto-downloads, and local storage for media. Organize your library into collections with a sleek UI. Includes built-in Cloudflare Tunnel support for secure remote access without port forwarding. Docker-ready deployment.
 
@@ -17,6 +17,72 @@ Self-hosted downloader and player for YouTube, Bilibili, Twitch, MissAV, and [yt
 [![GitHub Repo stars](https://img.shields.io/github/stars/franklioxygen/mytube)](https://github.com/franklioxygen/mytube)
 
 [中文](README-zh.md) | [Changelog](CHANGELOG.md)
+
+---
+
+## Screenshots
+
+### Home — Video Library
+![Home](docs/screenshots/home.png)
+
+### Manage Content — Collections & Videos
+![Manage](docs/screenshots/manage.png)
+
+### Subscriptions — Auto-Download Management
+![Subscriptions](docs/screenshots/subscriptions.png)
+
+### Subscribe to Auto-Download Modal
+![Subscribe Modal](docs/screenshots/subscribe-modal.png)
+
+### Settings
+![Settings](docs/screenshots/settings.png)
+
+---
+
+## Features
+
+### Downloading
+- **MP4 / MP3 Format Toggle**: Choose video (MP4) or audio-only (MP3) directly in the header before downloading — applies to all single, batch, and playlist downloads.
+- **Video Downloading**: Download YouTube, Bilibili, Twitch, MissAV and other yt-dlp-supported videos with a simple URL input.
+- **Playlist Detection**: Paste a playlist URL and instantly choose to download a single item or browse the full track list. A track-picker modal loads all entries, lets you select/deselect individual tracks, and groups them into a named collection.
+- **Collection Name Auto-Fill**: The "Playlist Detected" picker auto-fills the collection name from the actual playlist title fetched from yt-dlp. A checkbox locks the field to the original name; unchecking it seeds the field for easy editing.
+- **Batch Download**: Add multiple video URLs at once to the download queue.
+- **Parallel Downloads**: Queue multiple downloads and track their progress simultaneously.
+- **Concurrent Download Limit**: Set a limit on the number of simultaneous downloads to manage bandwidth.
+- **Video Upload**: Upload local video files directly to your library with automatic thumbnail generation.
+
+### Subscriptions
+- **Channel Subscriptions**: Subscribe to any YouTube / Bilibili channel and auto-download every new upload. Choose MP4 or MP3 per subscription.
+- **Playlist Subscriptions**: Subscribe to a specific playlist and auto-download new additions.
+- **All-Channel-Playlists Subscription**: Subscribe to every playlist on a channel at once.
+- **Subscribe from Playlist Detected**: A Subscribe button lives directly inside the "Playlist Detected" picker — click it to start a subscription for the playlist or its channel without leaving the current flow.
+- **Channel URL Auto-Resolution**: When subscribing via a video or playlist URL, AI Tube automatically looks up and fills in the channel URL using yt-dlp — no copy-pasting needed.
+- **Format per Subscription**: Each subscription stores its own MP4/MP3 preference; future downloads respect that format automatically.
+- **Check Interval**: Configure how often (in minutes) each subscription is polled for new content.
+- **Download All Previous**: Optionally backfill all existing videos/tracks when a new subscription is created.
+- **Pause / Resume**: Pause individual subscriptions without deleting them.
+
+### Library & Organization
+- **Collections**: Organize videos into custom collections for easy browsing and playback.
+- **TMDB Metadata Scraping**: Automatically scrape movie and TV show metadata (title, description, poster, director, year, rating) from TMDB based on filename. Supports localized content matching your site language.
+- **Auto Subtitles**: Automatically download YouTube / Bilibili default language subtitles.
+- **Cloud Storage Integration**: Automatically upload videos and thumbnails to cloud storage (OpenList/Alist) after download.
+
+### Access & Security
+- **Login Protection**: Secure your application with password login and optional passkeys (WebAuthn).
+- **Visitor User**: Enable a read-only role for safe sharing without modification capabilities.
+- **Cloudflare Tunnel Integration**: Built-in Cloudflare Tunnel support to easily expose your local AI Tube instance to the internet without port forwarding.
+
+### Customization & Automation
+- **Internationalization**: Support for multiple languages including English, Chinese, Spanish, French, German, Japanese, Korean, Arabic, Portuguese, and Russian.
+- **Mobile Optimizations**: Mobile-friendly tags menu and optimized layout for smaller screens.
+- **Cookie Management**: Support for uploading `cookies.txt` to enable downloading of age-restricted or premium content.
+- **yt-dlp Configuration**: Customize global `yt-dlp` arguments, network proxy, and other advanced settings via the settings page.
+- **Task Hooks**: Execute custom shell scripts at various stages of a download task (start, success, fail, cancel) for integration and automation. See [Task Hooks Guide](documents/en/hooks-guide.md).
+- **Telegram Notifications**: Receive instant notifications via Telegram bot when a download task succeeds or fails.
+- **Browser Extension**: A Chrome extension to download videos directly from your browser. Supports all yt-dlp supported sites.
+
+---
 
 ## AI Agent Skills
 
@@ -213,29 +279,7 @@ For the full REST API reference see [`skills/aitube-download/reference/api-refer
 
 [![Watch the video](https://img.youtube.com/vi/0_5ZpgsWTp0/maxresdefault.jpg)](https://www.youtube.com/watch?v=0_5ZpgsWTp0)
 
-## Features
-
-- **Video Downloading**: Download YouTube, Bilibili, Twitch, MissAV and other yt-dlp-supported videos with a simple URL input.
-- **Video Upload**: Upload local video files directly to your library with automatic thumbnail generation.
-- **TMDB Metadata Scraping**: Automatically scrape movie and TV show metadata (title, description, poster, director, year, rating) from TMDB based on filename. Supports localized content matching your site language.
-- **Parallel Downloads**: Queue multiple downloads and track their progress simultaneously.
-- **Batch Download**: Add multiple video URLs at once to the download queue.
-- **Concurrent Download Limit**: Set a limit on the number of simultaneous downloads to manage bandwidth.
-- **Cloud Storage Integration**: Automatically upload videos and thumbnails to cloud storage (OpenList/Alist) after download.
-- **Auto Subtitles**: Automatically download YouTube / Bilibili default language subtitles.
-- **Collections**: Organize videos into custom collections for easy access.
-- **Subscriptions**: Manage YouTube, Bilibili and Twitch channel subscriptions to automatically download new content.
-- **Login Protection**: Secure your application with password login and optional passkeys (WebAuthn).
-- **Visitor User**: Enable a read-only role for safe sharing without modification capabilities.
-- **Internationalization**: Support for multiple languages including English, Chinese, Spanish, French, German, Japanese, Korean, Arabic, Portuguese, and Russian.
-- **Mobile Optimizations**: Mobile-friendly tags menu and optimized layout for smaller screens.
-- **Cookie Management**: Support for uploading `cookies.txt` to enable downloading of age-restricted or premium content.
-- **yt-dlp Configuration**: Customize global `yt-dlp` arguments, network proxy, and other advanced settings via settings page.
-- **TMDB Integration**: Configure your TMDB API key in settings to enable automatic metadata scraping for local video files. The scraper intelligently parses filenames to extract titles and matches them with TMDB database.
-- **Cloudflare Tunnel Integration**: Built-in Cloudflare Tunnel support to easily expose your local AI Tube instance to the internet without port forwarding.
-- **Task Hooks**: Execute custom shell scripts at various stages of a download task (start, success, fail, cancel) for integration and automation. See [Task Hooks Guide](documents/en/hooks-guide.md).
-- **Telegram Notifications**: Receive instant notifications via Telegram bot when a download task succeeds or fails.
-- **Browser Extension**: A Chrome extension to download videos directly from your browser. Supports all yt-dlp supported sites.
+---
 
 ## Browser Extension
 
@@ -256,6 +300,8 @@ For the three-tier admin trust and deployment security model, please refer to [D
 ## API Endpoints
 
 For a list of available API endpoints, please refer to [API Endpoints](documents/en/api-endpoints.md).
+
+---
 
 ## Technology Stack
 
@@ -283,6 +329,8 @@ For a list of available API endpoints, please refer to [API Endpoints](documents
 - **Database Migrations**: Automatic schema updates using Drizzle Kit
 - **Download Queue Management**: Concurrent downloads with queue support
 - **Video Download Tracking**: Prevents duplicate downloads across sessions
+
+---
 
 ## Environment Variables
 
@@ -322,7 +370,8 @@ Key database tables:
 
 - `videos`: Video metadata and file paths
 - `collections`: Video collections/playlists
-- `subscriptions`: Channel/creator subscriptions
+- `subscriptions`: Channel/creator subscriptions with format preference (MP4/MP3)
+- `continuous_download_tasks`: Active subscription polling tasks with format preference
 - `downloads`: Active download queue
 - `download_history`: Completed download history
 - `video_downloads`: Tracks downloaded videos to prevent duplicates

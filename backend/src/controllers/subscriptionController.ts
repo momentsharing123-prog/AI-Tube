@@ -524,12 +524,13 @@ export const subscribeChannelPlaylists = async (
   req: Request,
   res: Response
 ): Promise<void> => {
-  const { url, interval, downloadAllPrevious, format } = req.body;
+  const { url, interval, downloadAllPrevious, format, channelNameOverride } = req.body;
   const downloadFormat: 'mp4' | 'mp3' = format === 'mp3' ? 'mp3' : 'mp4';
   logger.info("Subscribing to channel playlists:", {
     url,
     interval,
     downloadAllPrevious,
+    channelNameOverride,
   });
 
   if (!url || !interval) {
@@ -590,6 +591,11 @@ export const subscribeChannelPlaylists = async (
     if (match && match[1]) {
       channelName = match[1];
     }
+  }
+
+  // Allow caller to override the channel name (used for collection folder naming)
+  if (channelNameOverride && channelNameOverride.trim()) {
+    channelName = channelNameOverride.trim();
   }
 
   logger.info(

@@ -173,6 +173,7 @@ const ChannelSubscribeModal: React.FC<ChannelSubscribeModalProps> = ({ open, onC
                     url: channelModeUrl,
                     interval,
                     format,
+                    channelNameOverride: collectionName.trim() || undefined,
                     downloadAllPrevious,
                 });
             }
@@ -235,7 +236,7 @@ const ChannelSubscribeModal: React.FC<ChannelSubscribeModalProps> = ({ open, onC
                         setMode(next);
                         setError(null);
                         // Auto-update collection name to match the selected mode's default
-                        if (next === 'channel') {
+                        if (next === 'channel' || next === 'channel-playlists') {
                             setCollectionName(resolvedChannelName || '');
                         } else if (next === 'playlist') {
                             setCollectionName('');
@@ -290,27 +291,23 @@ const ChannelSubscribeModal: React.FC<ChannelSubscribeModalProps> = ({ open, onC
 
                 <Divider sx={{ my: 2 }} />
 
-                {/* Collection name — for all modes except channel-playlists (each playlist auto-names itself) */}
-                {mode !== 'channel-playlists' ? (
-                    <TextField
-                        fullWidth
-                        size="small"
-                        label="Collection name (optional)"
-                        value={collectionName}
-                        onChange={(e) => setCollectionName(e.target.value)}
-                        placeholder={mode === 'playlist' ? 'My Playlist' : resolvedChannelName || 'My Channel'}
-                        helperText={
-                            mode === 'playlist'
-                                ? 'Leave blank to use the playlist title.'
+                {/* Collection name — shown for all modes */}
+                <TextField
+                    fullWidth
+                    size="small"
+                    label="Collection name (optional)"
+                    value={collectionName}
+                    onChange={(e) => setCollectionName(e.target.value)}
+                    placeholder={mode === 'playlist' ? 'My Playlist' : resolvedChannelName || 'My Channel'}
+                    helperText={
+                        mode === 'playlist'
+                            ? 'Leave blank to use the playlist title.'
+                            : mode === 'channel-playlists'
+                                ? 'Used as the channel folder name for all subscribed playlists.'
                                 : 'Leave blank to use the channel name.'
-                        }
-                        sx={{ mb: 2 }}
-                    />
-                ) : (
-                    <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mb: 2 }}>
-                        Each playlist will be saved as its own collection, named from the playlist title.
-                    </Typography>
-                )}
+                    }
+                    sx={{ mb: 2 }}
+                />
 
                 <Divider sx={{ my: 2 }} />
 

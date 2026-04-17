@@ -1,10 +1,9 @@
-import { CheckCircleOutline, MusicNote, NotificationsActive, OpenInNew, VideoLibrary, Warning } from '@mui/icons-material';
+import { CheckCircleOutline, MusicNote, NotificationsActive, VideoLibrary, Warning } from '@mui/icons-material';
 import {
     Alert,
     Box,
     Button,
     Checkbox,
-    Chip,
     CircularProgress,
     Dialog,
     DialogActions,
@@ -123,7 +122,7 @@ const ChannelSubscribeModal: React.FC<ChannelSubscribeModalProps> = ({ open, onC
         }
     };
 
-    /** Resolve a channel URL from a video/playlist URL and store it as a hint (does not overwrite the url field). */
+    /** Resolve a channel URL from a video/playlist URL, auto-fill the url field, and store the channel name as a hint. */
     const resolveChannelUrlFromUrl = useCallback(async (sourceUrl: string) => {
         if (!sourceUrl || resolvingChannelUrl) return;
         setResolvingChannelUrl(true);
@@ -132,6 +131,7 @@ const ChannelSubscribeModal: React.FC<ChannelSubscribeModalProps> = ({ open, onC
         try {
             const res = await api.get('/channel-url', { params: { url: sourceUrl } });
             if (res.data?.channelUrl) {
+                setUrl(res.data.channelUrl);
                 setResolvedChannelUrl(res.data.channelUrl);
                 setResolvedChannelName(res.data.channelName ?? null);
             }
@@ -212,7 +212,7 @@ const ChannelSubscribeModal: React.FC<ChannelSubscribeModalProps> = ({ open, onC
                     size="small"
                     label="Channel or playlist URL"
                     value={url}
-                    onChange={(e) => { setUrl(e.target.value); setError(null); }}
+                    onChange={(e) => { setUrl(e.target.value); setError(null); setResolvedChannelUrl(null); setResolvedChannelName(null); }}
                     placeholder="https://www.youtube.com/@ChannelName"
                     disabled={resolvingChannelUrl}
                     helperText="Enter a YouTube channel, playlist, video, or Bilibili space URL."
@@ -255,7 +255,7 @@ const ChannelSubscribeModal: React.FC<ChannelSubscribeModalProps> = ({ open, onC
                     ))}
                 </RadioGroup>
 
-                {/* Resolved channel hint — shown when in channel mode and URL has been looked up */}
+                {/* Resolved channel hint */}
                 {(mode === 'channel' || mode === 'channel-playlists') && (resolvingChannelUrl || resolvedChannelUrl) && (
                     <Box sx={{ mt: 1, mb: 0.5 }}>
                         {resolvingChannelUrl ? (
@@ -266,30 +266,11 @@ const ChannelSubscribeModal: React.FC<ChannelSubscribeModalProps> = ({ open, onC
                                 </Typography>
                             </Box>
                         ) : resolvedChannelUrl ? (
-                            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.5 }}>
-                                {resolvedChannelName && (
-                                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                                        <CheckCircleOutline sx={{ fontSize: 14, color: 'success.main' }} />
-                                        <Typography variant="caption" color="success.main" sx={{ fontWeight: 600 }}>
-                                            {resolvedChannelName}
-                                        </Typography>
-                                    </Box>
-                                )}
-                                <Chip
-                                    label={resolvedChannelUrl}
-                                    size="small"
-                                    variant="outlined"
-                                    icon={<OpenInNew sx={{ fontSize: '14px !important' }} />}
-                                    onClick={() => setUrl(resolvedChannelUrl)}
-                                    title="Click to use this channel URL"
-                                    sx={{
-                                        maxWidth: '100%',
-                                        '& .MuiChip-label': { overflow: 'hidden', textOverflow: 'ellipsis', fontSize: '0.7rem' },
-                                        cursor: 'pointer',
-                                    }}
-                                />
-                                <Typography variant="caption" color="text.secondary">
-                                    Click the chip to use this URL, or keep your original link as-is.
+                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                                <CheckCircleOutline sx={{ fontSize: 14, color: 'success.main' }} />
+                                <Typography variant="caption" color="success.main">
+                                    {resolvedChannelName ? <><strong>{resolvedChannelName}</strong> — </> : null}
+                                    Auto-filled — edit if needed.
                                 </Typography>
                             </Box>
                         ) : null}

@@ -87,11 +87,17 @@ const AutoDownloadModal: React.FC<AutoDownloadModalProps> = ({
     const [error, setError] = useState<string | null>(null);
 
     const needsChannelUrl = mode === 'channel' || mode === 'channel-playlists';
-    // In playlist mode when fixedPlaylistUrl is set, show that URL (read-only)
-    const displayUrl = !needsChannelUrl && fixedPlaylistUrl ? fixedPlaylistUrl : url;
+    // Channel modes: show resolved channel URL (falls back to original typed URL before resolution)
+    // Playlist mode with fixed URL: show fixed URL (read-only)
+    // Playlist mode normal: show original typed URL
+    const displayUrl = needsChannelUrl
+        ? (resolvedChannelUrl ?? url)
+        : fixedPlaylistUrl ?? url;
     const canSubmit =
         !submitting && !resolvingChannelUrl && !resolvingPlaylistTitle && interval > 0 &&
-        (needsChannelUrl ? url.trim().length > 0 : !!(fixedPlaylistUrl || url.trim()));
+        (needsChannelUrl
+            ? (resolvedChannelUrl ?? url).trim().length > 0
+            : !!(fixedPlaylistUrl || url.trim()));
 
     // Sync state whenever the modal opens
     useEffect(() => {
@@ -174,7 +180,7 @@ const AutoDownloadModal: React.FC<AutoDownloadModalProps> = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [open, url]);
 
-    /** Resolve channel URL + name; auto-fills url field when it changed. */
+    /** Resolve channel URL + name; stores resolved URL separately, never mutates `url`. */
     const resolveChannel = useCallback(async (sourceUrl: string) => {
         if (!sourceUrl || resolvingChannelUrl) return;
         setResolvingChannelUrl(true);
@@ -183,7 +189,6 @@ const AutoDownloadModal: React.FC<AutoDownloadModalProps> = ({
         try {
             const res = await api.get('/channel-url', { params: { url: sourceUrl } });
             if (res.data?.channelUrl) {
-                if (res.data.channelUrl !== sourceUrl) setUrl(res.data.channelUrl);
                 setResolvedChannelUrl(res.data.channelUrl);
                 setResolvedChannelName(res.data.channelName ?? null);
                 if (res.data.channelName) setCollectionName(res.data.channelName);
@@ -277,9 +282,14 @@ const AutoDownloadModal: React.FC<AutoDownloadModalProps> = ({
                         setMode(next);
                         setError(null);
                         if (next === 'channel' || next === 'channel-playlists') {
+                            // url is still the original playlist/video URL — use it to resolve channel
                             setCollectionName(resolvedChannelName || '');
                             triggerChannelResolve(url);
                         } else {
+                            // Switching back to playlist: url was never changed, resolvedPlaylistTitle
+                            // still holds the resolved title (url change effect never fired for it)
+                            setResolvedChannelUrl(null);
+                            setResolvedChannelName(null);
                             setCollectionName(playlistTitle || resolvedPlaylistTitle || '');
                         }
                     }}
@@ -314,10 +324,17 @@ const AutoDownloadModal: React.FC<AutoDownloadModalProps> = ({
                     value={displayUrl}
                     onChange={(e) => {
                         if (!needsChannelUrl && fixedPlaylistUrl) return;
-                        setUrl(e.target.value);
                         setError(null);
-                        setResolvedChannelUrl(null);
-                        setResolvedChannelName(null);
+                        if (needsChannelUrl) {
+                            // In channel mode the visible field shows resolvedChannelUrl;
+                            // edits go directly into that state so url (original) is never lost.
+                            setResolvedChannelUrl(e.target.value);
+                            setResolvedChannelName(null);
+                        } else {
+                            setUrl(e.target.value);
+                            setResolvedChannelUrl(null);
+                            setResolvedChannelName(null);
+                        }
                     }}
                     placeholder={needsChannelUrl
                         ? 'https://www.youtube.com/@ChannelName'
@@ -342,7 +359,7 @@ const AutoDownloadModal: React.FC<AutoDownloadModalProps> = ({
                                 <strong>{resolvedChannelName}</strong> — Auto-filled — edit if needed.
                             </Typography>
                         </Box>
-                    ) : needsChannelUrl && url ? (
+                    ) : needsChannelUrl && resolvedChannelUrl ? (
                         <Typography variant="caption" color="text.secondary">Auto-filled — edit if needed.</Typography>
                     ) : !needsChannelUrl && fixedPlaylistUrl ? (
                         <Typography variant="caption" color="text.secondary">

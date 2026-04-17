@@ -293,7 +293,7 @@ export async function downloadYouTubeVideo(
  * Resolve the channel URL for any video, playlist, or channel URL.
  * Returns null when yt-dlp cannot determine the channel.
  */
-export async function getChannelUrl(url: string): Promise<string | null> {
+export async function getChannelUrl(url: string): Promise<{ channelUrl: string | null; channelName: string | null }> {
   const { executeYtDlpJson, getNetworkConfigFromUserConfig, getUserYtDlpConfig } =
     await import("../utils/ytDlpUtils");
   const { getProviderScript } = await import("./downloaders/ytdlp/ytdlpHelpers");
@@ -311,11 +311,20 @@ export async function getChannelUrl(url: string): Promise<string | null> {
       : {}),
   });
 
-  return (
+  const channelUrl =
     (info as any).channel_url ||
     (info as any).uploader_url ||
-    null
-  );
+    null;
+
+  const channelName =
+    (info as any).uploader ||
+    (info as any).channel ||
+    // fall back to first entry if top-level fields are missing
+    (info as any).entries?.[0]?.uploader ||
+    (info as any).entries?.[0]?.channel ||
+    null;
+
+  return { channelUrl, channelName };
 }
 
 export async function getPlaylistEntries(

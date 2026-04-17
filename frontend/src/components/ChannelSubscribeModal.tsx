@@ -1,8 +1,10 @@
-import { MusicNote, NotificationsActive, VideoLibrary, Warning } from '@mui/icons-material';
+import { CheckCircleOutline, MusicNote, NotificationsActive, OpenInNew, VideoLibrary, Warning } from '@mui/icons-material';
 import {
     Alert,
+    Box,
     Button,
     Checkbox,
+    Chip,
     CircularProgress,
     Dialog,
     DialogActions,
@@ -57,6 +59,8 @@ const ChannelSubscribeModal: React.FC<ChannelSubscribeModalProps> = ({ open, onC
     const [downloadAllPrevious, setDownloadAllPrevious] = useState(false);
     const [submitting, setSubmitting] = useState(false);
     const [resolvingChannelUrl, setResolvingChannelUrl] = useState(false);
+    const [resolvedChannelUrl, setResolvedChannelUrl] = useState<string | null>(null);
+    const [resolvedChannelName, setResolvedChannelName] = useState<string | null>(null);
     const [error, setError] = useState<string | null>(null);
 
     const canSubmit = !submitting && !resolvingChannelUrl && url.trim().length > 0 && interval > 0;
@@ -90,8 +94,10 @@ const ChannelSubscribeModal: React.FC<ChannelSubscribeModalProps> = ({ open, onC
         return null;
     };
 
-    // Auto-switch mode when the URL changes
+    // Auto-switch mode when the URL changes; also clear resolved channel hint
     useEffect(() => {
+        setResolvedChannelUrl(null);
+        setResolvedChannelName(null);
         if (!url) return;
         const detected = detectMode(url);
         if (detected) setMode(detected);
@@ -117,14 +123,17 @@ const ChannelSubscribeModal: React.FC<ChannelSubscribeModalProps> = ({ open, onC
         }
     };
 
-    /** Resolve a channel URL from a video/playlist URL and update the url field. */
+    /** Resolve a channel URL from a video/playlist URL and store it as a hint (does not overwrite the url field). */
     const resolveChannelUrlFromUrl = useCallback(async (sourceUrl: string) => {
         if (!sourceUrl || resolvingChannelUrl) return;
         setResolvingChannelUrl(true);
+        setResolvedChannelUrl(null);
+        setResolvedChannelName(null);
         try {
             const res = await api.get('/channel-url', { params: { url: sourceUrl } });
             if (res.data?.channelUrl) {
-                setUrl(res.data.channelUrl);
+                setResolvedChannelUrl(res.data.channelUrl);
+                setResolvedChannelName(res.data.channelName ?? null);
             }
         } catch {
             // silently ignore — user can fill manually
@@ -136,10 +145,12 @@ const ChannelSubscribeModal: React.FC<ChannelSubscribeModalProps> = ({ open, onC
     const handleConfirm = async () => {
         setSubmitting(true);
         setError(null);
+        // For channel modes use the resolved channel URL if available, else fall back to what the user typed
+        const channelModeUrl = (resolvedChannelUrl || url).trim();
         try {
             if (mode === 'channel') {
                 await api.post('/subscriptions', {
-                    url: url.trim(),
+                    url: channelModeUrl,
                     interval,
                     format,
                     downloadAllPrevious,
@@ -154,7 +165,7 @@ const ChannelSubscribeModal: React.FC<ChannelSubscribeModalProps> = ({ open, onC
                 });
             } else {
                 await api.post('/subscriptions/channel-playlists', {
-                    url: url.trim(),
+                    url: channelModeUrl,
                     interval,
                     format,
                     downloadAllPrevious,
@@ -177,6 +188,8 @@ const ChannelSubscribeModal: React.FC<ChannelSubscribeModalProps> = ({ open, onC
         setIntervalValue(60);
         setFormat('mp4');
         setDownloadAllPrevious(false);
+        setResolvedChannelUrl(null);
+        setResolvedChannelName(null);
         setError(null);
         onClose();
     };
@@ -202,18 +215,9 @@ const ChannelSubscribeModal: React.FC<ChannelSubscribeModalProps> = ({ open, onC
                     onChange={(e) => { setUrl(e.target.value); setError(null); }}
                     placeholder="https://www.youtube.com/@ChannelName"
                     disabled={resolvingChannelUrl}
-                    helperText={
-                        resolvingChannelUrl
-                            ? 'Looking up channel from provided URL…'
-                            : 'Enter a YouTube channel, playlist, video, or Bilibili space URL.'
-                    }
+                    helperText="Enter a YouTube channel, playlist, video, or Bilibili space URL."
                     autoFocus
                     sx={{ mt: 1, mb: 2 }}
-                    slotProps={{
-                        input: resolvingChannelUrl ? {
-                            endAdornment: <CircularProgress size={16} />,
-                        } : undefined,
-                    }}
                 />
 
                 <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
@@ -250,6 +254,47 @@ const ChannelSubscribeModal: React.FC<ChannelSubscribeModalProps> = ({ open, onC
                         />
                     ))}
                 </RadioGroup>
+
+                {/* Resolved channel hint — shown when in channel mode and URL has been looked up */}
+                {(mode === 'channel' || mode === 'channel-playlists') && (resolvingChannelUrl || resolvedChannelUrl) && (
+                    <Box sx={{ mt: 1, mb: 0.5 }}>
+                        {resolvingChannelUrl ? (
+                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                                <CircularProgress size={14} />
+                                <Typography variant="caption" color="text.secondary">
+                                    Looking up channel…
+                                </Typography>
+                            </Box>
+                        ) : resolvedChannelUrl ? (
+                            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.5 }}>
+                                {resolvedChannelName && (
+                                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                                        <CheckCircleOutline sx={{ fontSize: 14, color: 'success.main' }} />
+                                        <Typography variant="caption" color="success.main" sx={{ fontWeight: 600 }}>
+                                            {resolvedChannelName}
+                                        </Typography>
+                                    </Box>
+                                )}
+                                <Chip
+                                    label={resolvedChannelUrl}
+                                    size="small"
+                                    variant="outlined"
+                                    icon={<OpenInNew sx={{ fontSize: '14px !important' }} />}
+                                    onClick={() => setUrl(resolvedChannelUrl)}
+                                    title="Click to use this channel URL"
+                                    sx={{
+                                        maxWidth: '100%',
+                                        '& .MuiChip-label': { overflow: 'hidden', textOverflow: 'ellipsis', fontSize: '0.7rem' },
+                                        cursor: 'pointer',
+                                    }}
+                                />
+                                <Typography variant="caption" color="text.secondary">
+                                    Click the chip to use this URL, or keep your original link as-is.
+                                </Typography>
+                            </Box>
+                        ) : null}
+                    </Box>
+                )}
 
                 {mode === 'playlist' && (
                     <>

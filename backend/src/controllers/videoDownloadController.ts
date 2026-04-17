@@ -797,11 +797,11 @@ export const resolveChannelUrl = async (
   }
 
   try {
-    const { channelUrl, channelName } = await downloadService.getChannelUrl(validatedUrl);
-    sendData(res, { success: true, channelUrl, channelName });
+    const { channelUrl, channelName, playlistTitle } = await downloadService.getChannelUrl(validatedUrl);
+    sendData(res, { success: true, channelUrl, channelName, playlistTitle });
   } catch (error) {
     logger.error("Error resolving channel URL:", error);
-    sendData(res, { success: false, channelUrl: null, channelName: null });
+    sendData(res, { success: false, channelUrl: null, channelName: null, playlistTitle: null });
   }
 };
 

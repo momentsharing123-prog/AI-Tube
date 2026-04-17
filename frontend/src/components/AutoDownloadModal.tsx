@@ -82,13 +82,15 @@ const AutoDownloadModal: React.FC<AutoDownloadModalProps> = ({
     const [downloadAllPrevious, setDownloadAllPrevious] = useState(false);
     const [submitting, setSubmitting] = useState(false);
     const [resolvingChannelUrl, setResolvingChannelUrl] = useState(false);
+    const [resolvingPlaylistTitle, setResolvingPlaylistTitle] = useState(false);
+    const [resolvedPlaylistTitle, setResolvedPlaylistTitle] = useState<string | null>(null);
     const [error, setError] = useState<string | null>(null);
 
     const needsChannelUrl = mode === 'channel' || mode === 'channel-playlists';
     // In playlist mode when fixedPlaylistUrl is set, show that URL (read-only)
     const displayUrl = !needsChannelUrl && fixedPlaylistUrl ? fixedPlaylistUrl : url;
     const canSubmit =
-        !submitting && !resolvingChannelUrl && interval > 0 &&
+        !submitting && !resolvingChannelUrl && !resolvingPlaylistTitle && interval > 0 &&
         (needsChannelUrl ? url.trim().length > 0 : !!(fixedPlaylistUrl || url.trim()));
 
     // Sync state whenever the modal opens
@@ -97,6 +99,7 @@ const AutoDownloadModal: React.FC<AutoDownloadModalProps> = ({
             setUrl(initialUrl);
             setResolvedChannelUrl(null);
             setResolvedChannelName(null);
+            setResolvedPlaylistTitle(null);
             setCollectionName(initialCollectionName || playlistTitle || '');
             setMode('playlist');
             setError(null);
@@ -124,6 +127,7 @@ const AutoDownloadModal: React.FC<AutoDownloadModalProps> = ({
         if (fixedPlaylistUrl) return;
         setResolvedChannelUrl(null);
         setResolvedChannelName(null);
+        setResolvedPlaylistTitle(null);
         setCollectionName('');
         if (!url) return;
         const detected = detectMode(url);
@@ -139,6 +143,36 @@ const AutoDownloadModal: React.FC<AutoDownloadModalProps> = ({
         }
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [mode, open]);
+
+    // Auto-resolve playlist title when modal opens in playlist mode with a URL (header/subscription page context)
+    useEffect(() => {
+        if (!open) return;
+        if (fixedPlaylistUrl) return; // Playlist Detected context already has title from prop
+        if (mode !== 'playlist') return;
+        if (!url) return;
+        if (resolvedPlaylistTitle || resolvingPlaylistTitle) return;
+
+        const resolve = async () => {
+            setResolvingPlaylistTitle(true);
+            try {
+                const res = await api.get('/channel-url', { params: { url } });
+                const title: string | null = res.data?.playlistTitle ?? null;
+                const chName: string | null = res.data?.channelName ?? null;
+                if (title) {
+                    setResolvedPlaylistTitle(title);
+                    setCollectionName((prev) => prev || title);
+                } else if (chName) {
+                    // Fallback: use channel name as title hint
+                    setResolvedPlaylistTitle(chName);
+                    setCollectionName((prev) => prev || chName);
+                }
+            } catch { /* silently ignore */ } finally {
+                setResolvingPlaylistTitle(false);
+            }
+        };
+        resolve();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [open, url]);
 
     /** Resolve channel URL + name; auto-fills url field when it changed. */
     const resolveChannel = useCallback(async (sourceUrl: string) => {
@@ -214,6 +248,7 @@ const AutoDownloadModal: React.FC<AutoDownloadModalProps> = ({
         setDownloadAllPrevious(false);
         setResolvedChannelUrl(null);
         setResolvedChannelName(null);
+        setResolvedPlaylistTitle(null);
         setError(null);
         onClose();
     };
@@ -245,7 +280,7 @@ const AutoDownloadModal: React.FC<AutoDownloadModalProps> = ({
                             setCollectionName(resolvedChannelName || '');
                             triggerChannelResolve(url);
                         } else {
-                            setCollectionName(playlistTitle || '');
+                            setCollectionName(playlistTitle || resolvedPlaylistTitle || '');
                         }
                     }}
                 >
@@ -287,10 +322,10 @@ const AutoDownloadModal: React.FC<AutoDownloadModalProps> = ({
                     placeholder={needsChannelUrl
                         ? 'https://www.youtube.com/@ChannelName'
                         : 'https://www.youtube.com/playlist?list=…'}
-                    disabled={resolvingChannelUrl || (!needsChannelUrl && !!fixedPlaylistUrl)}
+                    disabled={resolvingChannelUrl || resolvingPlaylistTitle || (!needsChannelUrl && !!fixedPlaylistUrl)}
                     autoFocus={!fixedPlaylistUrl}
                     slotProps={{
-                        input: resolvingChannelUrl ? { endAdornment: <CircularProgress size={16} /> } : undefined,
+                        input: (resolvingChannelUrl || resolvingPlaylistTitle) ? { endAdornment: <CircularProgress size={16} /> } : undefined,
                     }}
                 />
                 {/* Hint row */}
@@ -315,6 +350,18 @@ const AutoDownloadModal: React.FC<AutoDownloadModalProps> = ({
                                 ? <><strong>{playlistTitle}</strong> — playlist URL pre-filled.</>
                                 : 'Playlist URL pre-filled.'}
                         </Typography>
+                    ) : !needsChannelUrl && resolvingPlaylistTitle ? (
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                            <CircularProgress size={12} />
+                            <Typography variant="caption" color="text.secondary">Looking up title…</Typography>
+                        </Box>
+                    ) : !needsChannelUrl && resolvedPlaylistTitle ? (
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                            <CheckCircleOutline sx={{ fontSize: 14, color: 'success.main' }} />
+                            <Typography variant="caption" color="success.main">
+                                <strong>{resolvedPlaylistTitle}</strong> — playlist URL pre-filled.
+                            </Typography>
+                        </Box>
                     ) : !needsChannelUrl ? (
                         <Typography variant="caption" color="text.secondary">Enter a YouTube playlist or Bilibili URL.</Typography>
                     ) : null}
@@ -329,7 +376,7 @@ const AutoDownloadModal: React.FC<AutoDownloadModalProps> = ({
                     label="Collection name"
                     value={collectionName}
                     onChange={(e) => setCollectionName(e.target.value)}
-                    placeholder={needsChannelUrl ? resolvedChannelName || 'My Channel' : playlistTitle || 'My Playlist'}
+                    placeholder={needsChannelUrl ? resolvedChannelName || 'My Channel' : playlistTitle || resolvedPlaylistTitle || 'My Playlist'}
                     helperText={
                         mode === 'channel-playlists'
                             ? 'Used as the channel folder name for all subscribed playlists. Leave blank to skip.'

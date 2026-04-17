@@ -166,6 +166,7 @@ const HeaderToolbarContent: React.FC<HeaderToolbarContentProps> = ({
                             searchTerm={searchTerm}
                             onResetSearch={onResetSearch}
                             onSubmit={onSubmit}
+                            onSubscribeClick={onSubscribeClick}
                         />
                     </Box>
                     <Box sx={{ display: 'flex', alignItems: 'center', ml: desktopActionsMarginLeft }}>

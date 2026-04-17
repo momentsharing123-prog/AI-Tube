@@ -1,4 +1,4 @@
-import { Clear, ContentPaste, Search } from '@mui/icons-material';
+import { Add, Clear, ContentPaste, Search } from '@mui/icons-material';
 import {
     alpha,
     Box,
@@ -26,6 +26,7 @@ interface SearchInputProps {
     searchTerm: string;
     onResetSearch?: () => void;
     onSubmit: (e: FormEvent) => void;
+    onSubscribeClick?: () => void;
 }
 
 const SearchInput: React.FC<SearchInputProps> = ({
@@ -36,7 +37,8 @@ const SearchInput: React.FC<SearchInputProps> = ({
     isSearchMode,
     searchTerm,
     onResetSearch,
-    onSubmit
+    onSubmit,
+    onSubscribeClick
 }) => {
     const { t } = useLanguage();
     const { userRole } = useAuth();
@@ -134,6 +136,19 @@ const SearchInput: React.FC<SearchInputProps> = ({
                                 >
                                     {isSubmitting ? <CircularProgress size={24} color="inherit" /> : <Search />}
                                 </Button>
+                                {!isVisitor && onSubscribeClick && (
+                                    <Button
+                                        type="button"
+                                        variant="contained"
+                                        color="secondary"
+                                        onClick={onSubscribeClick}
+                                        disabled={isSubmitting}
+                                        startIcon={<Add />}
+                                        sx={{ borderRadius: 2, ml: 0.5, whiteSpace: 'nowrap', height: '100%', minWidth: 'auto', px: 2 }}
+                                    >
+                                        Subscribe
+                                    </Button>
+                                )}
                             </InputAdornment>
                         ),
                         sx: { pr: 0, borderRadius: 2 }

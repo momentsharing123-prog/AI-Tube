@@ -1,4 +1,4 @@
-import { Brightness4, Brightness7, Download, NotificationsNone, Settings } from '@mui/icons-material';
+import { Brightness4, Brightness7, Download, Settings } from '@mui/icons-material';
 import { Badge, Box, IconButton, Tooltip, useMediaQuery, useTheme } from '@mui/material';
 import { useAuth } from '../../contexts/AuthContext';
 import { useLanguage } from '../../contexts/LanguageContext';
@@ -58,13 +58,6 @@ const ActionButtons: React.FC<ActionButtonsProps> = ({
                         queuedDownloads={queuedDownloads}
                         hasActiveSubscriptions={hasActiveSubscriptions}
                     />
-                    {onSubscribeClick && (
-                        <Tooltip title="Subscribe" disableHoverListener={isTouch}>
-                            <IconButton color="inherit" onClick={onSubscribeClick}>
-                                <NotificationsNone />
-                            </IconButton>
-                        </Tooltip>
-                    )}
                 </>
             )}
 

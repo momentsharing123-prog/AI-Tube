@@ -131,7 +131,10 @@ const ChannelSubscribeModal: React.FC<ChannelSubscribeModalProps> = ({ open, onC
         try {
             const res = await api.get('/channel-url', { params: { url: sourceUrl } });
             if (res.data?.channelUrl) {
-                setUrl(res.data.channelUrl);
+                // Only replace the URL in the textbox if it actually differs (e.g. was a video/playlist link)
+                if (res.data.channelUrl !== sourceUrl) {
+                    setUrl(res.data.channelUrl);
+                }
                 setResolvedChannelUrl(res.data.channelUrl);
                 setResolvedChannelName(res.data.channelName ?? null);
                 // Always update collection name with the resolved channel name
@@ -241,8 +244,9 @@ const ChannelSubscribeModal: React.FC<ChannelSubscribeModalProps> = ({ open, onC
                         } else if (next === 'playlist') {
                             setCollectionName('');
                         }
-                        // If switching to a channel mode and the user already entered a video/playlist URL, resolve it
-                        if ((next === 'channel' || next === 'channel-playlists') && looksLikeVideoOrPlaylist(url)) {
+                        // Resolve channel URL/name when switching to a channel mode
+                        // Always run if we don't have the channel name yet
+                        if ((next === 'channel' || next === 'channel-playlists') && url && !resolvedChannelName) {
                             resolveChannelUrlFromUrl(url);
                         }
                     }}

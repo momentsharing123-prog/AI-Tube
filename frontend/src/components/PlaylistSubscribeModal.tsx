@@ -182,8 +182,8 @@ const PlaylistSubscribeModal: React.FC<PlaylistSubscribeModalProps> = ({
                         } else if (next === 'channel' || next === 'channel-playlists') {
                             setCustomCollectionName(resolvedChannelName || '');
                         }
-                        // Auto-resolve channel URL when switching to a channel mode
-                        if ((next === 'channel' || next === 'channel-playlists') && !channelUrl) {
+                        // Auto-resolve channel URL/name when switching to a channel mode
+                        if ((next === 'channel' || next === 'channel-playlists') && !resolvedChannelName) {
                             resolveChannelUrlFromPlaylist();
                         }
                     }}

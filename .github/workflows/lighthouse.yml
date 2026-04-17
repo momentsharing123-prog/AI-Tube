@@ -75,7 +75,7 @@ jobs:
 
           trap cleanup EXIT
 
-          for _ in $(seq 1 120); do
+          for _ in $(seq 1 300); do
             if curl --silent --fail http://127.0.0.1:5551/ >/dev/null; then
               break
             fi

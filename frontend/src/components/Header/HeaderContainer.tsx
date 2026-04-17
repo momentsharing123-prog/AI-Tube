@@ -13,6 +13,7 @@ import {
 import { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 
+import ChannelSubscribeModal from '../ChannelSubscribeModal';
 import { useAuth } from '../../contexts/AuthContext';
 import { useLanguage } from '../../contexts/LanguageContext';
 import { usePageTagFilterOptional } from '../../contexts/PageTagFilterContext';
@@ -39,6 +40,7 @@ const HeaderContainer: React.FC<HeaderProps> = ({
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const [manageAnchorEl, setManageAnchorEl] = useState<null | HTMLElement>(null);
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+    const [subscribeModalOpen, setSubscribeModalOpen] = useState(false);
 
     const navigate = useNavigate();
     const location = useLocation();
@@ -166,6 +168,7 @@ const HeaderContainer: React.FC<HeaderProps> = ({
                             onManageClose={handleManageClose}
                             hasActiveSubscriptions={hasActiveSubscriptions}
                             showThemeButton={showThemeButton}
+                            onSubscribeClick={isVisitor ? undefined : () => setSubscribeModalOpen(true)}
                             mobileMenuOpen={mobileMenuOpen}
                             onToggleMobileMenu={() => setMobileMenuOpen((open) => !open)}
                             onCloseMobileMenu={() => setMobileMenuOpen(false)}
@@ -191,6 +194,13 @@ const HeaderContainer: React.FC<HeaderProps> = ({
                     flexShrink: 0,
                     transition: 'height 0.3s ease-in-out'
                 }}
+            />
+
+            <ChannelSubscribeModal
+                open={subscribeModalOpen}
+                onClose={() => setSubscribeModalOpen(false)}
+                onSuccess={() => setSubscribeModalOpen(false)}
+                initialUrl={videoUrl}
             />
 
             <Slide direction="up" in={showScrollTopButton} mountOnEnter unmountOnExit>

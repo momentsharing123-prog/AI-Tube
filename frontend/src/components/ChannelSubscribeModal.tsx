@@ -17,7 +17,7 @@ import {
     ToggleButtonGroup,
     Typography,
 } from '@mui/material';
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { api } from '../utils/apiClient';
 
 type SubscriptionMode = 'channel' | 'playlist' | 'channel-playlists';
@@ -26,6 +26,8 @@ interface ChannelSubscribeModalProps {
     open: boolean;
     onClose: () => void;
     onSuccess: () => void;
+    /** Pre-fill the URL field (e.g. from the header search bar) */
+    initialUrl?: string;
 }
 
 const MODES: { value: SubscriptionMode; label: string; description: string }[] = [
@@ -46,7 +48,7 @@ const MODES: { value: SubscriptionMode; label: string; description: string }[] =
     },
 ];
 
-const ChannelSubscribeModal: React.FC<ChannelSubscribeModalProps> = ({ open, onClose, onSuccess }) => {
+const ChannelSubscribeModal: React.FC<ChannelSubscribeModalProps> = ({ open, onClose, onSuccess, initialUrl = '' }) => {
     const [mode, setMode] = useState<SubscriptionMode>('channel');
     const [url, setUrl] = useState('');
     const [collectionName, setCollectionName] = useState('');
@@ -58,6 +60,42 @@ const ChannelSubscribeModal: React.FC<ChannelSubscribeModalProps> = ({ open, onC
     const [error, setError] = useState<string | null>(null);
 
     const canSubmit = !submitting && !resolvingChannelUrl && url.trim().length > 0 && interval > 0;
+
+    // Pre-fill URL from prop when the modal opens
+    useEffect(() => {
+        if (open) {
+            setUrl(initialUrl);
+        }
+    }, [open, initialUrl]);
+
+    /** Detect the best subscription mode for a given URL (returns null when no strong signal). */
+    const detectMode = (u: string): SubscriptionMode | null => {
+        try {
+            const parsed = new URL(u);
+            const host = parsed.hostname.replace('www.', '');
+            if (host === 'youtube.com' || host === 'youtu.be') {
+                const path = parsed.pathname;
+                if (path.startsWith('/@') || path.startsWith('/channel/') || path.startsWith('/user/') || path.startsWith('/c/')) {
+                    return 'channel';
+                }
+                if (parsed.searchParams.get('list')) return 'playlist';
+            }
+            if (host === 'bilibili.com') {
+                // Bilibili space pages are channel-like
+                if (parsed.pathname.startsWith('/space/')) return 'channel';
+            }
+        } catch {
+            // ignore invalid URLs
+        }
+        return null;
+    };
+
+    // Auto-switch mode when the URL changes
+    useEffect(() => {
+        if (!url) return;
+        const detected = detectMode(url);
+        if (detected) setMode(detected);
+    }, [url]);
 
     /** Returns true when the URL looks like a video or playlist rather than a channel page. */
     const looksLikeVideoOrPlaylist = (u: string): boolean => {

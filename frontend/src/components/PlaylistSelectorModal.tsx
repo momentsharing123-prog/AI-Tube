@@ -21,7 +21,7 @@ import {
     Typography,
 } from '@mui/material';
 import { useEffect, useState } from 'react';
-import PlaylistSubscribeModal from './PlaylistSubscribeModal';
+import AutoDownloadModal from './AutoDownloadModal';
 
 export interface PlaylistEntry {
     url: string;
@@ -348,14 +348,14 @@ const PlaylistSelectorModal: React.FC<PlaylistSelectorModalProps> = ({
             </DialogActions>
 
             {/* Playlist subscription modal */}
-            <PlaylistSubscribeModal
+            <AutoDownloadModal
                 open={subscribeOpen}
                 onClose={() => setSubscribeOpen(false)}
                 onSuccess={() => setSubscribeSuccess(true)}
-                playlistUrl={playlistUrl}
+                fixedPlaylistUrl={playlistUrl}
                 playlistTitle={fetchedTitle}
-                collectionName={effectiveCollectionName.trim()}
-                initialChannelUrl={channelUrl}
+                initialCollectionName={effectiveCollectionName.trim()}
+                initialUrl={channelUrl}
             />
         </Dialog>
     );

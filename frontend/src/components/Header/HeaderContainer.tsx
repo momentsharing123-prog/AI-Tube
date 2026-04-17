@@ -13,7 +13,7 @@ import {
 import { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 
-import ChannelSubscribeModal from '../ChannelSubscribeModal';
+import AutoDownloadModal from '../AutoDownloadModal';
 import { useAuth } from '../../contexts/AuthContext';
 import { useLanguage } from '../../contexts/LanguageContext';
 import { usePageTagFilterOptional } from '../../contexts/PageTagFilterContext';
@@ -196,7 +196,7 @@ const HeaderContainer: React.FC<HeaderProps> = ({
                 }}
             />
 
-            <ChannelSubscribeModal
+            <AutoDownloadModal
                 open={subscribeModalOpen}
                 onClose={() => setSubscribeModalOpen(false)}
                 onSuccess={() => setSubscribeModalOpen(false)}

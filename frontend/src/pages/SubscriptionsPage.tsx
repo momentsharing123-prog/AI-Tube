@@ -1,5 +1,5 @@
 import { Add, Cancel, Check, Close, Delete, DeleteOutline, Edit, Pause, PlayArrow } from '@mui/icons-material';
-import ChannelSubscribeModal from '../components/ChannelSubscribeModal';
+import AutoDownloadModal from '../components/AutoDownloadModal';
 import {
     Box,
     Button,
@@ -651,7 +651,7 @@ const SubscriptionsPage: React.FC = () => {
                 cancelText={t('cancel')}
                 isDanger
             />
-            <ChannelSubscribeModal
+            <AutoDownloadModal
                 open={isSubscribeModalOpen}
                 onClose={() => setIsSubscribeModalOpen(false)}
                 onSuccess={() => {

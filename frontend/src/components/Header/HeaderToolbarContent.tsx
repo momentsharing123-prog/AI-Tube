@@ -31,6 +31,7 @@ interface HeaderToolbarContentProps {
     onManageClose: () => void;
     hasActiveSubscriptions: boolean;
     showThemeButton: boolean;
+    onSubscribeClick?: () => void;
     mobileMenuOpen: boolean;
     onToggleMobileMenu: () => void;
     onCloseMobileMenu: () => void;
@@ -63,6 +64,7 @@ const HeaderToolbarContent: React.FC<HeaderToolbarContentProps> = ({
     onManageClose,
     hasActiveSubscriptions,
     showThemeButton,
+    onSubscribeClick,
     mobileMenuOpen,
     onToggleMobileMenu,
     onCloseMobileMenu,

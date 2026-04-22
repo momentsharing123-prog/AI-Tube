@@ -820,6 +820,7 @@ export const es = {
   nextCheck: "Próxima comprobación",
   editInterval: "Editar intervalo",
   platform: "Plataforma",
+  format: "Formato",
   unsubscribe: "Darse de baja",
   confirmUnsubscribe: "¿Estás seguro de que quieres darte de baja de {author}?",
   subscribedSuccessfully: "Suscrito con éxito",

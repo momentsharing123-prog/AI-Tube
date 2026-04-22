@@ -784,6 +784,7 @@ export const ar = {
   nextCheck: "التحقق التالي",
   editInterval: "تعديل الفاصل",
   platform: "المنصة",
+  format: "التنسيق",
   unsubscribe: "إلغاء الاشتراك",
   confirmUnsubscribe: "هل أنت متأكد أنك تريد إلغاء الاشتراك من {author}؟",
   subscribedSuccessfully: "تم الاشتراك بنجاح",

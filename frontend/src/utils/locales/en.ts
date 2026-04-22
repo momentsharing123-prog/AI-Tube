@@ -767,6 +767,7 @@ export const en = {
   nextCheck: "Next Check",
   editInterval: "Edit Interval",
   platform: "Platform",
+  format: "Format",
   unsubscribe: "Unsubscribe",
   confirmUnsubscribe: "Are you sure you want to unsubscribe from {author}?",
   subscribedSuccessfully: "Subscribed successfully",

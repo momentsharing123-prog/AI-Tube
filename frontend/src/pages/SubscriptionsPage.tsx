@@ -45,6 +45,7 @@ interface Subscription {
     playlistTitle?: string;
     subscriptionType?: string; // 'author' or 'playlist'
     collectionId?: string;
+    format?: string;
 }
 
 interface ContinuousDownloadTask {
@@ -377,6 +378,7 @@ const SubscriptionsPage: React.FC = () => {
                         <TableRow>
                             <TableCell>{t('author')}</TableCell>
                             <TableCell sx={{ display: { xs: 'none', md: 'table-cell' } }}>{t('platform')}</TableCell>
+                            <TableCell sx={{ display: { xs: 'none', md: 'table-cell' } }}>{t('format')}</TableCell>
                             <TableCell sx={{ display: { xs: 'none', md: 'table-cell' } }}>{t('interval')}</TableCell>
                             <TableCell sx={{ display: { xs: 'none', md: 'table-cell' }, whiteSpace: 'nowrap' }}>
                                 <Box sx={{ display: 'flex', flexDirection: 'column', lineHeight: 1.4 }}>
@@ -391,7 +393,7 @@ const SubscriptionsPage: React.FC = () => {
                     <TableBody>
                         {subscriptions.length === 0 ? (
                             <TableRow>
-                                <TableCell colSpan={isVisitor ? 5 : 6} align="center">
+                                <TableCell colSpan={isVisitor ? 6 : 7} align="center">
                                     <Typography color="text.secondary" sx={{ py: 4 }}>
                                         {t('noVideos')} {/* Reusing "No videos found" or similar if "No subscriptions" key missing */}
                                     </Typography>
@@ -427,6 +429,18 @@ const SubscriptionsPage: React.FC = () => {
                                         </Box>
                                     </TableCell>
                                     <TableCell sx={{ display: { xs: 'none', md: 'table-cell' } }}>{sub.platform}</TableCell>
+                                    <TableCell sx={{ display: { xs: 'none', md: 'table-cell' } }}>
+                                        <Typography
+                                            variant="body2"
+                                            sx={{
+                                                textTransform: 'uppercase',
+                                                fontWeight: 600,
+                                                color: sub.format === 'mp3' ? 'success.main' : 'info.main',
+                                            }}
+                                        >
+                                            {sub.format ?? 'mp4'}
+                                        </Typography>
+                                    </TableCell>
                                     <TableCell sx={{ display: { xs: 'none', md: 'table-cell' } }}>
                                         {isEditingInterval && !isMobileLayout ? (
                                             renderIntervalEditor(sub.id)

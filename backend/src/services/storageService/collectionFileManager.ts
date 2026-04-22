@@ -2,6 +2,7 @@ import path from "path";
 import {
   IMAGES_DIR,
   IMAGES_SMALL_DIR,
+  MUSIC_DIR,
   SUBTITLES_DIR,
   UPLOADS_DIR,
   VIDEOS_DIR,
@@ -67,15 +68,24 @@ export function moveVideoToCollection(
 
   if (video.videoFilename) {
     const currentVideoPath = findVideoFile(video.videoFilename, allCollections);
+
+    // Keep audio files (mp3) in MUSIC_DIR; everything else goes to VIDEOS_DIR
+    const resolvedMusicDir = path.resolve(MUSIC_DIR);
+    const isAudioFile =
+      currentVideoPath !== null &&
+      path.resolve(currentVideoPath).startsWith(resolvedMusicDir + path.sep);
+    const baseDir = isAudioFile ? MUSIC_DIR : VIDEOS_DIR;
+    const pathPrefix = isAudioFile ? "music" : "videos";
+
     const targetVideoPath = buildStoragePath(
-      VIDEOS_DIR,
+      baseDir,
       sanitizedCollectionName,
       video.videoFilename
     );
 
     if (currentVideoPath && currentVideoPath !== targetVideoPath) {
       moveFile(currentVideoPath, targetVideoPath);
-      updates.videoPath = `/videos/${sanitizedCollectionName}/${video.videoFilename}`;
+      updates.videoPath = `/${pathPrefix}/${sanitizedCollectionName}/${video.videoFilename}`;
       updated = true;
     }
   }

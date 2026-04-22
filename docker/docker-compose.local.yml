@@ -23,6 +23,11 @@ services:
       - AITUBE_API_ENABLED=${AITUBE_API_ENABLED:-false}
       - AITUBE_API_TOKEN=${AITUBE_API_TOKEN:-}
     restart: unless-stopped
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "7"
     networks:
       - aitube-network
 
@@ -40,6 +45,11 @@ services:
     depends_on:
       - backend
     restart: unless-stopped
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "7"
     networks:
       - aitube-network
 

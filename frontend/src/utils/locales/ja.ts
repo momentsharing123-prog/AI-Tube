@@ -808,6 +808,7 @@ export const ja = {
   nextCheck: "次回のチェック",
   editInterval: "間隔を編集",
   platform: "プラットフォーム",
+  format: "フォーマット",
   unsubscribe: "購読解除",
   confirmUnsubscribe: "{author} の購読を解除してもよろしいですか？",
   subscribedSuccessfully: "購読しました",

@@ -5,7 +5,7 @@ import { VIDEOS_DIR } from "../config/paths";
 import { db } from "../db";
 import { videos } from "../db/schema";
 import { ExecutionError, FileError } from "../errors/DownloadErrors";
-import { execFileSafe, validateVideoPath } from "../utils/security";
+import { execFileSafe, validateMediaPath } from "../utils/security";
 
 const TEMPORARY_VIDEO_ARTIFACT_PATTERN = /(\.temp\.)|(\.part$)|(\.ytdl$)|(\.f\d+\.)/i;
 
@@ -23,8 +23,8 @@ export const getVideoDuration = async (
       throw FileError.notFound(filePath);
     }
 
-    // Validate path to prevent path traversal
-    const validatedPath = validateVideoPath(filePath);
+    // Validate path to prevent path traversal (allow both videos and music dirs)
+    const validatedPath = validateMediaPath(filePath);
 
     // Use execFileSafe to prevent command injection
     const { stdout } = await execFileSafe("ffprobe", [

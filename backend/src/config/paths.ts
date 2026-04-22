@@ -23,3 +23,4 @@ export const COLLECTIONS_DATA_PATH: string = path.join(
   "collections.json"
 );
 export const HOOKS_DIR: string = path.join(DATA_DIR, "hooks");
+export const LOGS_DIR: string = path.join(DATA_DIR, "logs");

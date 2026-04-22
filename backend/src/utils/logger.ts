@@ -3,6 +3,9 @@
  * Provides consistent logging with log levels and structured output
  */
 
+import fs from "fs";
+import path from "path";
+
 export enum LogLevel {
   DEBUG = 0,
   INFO = 1,
@@ -12,6 +15,9 @@ export enum LogLevel {
 
 export class Logger {
   private level: LogLevel;
+  private logDir: string | null = null;
+  private logStream: fs.WriteStream | null = null;
+  private currentLogDate: string = "";
 
   constructor(level: LogLevel = LogLevel.INFO) {
     this.level = level;
@@ -29,6 +35,76 @@ export class Logger {
    */
   getLevel(): LogLevel {
     return this.level;
+  }
+
+  /**
+   * Initialize file-based logging. Creates logDir if needed, cleans logs older
+   * than 7 days, and opens today's log file for appending.
+   */
+  initFileLogging(logDir: string): void {
+    this.logDir = logDir;
+    try {
+      fs.mkdirSync(logDir, { recursive: true });
+    } catch {
+      // ignore — dir may already exist
+    }
+    this.cleanOldLogs();
+    this.openLogStream();
+  }
+
+  private getDateString(): string {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, "0");
+    const day = String(now.getDate()).padStart(2, "0");
+    return `${year}-${month}-${day}`;
+  }
+
+  private openLogStream(): void {
+    if (!this.logDir) return;
+    const dateStr = this.getDateString();
+    if (this.logStream && dateStr === this.currentLogDate) return;
+    if (this.logStream) {
+      this.logStream.end();
+      this.logStream = null;
+    }
+    this.currentLogDate = dateStr;
+    const logPath = path.join(this.logDir, `${dateStr}.log`);
+    this.logStream = fs.createWriteStream(logPath, { flags: "a" });
+  }
+
+  private writeToFile(line: string): void {
+    if (!this.logDir) return;
+    const dateStr = this.getDateString();
+    if (dateStr !== this.currentLogDate) {
+      this.cleanOldLogs();
+      this.openLogStream();
+    }
+    if (this.logStream) {
+      this.logStream.write(line + "\n");
+    }
+  }
+
+  private cleanOldLogs(): void {
+    if (!this.logDir) return;
+    try {
+      const files = fs.readdirSync(this.logDir);
+      const cutoff = Date.now() - 7 * 24 * 60 * 60 * 1000;
+      for (const file of files) {
+        if (!file.endsWith(".log")) continue;
+        const filePath = path.join(this.logDir, file);
+        try {
+          const stat = fs.statSync(filePath);
+          if (stat.mtimeMs < cutoff) {
+            fs.unlinkSync(filePath);
+          }
+        } catch {
+          // ignore per-file errors
+        }
+      }
+    } catch {
+      // ignore cleanup errors
+    }
   }
 
   /**
@@ -119,9 +195,15 @@ export class Logger {
    */
   debug(message: string, ...args: any[]): void {
     if (this.level <= LogLevel.DEBUG) {
+      const timestamp = this.formatTimestamp();
       const sanitizedMessage = redactSensitive(sanitizeLogMessage(message));
       const sanitizedArgs = this.sanitizeArgs(args);
-      console.debug(`[${this.formatTimestamp()}] [DEBUG]`, sanitizedMessage, ...sanitizedArgs);
+      const serializedArgs = sanitizedArgs.map((arg) => this.formatArg(arg));
+      const line = [`[${timestamp}] [DEBUG]`, sanitizedMessage, ...serializedArgs]
+        .join(" ")
+        .trim();
+      console.debug(line);
+      this.writeToFile(line);
     }
   }
 
@@ -138,6 +220,7 @@ export class Logger {
         .join(" ")
         .trim();
       process.stdout.write(`${line}\n`);
+      this.writeToFile(line);
     }
   }
 
@@ -146,9 +229,15 @@ export class Logger {
    */
   warn(message: string, ...args: any[]): void {
     if (this.level <= LogLevel.WARN) {
+      const timestamp = this.formatTimestamp();
       const sanitizedMessage = redactSensitive(sanitizeLogMessage(message));
       const sanitizedArgs = this.sanitizeArgs(args);
-      console.warn(`[${this.formatTimestamp()}] [WARN]`, sanitizedMessage, ...sanitizedArgs);
+      const serializedArgs = sanitizedArgs.map((arg) => this.formatArg(arg));
+      const line = [`[${timestamp}] [WARN]`, sanitizedMessage, ...serializedArgs]
+        .join(" ")
+        .trim();
+      process.stderr.write(`${line}\n`);
+      this.writeToFile(line);
     }
   }
 
@@ -163,21 +252,30 @@ export class Logger {
       const timestamp = this.formatTimestamp();
       const sanitizedMessage = redactSensitive(sanitizeLogMessage(message));
       const sanitizedArgs = this.sanitizeArgs(args);
+      const serializedArgs = sanitizedArgs.map((arg) => this.formatArg(arg));
+      let errorPart = "";
       if (error instanceof Error) {
         const safeError = {
           name: sanitizeLogMessage(error.name),
           message: redactSensitive(sanitizeLogMessage(error.message)),
         };
+        errorPart = JSON.stringify(safeError);
         console.error(`[${timestamp}] [ERROR]`, sanitizedMessage, safeError, ...sanitizedArgs);
       } else if (error !== undefined) {
         const sanitizedError =
           typeof error === "string"
             ? redactSensitive(sanitizeLogMessage(error))
             : this.sanitizeArgs([error])[0];
+        errorPart = this.formatArg(sanitizedError);
         console.error(`[${timestamp}] [ERROR]`, sanitizedMessage, sanitizedError, ...sanitizedArgs);
       } else {
         console.error(`[${timestamp}] [ERROR]`, sanitizedMessage, ...sanitizedArgs);
       }
+      const line = [`[${timestamp}] [ERROR]`, sanitizedMessage, errorPart, ...serializedArgs]
+        .filter(Boolean)
+        .join(" ")
+        .trim();
+      this.writeToFile(line);
     }
   }
 }

@@ -806,6 +806,7 @@ export const ru = {
   nextCheck: "Следующая проверка",
   editInterval: "Изменить интервал",
   platform: "Платформа",
+  format: "Формат",
   unsubscribe: "Отписаться",
   confirmUnsubscribe: "Вы уверены, что хотите отписаться от {author}?",
   subscribedSuccessfully: "Успешно подписаны",

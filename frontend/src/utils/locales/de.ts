@@ -821,6 +821,7 @@ export const de = {
   nextCheck: "Nächste Prüfung",
   editInterval: "Intervall bearbeiten",
   platform: "Plattform",
+  format: "Format",
   unsubscribe: "Deabonnieren",
   confirmUnsubscribe:
     "Sind Sie sicher, dass Sie {author} deabonnieren möchten?",

@@ -760,6 +760,7 @@ export const zh = {
   nextCheck: "下次检查",
   editInterval: "编辑间隔",
   platform: "平台",
+  format: "格式",
   unsubscribe: "取消订阅",
   confirmUnsubscribe: "您确定要取消订阅 {author} 吗？",
   subscribedSuccessfully: "订阅成功",

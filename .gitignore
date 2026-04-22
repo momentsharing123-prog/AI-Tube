@@ -78,3 +78,4 @@ codeql-reports/
 # Reports
 reports/*
 .lighthouseci/
+.gstack/

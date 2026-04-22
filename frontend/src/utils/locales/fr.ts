@@ -822,6 +822,7 @@ export const fr = {
   nextCheck: "Prochaine vérification",
   editInterval: "Modifier l’intervalle",
   platform: "Plateforme",
+  format: "Format",
   unsubscribe: "Se désabonner",
   confirmUnsubscribe: "Êtes-vous sûr de vouloir vous désabonner de {author} ?",
   subscribedSuccessfully: "Abonné avec succès",

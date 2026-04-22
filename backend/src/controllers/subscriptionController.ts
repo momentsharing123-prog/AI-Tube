@@ -85,7 +85,8 @@ export const createSubscription = async (
     normalizedUrl,
     parseInt(interval),
     authorName,
-    downloadShorts
+    downloadShorts,
+    downloadFormat
   );
 
   // If user wants to download all previous videos, create a continuous download task
@@ -487,7 +488,8 @@ export const createPlaylistSubscription = async (
     playlistId || "",
     author,
     platform,
-    collectionIdForSubscription
+    collectionIdForSubscription,
+    downloadFormat
   );
 
   // If user wants to download all videos, create a continuous download task
@@ -691,7 +693,8 @@ export const subscribeChannelPlaylists = async (
           playlistId || "",
           channelName,
           platform,
-          collectionId
+          collectionId,
+          downloadFormat
         );
         subscribedCount++;
       } catch (error: any) {
@@ -778,7 +781,8 @@ export const subscribeChannelPlaylists = async (
       targetUrl,
       parseInt(interval),
       channelName,
-      platform
+      platform,
+      downloadFormat
     );
     logger.info(`Created watcher for channel: ${channelName}`);
   } catch (error) {

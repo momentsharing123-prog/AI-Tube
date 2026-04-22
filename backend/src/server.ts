@@ -7,7 +7,7 @@ import cors from "cors";
 import express from "express";
 import fs from "fs-extra";
 import path from "path";
-import { DATA_DIR } from "./config/paths";
+import { DATA_DIR, LOGS_DIR } from "./config/paths";
 import { runMigrations } from "./db/migrate";
 import { errorHandler } from "./middleware/errorHandler";
 import downloadManager from "./services/downloadManager";
@@ -61,6 +61,7 @@ const configureProcessCrashReports = (): void => {
 
 const startServer = async (): Promise<void> => {
   try {
+    logger.initFileLogging(LOGS_DIR);
     configureProcessCrashReports();
     await runMigrations();
 

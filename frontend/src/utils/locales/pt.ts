@@ -812,6 +812,7 @@ export const pt = {
   nextCheck: "Próxima verificação",
   editInterval: "Editar intervalo",
   platform: "Plataforma",
+  format: "Formato",
   unsubscribe: "Cancelar inscrição",
   confirmUnsubscribe:
     "Tem certeza de que deseja cancelar a inscrição de {author}?",

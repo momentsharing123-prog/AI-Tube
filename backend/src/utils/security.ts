@@ -9,6 +9,7 @@ import path from "path";
 import {
   CLOUD_THUMBNAIL_CACHE_DIR,
   IMAGES_DIR,
+  MUSIC_DIR,
   VIDEOS_DIR,
 } from "../config/paths";
 
@@ -492,6 +493,14 @@ export function sanitizePathSegment(segment: string): string {
  */
 export function validateVideoPath(filePath: string): string {
   return resolveSafePath(filePath, VIDEOS_DIR);
+}
+
+/**
+ * Validates that a file path is within the videos or music directory.
+ * Use this for media files that can be either video (mp4) or audio (mp3).
+ */
+export function validateMediaPath(filePath: string): string {
+  return resolveSafePathInDirectories(filePath, [VIDEOS_DIR, MUSIC_DIR]);
 }
 
 /**

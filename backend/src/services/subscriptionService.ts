@@ -114,6 +114,9 @@ export interface Subscription {
   twitchBroadcasterId?: string;
   twitchBroadcasterLogin?: string;
   lastTwitchVideoId?: string;
+
+  // Download format
+  format?: string; // 'mp4' or 'mp3'
 }
 
 export class SubscriptionService {
@@ -134,7 +137,8 @@ export class SubscriptionService {
     authorUrl: string,
     interval: number,
     providedAuthorName?: string,
-    downloadShorts: boolean = false
+    downloadShorts: boolean = false,
+    format: 'mp4' | 'mp3' = 'mp4'
   ): Promise<Subscription> {
     // Detect platform and validate URL
     let platform: string;
@@ -366,6 +370,7 @@ export class SubscriptionService {
       twitchBroadcasterId,
       twitchBroadcasterLogin,
       lastTwitchVideoId,
+      format,
     };
 
     await db.insert(subscriptions).values(newSubscription);
@@ -382,7 +387,8 @@ export class SubscriptionService {
     playlistId: string,
     author: string,
     platform: string,
-    collectionId: string | null
+    collectionId: string | null,
+    format: 'mp4' | 'mp3' = 'mp4'
   ): Promise<Subscription> {
     // Check if already subscribed to this playlist
     const existing = await db
@@ -411,6 +417,7 @@ export class SubscriptionService {
       playlistTitle,
       subscriptionType: "playlist",
       collectionId: collectionId || undefined,
+      format,
     };
 
     await db.insert(subscriptions).values(newSubscription);
@@ -425,7 +432,8 @@ export class SubscriptionService {
     channelUrl: string,
     interval: number,
     channelName: string,
-    platform: string
+    platform: string,
+    format: 'mp4' | 'mp3' = 'mp4'
   ): Promise<Subscription> {
     // Check if watcher already exists
     const existing = await db
@@ -450,6 +458,7 @@ export class SubscriptionService {
       platform,
       paused: 0,
       subscriptionType: "channel_playlists",
+      format,
     };
 
     await db.insert(subscriptions).values(newSubscription);
@@ -787,7 +796,8 @@ export class SubscriptionService {
                     ""
                   );
                 } else {
-                  downloadResult = await downloadYouTubeVideo(latestVideoUrl);
+                  const dlFormat: 'mp4' | 'mp3' = sub.format === 'mp3' ? 'mp3' : 'mp4';
+                  downloadResult = await downloadYouTubeVideo(latestVideoUrl, undefined, undefined, dlFormat);
                 }
 
                 // Add to download history on success
@@ -909,8 +919,9 @@ export class SubscriptionService {
 
                 // Download the short
                 try {
+                  const shortDlFormat: 'mp4' | 'mp3' = sub.format === 'mp3' ? 'mp3' : 'mp4';
                   const downloadResult = await downloadYouTubeVideo(
-                    latestShortUrl
+                    latestShortUrl, undefined, undefined, shortDlFormat
                   );
 
                   // Add to download history on success
@@ -1257,7 +1268,8 @@ export class SubscriptionService {
       }
 
       try {
-        const downloadResult = await downloadYouTubeVideo(video.url);
+        const twitchDlFormat: 'mp4' | 'mp3' = sub.format === 'mp3' ? 'mp3' : 'mp4';
+        const downloadResult = await downloadYouTubeVideo(video.url, undefined, undefined, twitchDlFormat);
         const videoData = downloadResult?.videoData || downloadResult || {};
 
         storageService.addDownloadHistoryItem({

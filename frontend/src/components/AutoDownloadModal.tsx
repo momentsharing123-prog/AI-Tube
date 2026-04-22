@@ -77,8 +77,8 @@ const AutoDownloadModal: React.FC<AutoDownloadModalProps> = ({
     const [resolvedChannelUrl, setResolvedChannelUrl] = useState<string | null>(null);
     const [resolvedChannelName, setResolvedChannelName] = useState<string | null>(null);
     const [collectionName, setCollectionName] = useState('');
-    const [interval, setIntervalValue] = useState(60);
-    const [format, setFormat] = useState<'mp4' | 'mp3'>('mp4');
+    const [interval, setIntervalValue] = useState(1440);
+    const [format, setFormat] = useState<'mp4' | 'mp3'>('mp3');
     const [downloadAllPrevious, setDownloadAllPrevious] = useState(false);
     const [submitting, setSubmitting] = useState(false);
     const [resolvingChannelUrl, setResolvingChannelUrl] = useState(false);
@@ -248,8 +248,8 @@ const AutoDownloadModal: React.FC<AutoDownloadModalProps> = ({
         setUrl('');
         setCollectionName('');
         setMode('playlist');
-        setIntervalValue(60);
-        setFormat('mp4');
+        setIntervalValue(1440);
+        setFormat('mp3');
         setDownloadAllPrevious(false);
         setResolvedChannelUrl(null);
         setResolvedChannelName(null);

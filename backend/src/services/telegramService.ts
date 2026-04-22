@@ -9,19 +9,24 @@ interface TelegramStrings {
   url: string;
   error: string;
   testSuccess: string;
+  subscriptionComplete: string;
+  channel: string;
+  downloaded: string;
+  skipped: string;
+  failed: string;
 }
 
 const translations: Record<string, TelegramStrings> = {
-  en: { taskSuccess: "Task Success", taskFailed: "Task Failed", title: "Title", url: "URL", error: "Error", testSuccess: "AI Tube Telegram notification test successful!" },
-  zh: { taskSuccess: "任务成功", taskFailed: "任务失败", title: "标题", url: "链接", error: "错误", testSuccess: "AI Tube Telegram 通知测试成功！" },
-  ja: { taskSuccess: "タスク成功", taskFailed: "タスク失敗", title: "タイトル", url: "URL", error: "エラー", testSuccess: "AI Tube Telegram 通知テスト成功！" },
-  ko: { taskSuccess: "작업 성공", taskFailed: "작업 실패", title: "제목", url: "URL", error: "오류", testSuccess: "AI Tube Telegram 알림 테스트 성공!" },
-  fr: { taskSuccess: "Tâche réussie", taskFailed: "Tâche échouée", title: "Titre", url: "URL", error: "Erreur", testSuccess: "Test de notification Telegram AI Tube réussi !" },
-  de: { taskSuccess: "Aufgabe erfolgreich", taskFailed: "Aufgabe fehlgeschlagen", title: "Titel", url: "URL", error: "Fehler", testSuccess: "AI Tube Telegram-Benachrichtigungstest erfolgreich!" },
-  es: { taskSuccess: "Tarea exitosa", taskFailed: "Tarea fallida", title: "Título", url: "URL", error: "Error", testSuccess: "¡Prueba de notificación de Telegram de AI Tube exitosa!" },
-  pt: { taskSuccess: "Tarefa concluída", taskFailed: "Tarefa falhou", title: "Título", url: "URL", error: "Erro", testSuccess: "Teste de notificação Telegram do AI Tube bem-sucedido!" },
-  ru: { taskSuccess: "Задача выполнена", taskFailed: "Задача не выполнена", title: "Название", url: "URL", error: "Ошибка", testSuccess: "Тест уведомлений Telegram AI Tube успешен!" },
-  ar: { taskSuccess: "نجحت المهمة", taskFailed: "فشلت المهمة", title: "العنوان", url: "الرابط", error: "خطأ", testSuccess: "اختبار إشعارات تيليجرام AI Tube ناجح!" },
+  en: { taskSuccess: "Task Success", taskFailed: "Task Failed", title: "Title", url: "URL", error: "Error", testSuccess: "AI Tube Telegram notification test successful!", subscriptionComplete: "Subscription Check Complete", channel: "Channel", downloaded: "Downloaded", skipped: "Skipped", failed: "Failed" },
+  zh: { taskSuccess: "任务成功", taskFailed: "任务失败", title: "标题", url: "链接", error: "错误", testSuccess: "AI Tube Telegram 通知测试成功！", subscriptionComplete: "订阅检查完成", channel: "频道", downloaded: "已下载", skipped: "已跳过", failed: "失败" },
+  ja: { taskSuccess: "タスク成功", taskFailed: "タスク失敗", title: "タイトル", url: "URL", error: "エラー", testSuccess: "AI Tube Telegram 通知テスト成功！", subscriptionComplete: "サブスクリプション確認完了", channel: "チャンネル", downloaded: "ダウンロード済み", skipped: "スキップ済み", failed: "失敗" },
+  ko: { taskSuccess: "작업 성공", taskFailed: "작업 실패", title: "제목", url: "URL", error: "오류", testSuccess: "AI Tube Telegram 알림 테스트 성공!", subscriptionComplete: "구독 확인 완료", channel: "채널", downloaded: "다운로드됨", skipped: "건너뜀", failed: "실패" },
+  fr: { taskSuccess: "Tâche réussie", taskFailed: "Tâche échouée", title: "Titre", url: "URL", error: "Erreur", testSuccess: "Test de notification Telegram AI Tube réussi !", subscriptionComplete: "Vérification d'abonnement terminée", channel: "Chaîne", downloaded: "Téléchargé", skipped: "Ignoré", failed: "Échoué" },
+  de: { taskSuccess: "Aufgabe erfolgreich", taskFailed: "Aufgabe fehlgeschlagen", title: "Titel", url: "URL", error: "Fehler", testSuccess: "AI Tube Telegram-Benachrichtigungstest erfolgreich!", subscriptionComplete: "Abonnement-Prüfung abgeschlossen", channel: "Kanal", downloaded: "Heruntergeladen", skipped: "Übersprungen", failed: "Fehlgeschlagen" },
+  es: { taskSuccess: "Tarea exitosa", taskFailed: "Tarea fallida", title: "Título", url: "URL", error: "Error", testSuccess: "¡Prueba de notificación de Telegram de AI Tube exitosa!", subscriptionComplete: "Verificación de suscripción completada", channel: "Canal", downloaded: "Descargado", skipped: "Omitido", failed: "Fallido" },
+  pt: { taskSuccess: "Tarefa concluída", taskFailed: "Tarefa falhou", title: "Título", url: "URL", error: "Erro", testSuccess: "Teste de notificação Telegram do AI Tube bem-sucedido!", subscriptionComplete: "Verificação de assinatura concluída", channel: "Canal", downloaded: "Baixado", skipped: "Ignorado", failed: "Falhou" },
+  ru: { taskSuccess: "Задача выполнена", taskFailed: "Задача не выполнена", title: "Название", url: "URL", error: "Ошибка", testSuccess: "Тест уведомлений Telegram AI Tube успешен!", subscriptionComplete: "Проверка подписки завершена", channel: "Канал", downloaded: "Загружено", skipped: "Пропущено", failed: "Не удалось" },
+  ar: { taskSuccess: "نجحت المهمة", taskFailed: "فشلت المهمة", title: "العنوان", url: "الرابط", error: "خطأ", testSuccess: "اختبار إشعارات تيليجرام AI Tube ناجح!", subscriptionComplete: "اكتمل فحص الاشتراك", channel: "القناة", downloaded: "تم التنزيل", skipped: "تم التخطي", failed: "فشل" },
 };
 
 function getStrings(lang?: string): TelegramStrings {
@@ -112,6 +117,45 @@ export class TelegramService {
       await sendMessage(settings.telegramBotToken, settings.telegramChatId, text);
     } catch (error: unknown) {
       logger.error(`[TelegramService] Failed to send notification: ${error instanceof Error ? error.message : String(error)}`);
+    }
+  }
+
+  static async notifySubscriptionComplete(context: {
+    author: string;
+    authorUrl: string;
+    downloadedCount: number;
+    skippedCount: number;
+    failedCount: number;
+  }): Promise<void> {
+    // Only notify if something actually happened
+    if (context.downloadedCount === 0 && context.failedCount === 0) return;
+
+    try {
+      const settings = storageService.getSettings() as Settings;
+
+      if (!settings.telegramEnabled || !settings.telegramBotToken || !settings.telegramChatId) {
+        return;
+      }
+
+      if (settings.telegramNotifyOnSuccess === false && context.downloadedCount > 0 && context.failedCount === 0) return;
+      if (settings.telegramNotifyOnFail === false && context.failedCount > 0 && context.downloadedCount === 0) return;
+
+      const s = getStrings(settings.language);
+      const hasFailures = context.failedCount > 0;
+      const emoji = hasFailures ? "\u26a0\ufe0f" : "\u2705";
+      let text = `${emoji} <b>${s.subscriptionComplete}</b>\n<b>${s.channel}:</b> ${escapeHtml(context.author)}`;
+      text += `\n<b>${s.downloaded}:</b> ${context.downloadedCount}`;
+      if (context.skippedCount > 0) {
+        text += `  |  <b>${s.skipped}:</b> ${context.skippedCount}`;
+      }
+      if (context.failedCount > 0) {
+        text += `  |  <b>${s.failed}:</b> ${context.failedCount}`;
+      }
+      text += `\n<b>${s.url}:</b> ${escapeHtml(context.authorUrl)}`;
+
+      await sendMessage(settings.telegramBotToken, settings.telegramChatId, text);
+    } catch (error: unknown) {
+      logger.error(`[TelegramService] Failed to send subscription notification: ${error instanceof Error ? error.message : String(error)}`);
     }
   }
 

@@ -84,9 +84,17 @@ echo.
 
 :: ── 5. Build and start ────────────────────────────────────────
 echo [5/6] Building images and starting containers...
-echo  This may take a few minutes on first run.
+echo  Building without cache to ensure latest code is picked up.
 echo.
-docker compose --env-file "%ENV_FILE%" -f "%COMPOSE_FILE%" up -d --build
+docker compose --env-file "%ENV_FILE%" -f "%COMPOSE_FILE%" build --no-cache
+if errorlevel 1 (
+    echo.
+    echo  ERROR: Docker build failed. Check the output above.
+    echo.
+    pause
+    exit /b 1
+)
+docker compose --env-file "%ENV_FILE%" -f "%COMPOSE_FILE%" up -d
 if errorlevel 1 (
     echo.
     echo  ERROR: Docker Compose failed. Check the output above.

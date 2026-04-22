@@ -290,6 +290,17 @@ export class TaskProcessor {
       logger.info(
         `Completed continuous download task ${task.id}: ${finalTask.downloadedCount} downloaded, ${finalTask.skippedCount} skipped, ${finalTask.failedCount} failed`
       );
+
+      // Send Telegram summary (fires only when new videos were downloaded or failures occurred)
+      import("../telegramService").then(({ TelegramService }) =>
+        TelegramService.notifySubscriptionComplete({
+          author: task.author,
+          authorUrl: task.authorUrl,
+          downloadedCount: progressState.downloadedCount,
+          skippedCount: progressState.skippedCount,
+          failedCount: progressState.failedCount,
+        })
+      ).catch(() => {});
     }
   }
 

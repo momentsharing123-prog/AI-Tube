@@ -177,7 +177,7 @@ export const DownloadProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     const [playlistSelectorUrl, setPlaylistSelectorUrl] = useState<string>('');
     const [playlistSelectorTitle, setPlaylistSelectorTitle] = useState<string>('');
     const [playlistSelectorFormat, setPlaylistSelectorFormat] = useState<'mp3' | 'mp4'>('mp3');
-    const [downloadFormat, setDownloadFormat] = useState<'mp4' | 'mp3'>('mp4');
+    const [downloadFormat, setDownloadFormat] = useState<'mp4' | 'mp3'>('mp3');
 
 
     // Reference to track current download IDs for detecting completion

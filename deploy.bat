@@ -12,6 +12,8 @@ set "COMPOSE_FILE=%PROJECT_ROOT%docker\docker-compose.prod.yml"
 set "ENV_FILE=%PROJECT_ROOT%.env"
 set "UPLOADS_DIR=E:\Youtube Download\SynologyDrive\uploads"
 set "DATA_DIR=E:\Youtube Download\SynologyDrive\data"
+set "VIDEOS_DIR=E:\Youtube Download\SynologyDrive\Youtube Download\Videos"
+set "MUSIC_DIR=E:\Youtube Download\SynologyDrive\Youtube Download\Music"
 set "BACKEND_CONTAINER=ai-tube-prod"
 set "FRONTEND_CONTAINER=ai-tube-prod-web"
 set "APP_URL=http://localhost:6001"
@@ -49,6 +51,18 @@ if not exist "%DATA_DIR%" (
     echo  Created: %DATA_DIR%
 ) else (
     echo  OK: %DATA_DIR%
+)
+if not exist "%VIDEOS_DIR%" (
+    mkdir "%VIDEOS_DIR%"
+    echo  Created: %VIDEOS_DIR%
+) else (
+    echo  OK: %VIDEOS_DIR%
+)
+if not exist "%MUSIC_DIR%" (
+    mkdir "%MUSIC_DIR%"
+    echo  Created: %MUSIC_DIR%
+) else (
+    echo  OK: %MUSIC_DIR%
 )
 echo.
 

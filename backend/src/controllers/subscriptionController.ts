@@ -214,6 +214,18 @@ export const resumeSubscription = async (
 };
 
 /**
+ * Force check all subscriptions immediately
+ * Errors are automatically handled by asyncHandler middleware
+ */
+export const forceCheckSubscriptions = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  await subscriptionService.checkSubscriptions();
+  res.status(200).json(successMessage("Subscription check completed"));
+};
+
+/**
  * Get all continuous download tasks
  * Errors are automatically handled by asyncHandler middleware
  */

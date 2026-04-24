@@ -8,6 +8,10 @@ services:
     volumes:
       - /share/CACHEDEV2_DATA/Medias/AI Tube/uploads:/app/uploads
       - /share/CACHEDEV2_DATA/Medias/AI Tube/data:/app/data
+      # Optional: mount videos and music to separate host paths or volumes.
+      # Uncomment and adjust the host paths, then set the matching env vars below.
+      # - /share/CACHEDEV2_DATA/Medias/Videos:/mnt/videos
+      # - /share/CACHEDEV2_DATA/Medias/Music:/mnt/music
     environment:
       - PORT=5551
       # Optional: match the backend process uid/gid to the host-side file ownership.
@@ -19,6 +23,10 @@ services:
       # Valid values: application | container | host
       # Docs: documents/en/deployment-security-model.md
       - AITUBE_ADMIN_TRUST_LEVEL=container
+      # Optional: override the container path for downloaded videos / music.
+      # Must match the container-side path of the volume mounts above.
+      # - AITUBE_VIDEOS_DIR=/mnt/videos
+      # - AITUBE_MUSIC_DIR=/mnt/music
     restart: unless-stopped
     networks:
       - aitube-network

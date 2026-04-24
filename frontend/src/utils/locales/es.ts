@@ -861,6 +861,8 @@ export const es = {
   confirmDeleteTask:
     "¿Estás seguro de que quieres eliminar el registro de tarea para {author}? Esta acción no se puede deshacer.",
   taskDeleted: "Tarea eliminada exitosamente",
+  forceCheckUpdate: "Forzar comprobación de actualizaciones",
+  forceCheckStarted: "Comprobación de suscripciones iniciada",
   clearFinishedTasks: "Borrar tareas finalizadas",
   tasksCleared: "Tareas finalizadas borradas con éxito",
   confirmClearFinishedTasks:

@@ -863,6 +863,8 @@ export const fr = {
   confirmDeleteTask:
     "Êtes-vous sûr de vouloir supprimer l'enregistrement de tâche pour {author} ? Cette action ne peut pas être annulée.",
   taskDeleted: "Tâche supprimée avec succès",
+  forceCheckUpdate: "Forcer la vérification des mises à jour",
+  forceCheckStarted: "Vérification des abonnements lancée",
   clearFinishedTasks: "Effacer les tâches terminées",
   tasksCleared: "Tâches terminées effacées avec succès",
   confirmClearFinishedTasks:

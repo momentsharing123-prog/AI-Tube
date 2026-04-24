@@ -103,6 +103,7 @@ const SubscriptionsPage: React.FC = () => {
     const [editedInterval, setEditedInterval] = useState<string>('');
     const [isSavingInterval, setIsSavingInterval] = useState(false);
     const [isSubscribeModalOpen, setIsSubscribeModalOpen] = useState(false);
+    const [isForceChecking, setIsForceChecking] = useState(false);
 
     // Use React Query for better caching and memory management
     const { data: subscriptions = [], refetch: refetchSubscriptions } = useQuery({
@@ -239,6 +240,20 @@ const SubscriptionsPage: React.FC = () => {
         }
     };
 
+    const handleForceCheckUpdate = async () => {
+        setIsForceChecking(true);
+        try {
+            await api.post('/subscriptions/check');
+            showSnackbar(t('forceCheckStarted'));
+            await refetchSubscriptions();
+        } catch (error) {
+            console.error('Error force checking subscriptions:', error);
+            showSnackbar(t('error'));
+        } finally {
+            setIsForceChecking(false);
+        }
+    };
+
     const handleStartEditingInterval = (subscription: Subscription) => {
         setEditingSubscriptionId(subscription.id);
         setEditedInterval(String(subscription.interval));
@@ -361,13 +376,23 @@ const SubscriptionsPage: React.FC = () => {
                     {t('subscriptions')}
                 </Typography>
                 {!isVisitor && (
-                    <Button
-                        variant="contained"
-                        startIcon={<Add />}
-                        onClick={() => setIsSubscribeModalOpen(true)}
-                    >
-                        Subscribe
-                    </Button>
+                    <Box sx={{ display: 'flex', gap: 1 }}>
+                        <Button
+                            variant="outlined"
+                            onClick={() => void handleForceCheckUpdate()}
+                            disabled={isForceChecking}
+                            startIcon={isForceChecking ? <CircularProgress size={16} /> : undefined}
+                        >
+                            {t('forceCheckUpdate')}
+                        </Button>
+                        <Button
+                            variant="contained"
+                            startIcon={<Add />}
+                            onClick={() => setIsSubscribeModalOpen(true)}
+                        >
+                            Subscribe
+                        </Button>
+                    </Box>
                 )}
             </Box>
 

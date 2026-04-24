@@ -845,6 +845,8 @@ export const ru = {
   confirmDeleteTask:
     "Вы уверены, что хотите удалить запись задачи для {author}? Это действие нельзя отменить.",
   taskDeleted: "Задача успешно удалена",
+  forceCheckUpdate: "Принудительная проверка обновлений",
+  forceCheckStarted: "Проверка подписок запущена",
   clearFinishedTasks: "Очистить завершенные задачи",
   tasksCleared: "Завершенные задачи успешно очищены",
   confirmClearFinishedTasks:

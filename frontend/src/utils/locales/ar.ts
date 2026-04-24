@@ -823,6 +823,8 @@ export const ar = {
   confirmDeleteTask:
     "هل أنت متأكد أنك تريد حذف سجل المهمة لـ {author}؟ لا يمكن التراجع عن هذا الإجراء.",
   taskDeleted: "تم حذف المهمة بنجاح",
+  forceCheckUpdate: "فرض التحقق من التحديثات",
+  forceCheckStarted: "بدأ فحص الاشتراكات",
   clearFinishedTasks: "مسح المهام المنتهية",
   tasksCleared: "تم مسح المهام المنتهية بنجاح",
   confirmClearFinishedTasks:

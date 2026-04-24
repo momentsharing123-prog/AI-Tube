@@ -8,8 +8,10 @@ services:
     image: ai-tube-backend:prod
     container_name: ai-tube-prod
     volumes:
-      - "E:/Youtube Download/SynologyDrive/uploads:/app/uploads"
-      - "E:/Youtube Download/SynologyDrive/data:/app/data"
+      - "${UPLOADS_DIR}:/app/uploads"
+      - "${DATA_DIR}:/app/data"
+      - "${VIDEOS_DIR}:/mnt/videos"
+      - "${MUSIC_DIR}:/mnt/music"
     environment:
       - PORT=5551
       - PUID=${PUID:-1000}
@@ -18,6 +20,8 @@ services:
       - CSRF_SECRET=${CSRF_SECRET}
       - AITUBE_AUTO_FIX_PERMISSIONS=1
       - AITUBE_ADMIN_TRUST_LEVEL=container
+      - AITUBE_VIDEOS_DIR=/mnt/videos
+      - AITUBE_MUSIC_DIR=/mnt/music
       # API token config — leave AITUBE_API_TOKEN blank to auto-generate
       - AITUBE_API_ENABLED=${AITUBE_API_ENABLED:-true}
       - AITUBE_API_TOKEN=${AITUBE_API_TOKEN:-}

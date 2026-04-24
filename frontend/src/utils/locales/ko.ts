@@ -832,6 +832,8 @@ export const ko = {
   confirmDeleteTask:
     "{author}님의 작업 기록을 삭제하시겠습니까? 이 작업은 취소할 수 없습니다.",
   taskDeleted: "작업이 성공적으로 삭제되었습니다",
+  forceCheckUpdate: "강제 업데이트 확인",
+  forceCheckStarted: "구독 확인이 시작되었습니다",
   clearFinishedTasks: "완료된 작업 지우기",
   tasksCleared: "완료된 작업이 성공적으로 지워졌습니다",
   confirmClearFinishedTasks:

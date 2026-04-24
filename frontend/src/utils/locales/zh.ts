@@ -797,6 +797,8 @@ export const zh = {
   deleteTask: "删除任务",
   confirmDeleteTask: "您确定要删除 {author} 的任务记录吗？此操作无法撤销。",
   taskDeleted: "任务已成功删除",
+  forceCheckUpdate: "强制检查更新",
+  forceCheckStarted: "订阅检查已开始",
   clearFinishedTasks: "清除已完成任务",
   tasksCleared: "已成功清除已完成的任务",
   confirmClearFinishedTasks:

@@ -863,6 +863,8 @@ export const de = {
   confirmDeleteTask:
     "Sind Sie sicher, dass Sie den Aufgaben-Datensatz für {author} löschen möchten? Diese Aktion kann nicht rückgängig gemacht werden.",
   taskDeleted: "Aufgabe erfolgreich gelöscht",
+  forceCheckUpdate: "Update erzwingen",
+  forceCheckStarted: "Abonnement-Prüfung gestartet",
   clearFinishedTasks: "Beendete Aufgaben löschen",
   tasksCleared: "Beendete Aufgaben erfolgreich gelöscht",
   confirmClearFinishedTasks:

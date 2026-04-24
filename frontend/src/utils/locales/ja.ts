@@ -848,6 +848,8 @@ export const ja = {
   confirmDeleteTask:
     "{author} のタスクレコードを削除してもよろしいですか？この操作は元に戻せません。",
   taskDeleted: "タスクが正常に削除されました",
+  forceCheckUpdate: "強制更新チェック",
+  forceCheckStarted: "購読チェックを開始しました",
   clearFinishedTasks: "完了したタスクをクリア",
   tasksCleared: "完了したタスクを正常にクリアしました",
   confirmClearFinishedTasks:

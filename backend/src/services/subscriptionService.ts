@@ -510,7 +510,7 @@ export class SubscriptionService {
 
       if (!result.entries || result.entries.length === 0) {
         logger.debug(`No playlists found for watcher ${sub.author}`);
-        return;
+        return 0;
       }
 
       // Extract channel name if needed (to update watcher name if generic?)

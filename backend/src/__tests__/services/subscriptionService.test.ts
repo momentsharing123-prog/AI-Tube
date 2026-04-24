@@ -790,7 +790,7 @@ describe('SubscriptionService', () => {
       mockBuilder.then = (cb: any) => Promise.resolve([paused, watcher]).then(cb);
       const watcherSpy = vi
         .spyOn(subscriptionService, 'checkChannelPlaylists')
-        .mockResolvedValue(undefined);
+        .mockResolvedValue(0);
 
       await subscriptionService.checkSubscriptions();
 

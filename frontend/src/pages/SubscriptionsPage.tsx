@@ -105,6 +105,7 @@ const SubscriptionsPage: React.FC = () => {
     const [isSavingInterval, setIsSavingInterval] = useState(false);
     const [isSubscribeModalOpen, setIsSubscribeModalOpen] = useState(false);
     const [isForceChecking, setIsForceChecking] = useState(false);
+    const [checkResults, setCheckResults] = useState<Record<string, { found: number; status: string }> | null>(null);
 
     // Use React Query for better caching and memory management
     const { data: subscriptions = [], refetch: refetchSubscriptions } = useQuery({
@@ -243,9 +244,10 @@ const SubscriptionsPage: React.FC = () => {
 
     const handleForceCheckUpdate = async () => {
         setIsForceChecking(true);
+        setCheckResults(null);
         try {
-            await api.post('/subscriptions/check');
-            showSnackbar(t('forceCheckStarted'));
+            const response = await api.post('/subscriptions/check');
+            setCheckResults(response.data as Record<string, { found: number; status: string }>);
             await refetchSubscriptions();
         } catch (error) {
             console.error('Error force checking subscriptions:', error);
@@ -450,6 +452,21 @@ const SubscriptionsPage: React.FC = () => {
                                                         {t('interval')}: {sub.interval} {t('minutes')}
                                                     </Typography>
                                                 )
+                                            )}
+                                            {checkResults?.[sub.id] && (
+                                                <Typography
+                                                    variant="caption"
+                                                    sx={{
+                                                        fontWeight: 600,
+                                                        color: checkResults[sub.id].found > 0 ? 'success.main' : 'text.disabled',
+                                                    }}
+                                                >
+                                                    {checkResults[sub.id].status === 'paused'
+                                                        ? null
+                                                        : checkResults[sub.id].found > 0
+                                                            ? `↓ ${checkResults[sub.id].found} new`
+                                                            : '✓ No new'}
+                                                </Typography>
                                             )}
                                         </Box>
                                     </TableCell>

@@ -222,8 +222,8 @@ export const forceCheckSubscriptions = async (
   req: Request,
   res: Response
 ): Promise<void> => {
-  await subscriptionService.checkSubscriptions();
-  res.status(200).json(successMessage("Subscription check completed"));
+  const results = await subscriptionService.checkSubscriptions(true);
+  res.status(200).json(results);
 };
 
 /**

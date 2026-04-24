@@ -31,6 +31,14 @@ import { YtDlpDownloader } from "./downloaders/YtDlpDownloader";
 import * as storageService from "./storageService";
 import { TwitchVideoInfo, twitchApiService } from "./twitchService";
 
+export interface SubscriptionCheckResultItem {
+  author: string;
+  found: number;
+  status: "checked" | "paused" | "skipped";
+}
+
+export type SubscriptionCheckResults = Record<string, SubscriptionCheckResultItem>;
+
 const MAX_TWITCH_SUBSCRIPTION_PAGES_PER_CHECK = 5;
 const MAX_TWITCH_SUBSCRIPTION_SCANNED_VIDEOS = 500;
 const MAX_TWITCH_SUBSCRIPTION_DOWNLOADS_PER_CHECK = Math.max(
@@ -469,7 +477,7 @@ export class SubscriptionService {
   /**
    * Check for new playlists on a channel and subscribe to them
    */
-  async checkChannelPlaylists(sub: Subscription): Promise<void> {
+  async checkChannelPlaylists(sub: Subscription): Promise<number> {
     try {
       logger.info(`Checking channel playlists for ${sub.author}...`);
 
@@ -608,8 +616,10 @@ export class SubscriptionService {
         .update(subscriptions)
         .set({ lastCheck: Date.now() })
         .where(eq(subscriptions.id, sub.id));
+      return newSubscriptionsCount;
     } catch (error) {
       logger.error(`Error in playlists watcher for ${sub.author}:`, error);
+      return 0;
     }
   }
 
@@ -716,10 +726,12 @@ export class SubscriptionService {
     return await db.select().from(subscriptions);
   }
 
-  async checkSubscriptions(): Promise<void> {
+  async checkSubscriptions(force = false): Promise<SubscriptionCheckResults> {
+    const results: SubscriptionCheckResults = {};
+
     if (this.isCheckingSubscriptions) {
       logger.debug("Subscription check already running, skipping this tick");
-      return;
+      return results;
     }
 
     this.isCheckingSubscriptions = true;
@@ -729,10 +741,10 @@ export class SubscriptionService {
       for (const sub of allSubs) {
         // Skip if paused
         if (sub.paused) {
-          // We can log this at debug level to avoid spamming logs
           logger.debug(
             `Skipping paused subscription: ${sub.id} (${sub.author})`
           );
+          results[sub.id] = { author: sub.author, found: 0, status: "paused" };
           continue;
         }
 
@@ -740,7 +752,12 @@ export class SubscriptionService {
         const lastCheck = sub.lastCheck || 0;
         const intervalMs = sub.interval * 60 * 1000;
 
-        if (now - lastCheck >= intervalMs) {
+        if (!force && now - lastCheck < intervalMs) {
+          results[sub.id] = { author: sub.author, found: 0, status: "skipped" };
+          continue;
+        }
+
+        if (force || now - lastCheck >= intervalMs) {
           try {
             logger.info(
               `Checking subscription for ${sub.author} (${sub.platform})...`
@@ -748,12 +765,14 @@ export class SubscriptionService {
 
           // 1. Fetch latest video link based on platform and subscription type
             if (sub.subscriptionType === "channel_playlists") {
-              await this.checkChannelPlaylists(sub);
+              const found = await this.checkChannelPlaylists(sub);
+              results[sub.id] = { author: sub.author, found, status: "checked" };
               continue; // Watcher handled, move to next subscription
             }
 
             if (sub.platform === "Twitch") {
-              await this.checkTwitchSubscription(sub);
+              const found = await this.checkTwitchSubscription(sub);
+              results[sub.id] = { author: sub.author, found, status: "checked" };
               continue;
             }
 
@@ -765,7 +784,9 @@ export class SubscriptionService {
                 )
               : await this.getLatestVideoUrl(sub.authorUrl, sub.platform);
 
+            let foundCount = 0;
             if (latestVideoUrl && latestVideoUrl !== sub.lastVideoLink) {
+              foundCount++;
               logger.info(`New video found for ${sub.author}: ${latestVideoUrl}`);
 
               // 2. Update lastCheck *before* download to prevent concurrent processing
@@ -913,6 +934,7 @@ export class SubscriptionService {
                 );
 
               if (latestShortUrl && latestShortUrl !== sub.lastShortVideoLink) {
+                foundCount++;
                 logger.info(
                   `New short found for ${sub.author}: ${latestShortUrl}`
                 );
@@ -977,24 +999,27 @@ export class SubscriptionService {
                 );
               }
             }
+            results[sub.id] = { author: sub.author, found: foundCount, status: "checked" };
           } catch (error) {
             logger.error(
               `Error checking subscription for ${sub.author}:`,
               error
             );
+            results[sub.id] = { author: sub.author, found: 0, status: "checked" };
           }
         }
       }
     } finally {
       this.isCheckingSubscriptions = false;
     }
+    return results;
   }
 
   private isEligibleTwitchVideo(video: TwitchVideoInfo): boolean {
     return video.type === "archive" || video.type === "upload";
   }
 
-  private async checkTwitchSubscription(sub: Subscription): Promise<void> {
+  private async checkTwitchSubscription(sub: Subscription): Promise<number> {
     const now = Date.now();
     const lockResult = await db
       .update(subscriptions)
@@ -1006,16 +1031,15 @@ export class SubscriptionService {
       logger.warn(
         `Twitch subscription ${sub.id} (${sub.author}) was deleted before polling`
       );
-      return;
+      return 0;
     }
 
     if (!twitchApiService.isConfigured()) {
-      await this.checkTwitchSubscriptionWithYtDlp(sub);
-      return;
+      return await this.checkTwitchSubscriptionWithYtDlp(sub);
     }
 
     try {
-      await this.checkTwitchSubscriptionWithApi(sub);
+      return await this.checkTwitchSubscriptionWithApi(sub);
     } catch (error) {
       if (!shouldFallbackToTwitchYtDlp(error)) {
         throw error;
@@ -1025,13 +1049,13 @@ export class SubscriptionService {
         `Falling back to yt-dlp for Twitch subscription ${sub.id} (${sub.author}) after Helix polling failed`,
         error instanceof Error ? error : new Error(String(error))
       );
-      await this.checkTwitchSubscriptionWithYtDlp(sub);
+      return await this.checkTwitchSubscriptionWithYtDlp(sub);
     }
   }
 
   private async checkTwitchSubscriptionWithApi(
     sub: Subscription
-  ): Promise<void> {
+  ): Promise<number> {
     twitchApiService.ensureConfigured();
 
     let channel = sub.twitchBroadcasterId
@@ -1054,7 +1078,7 @@ export class SubscriptionService {
       logger.warn(
         `Twitch channel for subscription ${sub.id} could not be resolved`
       );
-      return;
+      return 0;
     }
 
     await db
@@ -1124,7 +1148,7 @@ export class SubscriptionService {
     }
 
     if (unseenVideos.length === 0) {
-      return;
+      return 0;
     }
 
     await this.processTwitchSubscriptionVideos(
@@ -1139,11 +1163,12 @@ export class SubscriptionService {
         authorName: video.userName || channel.displayName,
       }))
     );
+    return unseenVideos.length;
   }
 
   private async checkTwitchSubscriptionWithYtDlp(
     sub: Subscription
-  ): Promise<void> {
+  ): Promise<number> {
     const fallbackLogin =
       sub.twitchBroadcasterLogin || extractTwitchChannelLogin(sub.authorUrl);
     if (!fallbackLogin) {
@@ -1217,7 +1242,7 @@ export class SubscriptionService {
     }
 
     if (unseenVideos.length === 0) {
-      return;
+      return 0;
     }
 
     await this.processTwitchSubscriptionVideos(
@@ -1232,6 +1257,7 @@ export class SubscriptionService {
         authorName: video.author || resolvedAuthor,
       }))
     );
+    return unseenVideos.length;
   }
 
   private async processTwitchSubscriptionVideos(

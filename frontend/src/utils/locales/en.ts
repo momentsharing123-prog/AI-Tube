@@ -807,6 +807,8 @@ export const en = {
   confirmDeleteTask:
     "Are you sure you want to delete the task record for {author}? This action cannot be undone.",
   taskDeleted: "Task deleted successfully",
+  forceCheckUpdate: "Force Check Update",
+  forceCheckStarted: "Subscription check started",
   clearFinishedTasks: "Clear Finished Tasks",
   tasksCleared: "Finished tasks cleared successfully",
   confirmClearFinishedTasks:

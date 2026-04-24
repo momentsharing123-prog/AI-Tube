@@ -3,6 +3,8 @@ set -Eeuo pipefail
 
 DATA_DIR="${AITUBE_DATA_DIR:-/app/data}"
 UPLOADS_DIR="${AITUBE_UPLOADS_DIR:-/app/uploads}"
+VIDEOS_DIR="${AITUBE_VIDEOS_DIR:-}"
+MUSIC_DIR="${AITUBE_MUSIC_DIR:-}"
 HOME_DIR="${DATA_DIR}/.home"
 TARGET_UID="${PUID:-1000}"
 TARGET_GID="${PGID:-1000}"
@@ -79,13 +81,19 @@ prepare_runtime_layout() {
   mkdir -p \
     "$DATA_DIR" \
     "$UPLOADS_DIR" \
-    "$UPLOADS_DIR/videos" \
     "$UPLOADS_DIR/images" \
     "$UPLOADS_DIR/images-small" \
     "$UPLOADS_DIR/subtitles" \
     "$UPLOADS_DIR/avatars" \
     "$UPLOADS_DIR/cloud-thumbnail-cache" \
     "$HOME_DIR"
+
+  # Create videos/music dirs only when not overridden by separate mounts.
+  # When AITUBE_VIDEOS_DIR / AITUBE_MUSIC_DIR are set the caller is expected
+  # to bind-mount those paths themselves; we still ensure they exist.
+  local effective_videos_dir="${VIDEOS_DIR:-$UPLOADS_DIR/videos}"
+  local effective_music_dir="${MUSIC_DIR:-$UPLOADS_DIR/music}"
+  mkdir -p "$effective_videos_dir" "$effective_music_dir"
 }
 
 require_numeric "PUID" "$TARGET_UID"
@@ -103,11 +111,14 @@ if [ "$(id -u)" = "0" ]; then
     reconcile_path_if_needed "$DATA_DIR/aitube.db"
     reconcile_path_if_needed "$UPLOADS_DIR" 1
     reconcile_path_if_needed "$UPLOADS_DIR/images-small" 1
-    reconcile_path_if_needed "$UPLOADS_DIR/videos" 1
     reconcile_path_if_needed "$UPLOADS_DIR/images" 1
     reconcile_path_if_needed "$UPLOADS_DIR/subtitles" 1
     reconcile_path_if_needed "$UPLOADS_DIR/avatars" 1
     reconcile_path_if_needed "$UPLOADS_DIR/cloud-thumbnail-cache" 1
+
+    # Reconcile overridden videos/music dirs (may be separate bind mounts).
+    reconcile_path_if_needed "${VIDEOS_DIR:-$UPLOADS_DIR/videos}" 1
+    reconcile_path_if_needed "${MUSIC_DIR:-$UPLOADS_DIR/music}" 1
   else
     log "Skipping automatic permission reconciliation because AITUBE_AUTO_FIX_PERMISSIONS=${AUTO_FIX_PERMISSIONS}"
   fi
@@ -117,6 +128,14 @@ if [ "$(id -u)" = "0" ]; then
   ensure_writable_as_target "$DATA_DIR" "Data directory"
   ensure_writable_as_target "$UPLOADS_DIR" "Uploads directory"
   ensure_writable_as_target "$HOME_DIR" "Runtime home directory"
+
+  # Validate custom mount dirs if configured.
+  if [ -n "$VIDEOS_DIR" ]; then
+    ensure_writable_as_target "$VIDEOS_DIR" "Videos directory (AITUBE_VIDEOS_DIR)"
+  fi
+  if [ -n "$MUSIC_DIR" ]; then
+    ensure_writable_as_target "$MUSIC_DIR" "Music directory (AITUBE_MUSIC_DIR)"
+  fi
 
   if [ -e "$DATA_DIR/aitube.db" ]; then
     ensure_writable_as_target "$DATA_DIR/aitube.db" "SQLite database file"

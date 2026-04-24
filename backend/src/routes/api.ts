@@ -189,6 +189,10 @@ router.post(
   "/subscriptions/channel-playlists",
   asyncHandler(subscriptionController.subscribeChannelPlaylists)
 );
+router.post(
+  "/subscriptions/check",
+  asyncHandler(subscriptionController.forceCheckSubscriptions)
+);
 
 // Continuous download task routes
 router.get(

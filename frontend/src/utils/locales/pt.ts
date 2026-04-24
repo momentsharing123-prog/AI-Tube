@@ -853,6 +853,8 @@ export const pt = {
   confirmDeleteTask:
     "Tem certeza de que deseja excluir o registro da tarefa para {author}? Esta ação não pode ser desfeita.",
   taskDeleted: "Tarefa excluída com sucesso",
+  forceCheckUpdate: "Forçar verificação de atualizações",
+  forceCheckStarted: "Verificação de assinaturas iniciada",
   clearFinishedTasks: "Limpar tarefas concluídas",
   tasksCleared: "Tarefas concluídas limpas com sucesso",
   confirmClearFinishedTasks:
